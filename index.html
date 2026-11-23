@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lista de Verificación WMS</title>
+<meta name="theme-color" content="#0f172a">
+<style>
+*{box-sizing:border-box;font-family:system-ui,Arial,sans-serif}
+body{margin:0;background:#f1f5f9;color:#0f172a}
+header{background:#0f172a;color:white;padding:20px;text-align:center}
+header h1{margin:0;font-size:22px}
+header p{margin:6px 0 0;opacity:.9;font-size:14px}
+.slogan{background:#f59e0b;color:#111;padding:12px;text-align:center;font-weight:800}
+.wrap{max-width:650px;margin:auto;padding:16px}
+.card{background:white;border-radius:14px;padding:16px;margin-bottom:14px;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+label{font-weight:700;font-size:13px}
+input,select{width:100%;padding:12px;margin:6px 0 12px;border:1px solid #cbd5e1;border-radius:10px;font-size:15px}
+.item{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid #e2e8f0}
+.item:last-child{border:0}
+.item input{width:24px;height:24px;margin:0;accent-color:#16a34a}
+.item b{display:block}
+.item span{color:#64748b;font-size:13px}
+button{width:100%;padding:14px;border:0;border-radius:12px;font-size:16px;font-weight:800;cursor:pointer}
+.btn-green{background:#16a34a;color:white}
+.btn-dark{background:#0f172a;color:white;margin-top:10px}
+#resultado{display:none;text-align:center;font-size:18px;font-weight:800;padding:14px;border-radius:12px}
+footer{text-align:center;color:#64748b;font-size:12px;padding:16px}
+@media print{.slogan,button{display:none}}
+</style>
+</head>
+<body>
+<header>
+<h1>🚛 Lista de Verificación WMS</h1>
+<p>Revisión Diaria de Unidades</p>
+</header>
+<div class="slogan">Revisiones diarias con calidad. Tu flotilla siempre lista.</div>
+<div class="wrap">
+<div class="card">
+<label>Fecha</label><input type="date" id="fecha">
+<label>Unidad / Placas</label><input type="text" id="unidad" placeholder="Ej. Unidad 12 - ABC-123">
+<label>Operador / Chofer</label><input type="text" id="operador" placeholder="Nombre del operador">
+<label>Kilometraje</label><input type="number" id="km" placeholder="Ej. 125400">
+</div>
+<div class="card" id="lista"></div>
+<div id="resultado"></div>
+<button class="btn-green" onclick="validar()">✅ FINALIZAR REVISIÓN</button>
+<button class="btn-dark" onclick="window.print()">🖨️ IMPRIMIR / GUARDAR PDF</button>
+</div>
+<footer>WMS Almacén - Christian Suarez - 2026</footer>
+<script>
+document.getElementById('fecha').valueAsDate = new Date();
+const checks=[
+["Luces delanteras y traseras","Revisar altas, bajas, direccionales y freno"],
+["Frenos","Probar pedal, freno de mano y que no rechine"],
+["Llantas y presión","Revisar dibujo, que no estén lisas ni bajas"],
+["Nivel de aceite","Revisar varilla, sin fugas"],
+["Anticongelante / Agua","Nivel correcto, sin fugas"],
+["Espejos y cristales","Limpios, sin roturas, bien ajustados"],
+["Claxon","Que suene fuerte"],
+["Cinturón de seguridad","Que abroche y no esté roto"],
+["Extintor","Vigente, con presión y en su lugar"],
+["Documentos","Licencia, tarjeta, seguro y verificación"],
+["Luces interiores y tablero","Sin testigos prendidos"],
+["Limpia parabrisas","Agua y que limpien bien"],
+["Batería","Bornes limpios, sin sarro"],
+["Caja / Plataforma","Limpia, puertas cierran bien"],
+["Equipo de seguridad","Triángulos, chaleco, gato y llanta de refacción"]
+];
+const lista=document.getElementById('lista');
+lista.innerHTML='<h2 style="margin:0 0 10px">✅ Checklist - Marca todo</h2>'+checks.map((c,i)=>`<div class="item"><input type="checkbox" class="chk" id="c${i}"><div><b>${c[0]}</b><span>${c[1]}</span></div></div>`).join('');
+function validar(){
+const total=document.querySelectorAll('.chk').length;
+const ok=document.querySelectorAll('.chk:checked').length;
+const r=document.getElementById('resultado');
+r.style.display='block';
+if(ok===total){r.style.background='#dcfce7';r.style.color='#166534';r.textContent='🎉 ¡UNIDAD LISTA! '+ok+'/'+total+' - PUEDE SALIR';}
+else{r.style.background='#fef3c7';r.style.color='#92400e';r.textContent='⚠️ FALTAN '+ (total-ok) +' REVISIONES - '+ok+'/'+total;}
+r.scrollIntoView({behavior:'smooth'});
+}
+</script>
+</body>
+</html>
