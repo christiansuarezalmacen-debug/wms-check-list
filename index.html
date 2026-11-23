@@ -81,7 +81,6 @@ label{font-size:13px;opacity:.85;display:block;margin:4px 0 6px}
   <div class="link">¿Olvidaste tu contraseña? <b onclick="show('p-olvido')">Recuperarla</b></div>
 </div>
 
-<!-- ACTIVAR SUSCRIPCIÓN - ANTES ERA CREAR CUENTA -->
 <div class="container hidden" id="p2-admin-registro" style="background:#0A1E3C">
   <div class="top"><span onclick="show('p2-admin')" style="cursor:pointer">←</span><b>Activar Suscripción</b><span></span></div>
   <div class="precio"><b>7 DÍAS GRATIS</b><span>Después $99 / mes • Cancela cuando quieras</span><span>Usuarios ilimitados</span></div>
@@ -108,7 +107,6 @@ label{font-size:13px;opacity:.85;display:block;margin:4px 0 6px}
   <button class="btn btn-outline" onclick="show('p2-admin')">Regresar a Iniciar Sesión</button>
 </div>
 
-<!-- PANTALLA CUANDO SE ACABA LA PRUEBA -->
 <div class="container hidden" id="p-suscripcion" style="background:#0A1E3C">
   <div class="top"><span onclick="show('p1')" style="cursor:pointer">←</span><b>Suscripción</b><span></span></div>
   <div class="saludo"><h2>Se acabaron tus 7 días gratis 😔</h2><p>Para seguir usando WMS Check List, activa tu suscripción</p></div>
@@ -190,8 +188,9 @@ label{font-size:13px;opacity:.85;display:block;margin:4px 0 6px}
 </div>
 
 <script>
-const SUPABASE_URL = 'PON_AQUI_TU_PROJECT_URL';
-const SUPABASE_ANON_KEY = 'PON_AQUI_TU_ANON_KEY';
+// ===== DATOS DE SUPABASE DE LULÚ - YA CONECTADO =====
+const SUPABASE_URL = 'https://jcubuvoilbqbtpeuajrp.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_MVCEb9ZZxJRPunTz5uJExg_vMn3xduY';
 const CORREO_SOPORTE = 'soporte@wmschecklist.com';
 const NOMBRE_APP = 'WMS Check List';
 const PRECIO_MENSUAL = 99;
@@ -224,7 +223,6 @@ function mostrarPrueba(){
     document.getElementById('diasPrueba').innerText='Tu prueba terminó - Activa tu suscripción $99 / mes';
   }
 }
-// ACTIVAR SUSCRIPCIÓN = CREAR CUENTA + 7 DÍAS GRATIS + $99/MES
 async function registrar(){
   const p1=document.getElementById('pass1').value;const p2=document.getElementById('pass2').value;
   if(p1!==p2){alert('Las contraseñas no coinciden, revisalas');return}
@@ -245,7 +243,6 @@ async function iniciarSesion(){
   if(!correo||!pass){alert('Pon tu correo y tu contraseña');return}
   const {data,error}=await supabaseClient.from('empresas').select('*').eq('correo',correo).eq('pass',pass).single();
   if(error||!data){alert('Correo o contraseña incorrectos.');return}
-  // Si ya se acabó la prueba y no pagó, lo mandamos a Activar Suscripción
   const fin=new Date(data.fin_prueba);
   const hoy=new Date();
   if(data.estado==='bloqueado' || (data.estado==='prueba' && fin < hoy)){
@@ -254,14 +251,12 @@ async function iniciarSesion(){
     show('p-suscripcion');
     return;
   }
-  if(data.estado==='bloqueado'){alert('Tu cuenta está bloqueada. Escríbenos a '+CORREO_SOPORTE);return}
   empresaActual=data; adminCuenta=data; sesionActiva=true;
   document.getElementById('nombreEmpresa2').innerText=data.nombre_empresa;
   mostrarPrueba();
   await cargarUsuarios();
   show('p-admin-menu')
 }
-// ESTE BOTÓN ES EL QUE VA A CONECTAR CON GOOGLE PLAY CUANDO SUBAMOS LA APP
 function activarSuscripcionGoogle(){
   alert('Aquí Google Play va a abrir su ventana de pago.\n\nSuscripción: $99 / mes\n\nPor mientras, como todavía no está en Play Store, escríbenos a '+CORREO_SOPORTE+' para activar tu suscripción manual.');
 }
