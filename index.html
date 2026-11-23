@@ -40,6 +40,8 @@ label{font-size:13px;opacity:.85;display:block;margin:4px 0 6px}
 .usuario-card b{font-size:15px;display:block}
 .usuario-card span{font-size:13px;opacity:.8;display:block;margin-top:3px}
 .btn-trash{background:#EF4444;color:#fff;border:none;width:44px;height:44px;border-radius:12px;font-size:20px;cursor:pointer;flex-shrink:0}
+.link{text-align:center;margin-top:14px;font-size:14px;opacity:.9}
+.link b{color:#FBBF24;cursor:pointer}
 </style>
 </head>
 <body>
@@ -61,8 +63,19 @@ label{font-size:13px;opacity:.85;display:block;margin:4px 0 6px}
   </div>
 </div>
 
+<!-- SOY ADMINISTRADOR - AHORA ES INICIAR SESIÓN -->
 <div class="container hidden" id="p2-admin" style="background:#0A1E3C">
   <div class="top"><span onclick="show('p1')" style="cursor:pointer">←</span><b>Soy Administrador</b><span></span></div>
+  <div class="saludo"><h2>Bienvenido de nuevo</h2><p>Inicia sesión para continuar</p></div>
+  <label>Correo</label><input id="loginCorreo" placeholder="tu@correo.com" type="email">
+  <label>Contraseña</label><input id="loginPass" placeholder="••••••••" type="password">
+  <button class="btn btn-yellow" onclick="iniciarSesion()">INICIAR SESIÓN</button>
+  <div class="link">¿No tienes cuenta? <b onclick="show('p2-admin-registro')">Regístrate</b></div>
+</div>
+
+<!-- CREAR CUENTA - YA ESTABA BIEN, NO SE TOCA -->
+<div class="container hidden" id="p2-admin-registro" style="background:#0A1E3C">
+  <div class="top"><span onclick="show('p2-admin')" style="cursor:pointer">←</span><b>Crear Cuenta</b><span></span></div>
   <div class="trial">Prueba Sin Costo 7 días</div>
   <label>Nombre de empresa</label><input id="empresa" placeholder="Ej. Transportes Suárez S.A.">
   <label>Correo</label><input placeholder="tu@correo.com" type="email">
@@ -70,6 +83,7 @@ label{font-size:13px;opacity:.85;display:block;margin:4px 0 6px}
   <label>Confirma tu contraseña</label><input id="pass2" placeholder="Repite tu contraseña" type="password">
   <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:14px"><input type="checkbox" id="verPass" onclick="verContrasena()" style="width:18px;margin:0"> Ver contraseña</label>
   <button class="btn btn-blue" onclick="registrar()">Crear Cuenta</button>
+  <div class="link">¿Ya tienes cuenta? <b onclick="show('p2-admin')">Inicia Sesión</b></div>
 </div>
 
 <div class="container hidden" id="p2-operador" style="background:#0A1E3C">
@@ -103,7 +117,6 @@ label{font-size:13px;opacity:.85;display:block;margin:4px 0 6px}
   <button class="btn btn-yellow" onclick="guardarEmpleado()">GUARDAR EMPLEADO</button>
 </div>
 
-<!-- CONSULTAR USUARIOS -->
 <div class="container hidden" id="p-consulta-usuarios" style="background:#0A1E3C">
   <div class="top"><span onclick="show('p-admin-menu')" style="cursor:pointer">←</span><b>Consultar Usuarios</b><span></span></div>
   <p style="font-size:13px;opacity:.8;margin-bottom:14px">Tienes <b id="totalUsuarios">0</b> usuarios dados de alta</p>
@@ -143,9 +156,10 @@ label{font-size:13px;opacity:.85;display:block;margin:4px 0 6px}
 
 <script>
 let usuarios=[];
-function show(id){['p1','p2-admin','p2-operador','p4','p-admin-menu','p-alta-empleado','p-consulta-usuarios','p-consulta-camiones','p-consulta-montacargas','p-consulta-bitacora'].forEach(x=>document.getElementById(x).classList.add('hidden'));document.getElementById(id).classList.remove('hidden')}
+function show(id){['p1','p2-admin','p2-admin-registro','p2-operador','p4','p-admin-menu','p-alta-empleado','p-consulta-usuarios','p-consulta-camiones','p-consulta-montacargas','p-consulta-bitacora'].forEach(x=>document.getElementById(x).classList.add('hidden'));document.getElementById(id).classList.remove('hidden')}
 function verContrasena(){const t=document.getElementById('verPass').checked?'text':'password';document.getElementById('pass1').type=t;document.getElementById('pass2').type=t}
 function registrar(){const p1=document.getElementById('pass1').value;const p2=document.getElementById('pass2').value;if(p1!==p2){alert('Las contraseñas no coinciden, revisalas');return}const emp=document.getElementById('empresa').value||'Industria Suárez';document.getElementById('nombreEmpresa').innerText=emp;document.getElementById('nombreEmpresa2').innerText=emp;show('p-admin-menu')}
+function iniciarSesion(){show('p-admin-menu')}
 function guardarEmpleado(){const nombre=document.getElementById('empNombre').value;const usuario=document.getElementById('empUsuario').value;const pass=document.getElementById('empPass').value;const rol=document.getElementById('empRol').value;const tel=document.getElementById('empTel').value;if(!nombre||!usuario||!pass){alert('Falta nombre, usuario y contraseña');return}usuarios.push({nombre,usuario,pass,rol,tel});['empNombre','empUsuario','empPass','empRol','empTel'].forEach(i=>document.getElementById(i).value='');renderUsuarios();show('p-consulta-usuarios')}
 function renderUsuarios(){const lista=document.getElementById('listaUsuarios');document.getElementById('totalUsuarios').innerText=usuarios.length;document.getElementById('sinUsuarios').style.display=usuarios.length?'none':'block';lista.innerHTML='';usuarios.forEach((u,i)=>{lista.innerHTML+=`<div class="usuario-card"><div><b>${u.nombre}</b><span>Usuario: ${u.usuario}</span><span>Contraseña: ${u.pass}</span><span>Rol: ${u.rol||'Sin rol'} ${u.tel?'• Tel: '+u.tel:''}</span></div><button class="btn-trash" onclick="eliminarUsuario(${i})">🗑️</button></div>`})}
 function eliminarUsuario(i){if(confirm('¿Seguro que quieres eliminar a '+usuarios[i].nombre+'?')){usuarios.splice(i,1);renderUsuarios()}}
