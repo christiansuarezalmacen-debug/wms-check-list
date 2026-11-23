@@ -42,7 +42,7 @@ label{font-size:13px;opacity:.85;display:block;margin:4px 0 6px}
   <div class="overlay"></div>
   <div class="content">
     <div>
-      <div class="logo"><b>WMS CHECK LIST</b><span>Revisiones diarias con calidad.<br>Tu flotilla siempre lista.</span></div>
+      <div class="logo"><b>WMS CHECK LIST</b><span>Revisiones diarias con Calidad.<br>Tus Equipos Siempre Listos.</span></div>
       <img class="logo-principal" src="./icon-512.png" alt="WMS Check List">
     </div>
     <div class="bottom">
@@ -56,11 +56,13 @@ label{font-size:13px;opacity:.85;display:block;margin:4px 0 6px}
 
 <div class="container hidden" id="p2-admin" style="background:#0A1E3C">
   <div class="top"><span onclick="show('p1')" style="cursor:pointer">←</span><b>Soy Administrador</b><span></span></div>
-  <div class="trial">Prueba gratis 7 días • Sin tarjeta</div>
+  <div class="trial">Prueba Sin Costo 7 días</div>
   <label>Nombre de empresa</label><input id="empresa" placeholder="Ej. Transportes López S.A.">
   <label>Correo</label><input placeholder="tu@correo.com" type="email">
-  <label>Contraseña</label><input placeholder="••••••••" type="password">
-  <button class="btn btn-blue" onclick="registrar()">Crear Cuenta Gratis</button>
+  <label>Contraseña</label><input id="pass1" placeholder="••••••••" type="password">
+  <label>Confirma tu contraseña</label><input id="pass2" placeholder="Repite tu contraseña" type="password">
+  <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:14px"><input type="checkbox" id="verPass" onclick="verContrasena()" style="width:18px;margin:0"> Ver contraseña</label>
+  <button class="btn btn-blue" onclick="registrar()">Crear Cuenta</button>
 </div>
 
 <div class="container hidden" id="p2-operador" style="background:#0A1E3C">
@@ -80,7 +82,8 @@ label{font-size:13px;opacity:.85;display:block;margin:4px 0 6px}
 
 <script>
 function show(id){['p1','p2-admin','p2-operador','p4'].forEach(x=>document.getElementById(x).classList.add('hidden'));document.getElementById(id).classList.remove('hidden')}
-function registrar(){const emp=document.getElementById('empresa').value||'Transportes López';document.getElementById('nombreEmpresa').innerText=emp;show('p4')}
+function verContrasena(){const t=document.getElementById('verPass').checked?'text':'password';document.getElementById('pass1').type=t;document.getElementById('pass2').type=t}
+function registrar(){const p1=document.getElementById('pass1').value;const p2=document.getElementById('pass2').value;if(p1!==p2){alert('Las contraseñas no coinciden, revisalas');return}const emp=document.getElementById('empresa').value||'Transportes López';document.getElementById('nombreEmpresa').innerText=emp;show('p4')}
 </script>
 </body>
 </html>
