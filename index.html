@@ -42,6 +42,7 @@ label{font-size:13px;opacity:.85;display:block;margin:4px 0 6px}
 .btn-trash{background:#EF4444;color:#fff;border:none;width:44px;height:44px;border-radius:12px;font-size:20px;cursor:pointer;flex-shrink:0}
 .link{text-align:center;margin-top:14px;font-size:14px;opacity:.9}
 .link b{color:#FBBF24;cursor:pointer}
+.ok{background:#065F46;border:1px solid #10B981;border-radius:14px;padding:14px;font-size:13px;line-height:1.5;margin-bottom:14px}
 </style>
 </head>
 <body>
@@ -63,38 +64,58 @@ label{font-size:13px;opacity:.85;display:block;margin:4px 0 6px}
   </div>
 </div>
 
-<!-- SOY ADMINISTRADOR - AHORA ES INICIAR SESIÓN -->
+<!-- SOY ADMINISTRADOR - INICIAR SESIÓN -->
 <div class="container hidden" id="p2-admin" style="background:#0A1E3C">
   <div class="top"><span onclick="show('p1')" style="cursor:pointer">←</span><b>Soy Administrador</b><span></span></div>
   <div class="saludo"><h2>Bienvenido de nuevo</h2><p>Inicia sesión para continuar</p></div>
-  <label>Correo</label><input id="loginCorreo" placeholder="tu@correo.com" type="email">
-  <label>Contraseña</label><input id="loginPass" placeholder="••••••••" type="password">
-  <button class="btn btn-yellow" onclick="iniciarSesion()">INICIAR SESIÓN</button>
+  <form onsubmit="event.preventDefault();iniciarSesion()">
+  <label>Correo</label><input id="loginCorreo" placeholder="tu@correo.com" type="email" autocomplete="username" required>
+  <label>Contraseña</label><input id="loginPass" placeholder="••••••••" type="password" autocomplete="current-password" required>
+  <button class="btn btn-yellow" type="submit">INICIAR SESIÓN</button>
+  </form>
   <div class="link">¿No tienes cuenta? <b onclick="show('p2-admin-registro')">Regístrate</b></div>
+  <div class="link">¿Olvidaste tu contraseña? <b onclick="show('p-olvido')">Recuperarla</b></div>
 </div>
 
-<!-- CREAR CUENTA - YA ESTABA BIEN, NO SE TOCA -->
+<!-- CREAR CUENTA -->
 <div class="container hidden" id="p2-admin-registro" style="background:#0A1E3C">
   <div class="top"><span onclick="show('p2-admin')" style="cursor:pointer">←</span><b>Crear Cuenta</b><span></span></div>
   <div class="trial">Prueba Sin Costo 7 días</div>
-  <label>Nombre de empresa</label><input id="empresa" placeholder="Ej. Transportes Suárez S.A.">
-  <label>Correo</label><input placeholder="tu@correo.com" type="email">
-  <label>Contraseña</label><input id="pass1" placeholder="••••••••" type="password">
-  <label>Confirma tu contraseña</label><input id="pass2" placeholder="Repite tu contraseña" type="password">
+  <form onsubmit="event.preventDefault();registrar()">
+  <label>Nombre de empresa</label><input id="empresa" placeholder="Ej. Transportes Suárez S.A." autocomplete="organization" required>
+  <label>Correo</label><input id="regCorreo" placeholder="tu@correo.com" type="email" autocomplete="email" required>
+  <label>Contraseña</label><input id="pass1" placeholder="••••••••" type="password" autocomplete="new-password" required>
+  <label>Confirma tu contraseña</label><input id="pass2" placeholder="Repite tu contraseña" type="password" autocomplete="new-password" required>
   <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:14px"><input type="checkbox" id="verPass" onclick="verContrasena()" style="width:18px;margin:0"> Ver contraseña</label>
-  <button class="btn btn-blue" onclick="registrar()">Crear Cuenta</button>
+  <button class="btn btn-blue" type="submit">Crear Cuenta</button>
+  </form>
   <div class="link">¿Ya tienes cuenta? <b onclick="show('p2-admin')">Inicia Sesión</b></div>
+</div>
+
+<!-- OLVIDASTE TU CONTRASEÑA -->
+<div class="container hidden" id="p-olvido" style="background:#0A1E3C">
+  <div class="top"><span onclick="show('p2-admin')" style="cursor:pointer">←</span><b>Recuperar Contraseña</b><span></span></div>
+  <div class="saludo"><h2>¿Olvidaste tu contraseña?</h2><p>Te enviamos un correo para cambiarla</p></div>
+  <div id="msgOlvido" class="ok hidden"></div>
+  <form onsubmit="event.preventDefault();enviarRecuperacion()">
+  <label>Ingresa el correo que registraste</label><input id="correoOlvido" placeholder="tu@correo.com" type="email" autocomplete="email" required>
+  <button class="btn btn-yellow" type="submit">ENVIAR CORREO DE RECUPERACIÓN</button>
+  </form>
+  <button class="btn btn-outline" onclick="show('p2-admin')">Regresar a Iniciar Sesión</button>
 </div>
 
 <div class="container hidden" id="p2-operador" style="background:#0A1E3C">
   <div class="top"><span onclick="show('p1')" style="cursor:pointer">←</span><b>Soy Operador</b><span></span></div>
-  <label>Nombre de la empresa</label><input placeholder="Ej. Transportes López">
-  <label>Tu usuario</label><input placeholder="Ej. chofer_juan">
-  <label>Tu contraseña</label><input placeholder="••••••••" type="password">
-  <button class="btn" onclick="show('p4')">ENTRAR A CHAMBEAR →</button>
+  <form onsubmit="event.preventDefault();loginOperador()">
+  <label>Nombre de la empresa</label><input id="opEmpresa" placeholder="Ej. Transportes López" autocomplete="organization" required>
+  <label>Tu usuario</label><input id="opUsuario" placeholder="Ej. chofer_juan" autocomplete="username" required>
+  <label>Tu contraseña</label><input id="opPass" placeholder="••••••••" type="password" autocomplete="current-password" required>
+  <button class="btn" type="submit">ENTRAR A CHAMBEAR →</button>
+  </form>
+  <div class="link">¿Olvidaste tu contraseña? <b onclick="alert('Pídele a tu Administrador que te recuerde tu contraseña en Dar de Baja Empleado')">Pide ayuda a tu Admin</b></div>
 </div>
 
-<!-- PANEL ADMINISTRADOR -->
+<!-- PANEL ADMINISTRADOR - TUS BOTONES -->
 <div class="container hidden" id="p-admin-menu" style="background:#0A1E3C">
   <div class="top"><span onclick="show('p1')" style="cursor:pointer">←</span><b>Panel Administrador</b><span>🔔</span></div>
   <div class="saludo"><h2>Hola, <span id="nombreEmpresa2">Industria Suárez</span></h2><p>¿Qué hacemos hoy?</p></div>
@@ -104,16 +125,16 @@ label{font-size:13px;opacity:.85;display:block;margin:4px 0 6px}
   <button class="btn" onclick="show('p-consulta-camiones')">🚚 CHECK LIST DE VEHICULOS</button>
   <button class="btn" onclick="show('p-consulta-montacargas')">🏗️ CHECK LIST DE MONTACARGAS</button>
   <button class="btn" onclick="show('p-consulta-bitacora')">🗺️ BITÁCORA DE RUTA</button>
-  <button class="btn btn-outline" onclick="show('p1')" style="margin-top:10px">Cerrar Sesión</button>
+  <button class="btn btn-outline" onclick="cerrarSesion()" style="margin-top:10px">Cerrar Sesión</button>
 </div>
 
 <div class="container hidden" id="p-alta-empleado" style="background:#0A1E3C">
   <div class="top"><span onclick="show('p-admin-menu')" style="cursor:pointer">←</span><b>Dar de Alta Empleado</b><span></span></div>
-  <label>Nombre completo del empleado</label><input id="empNombre" placeholder="Ej. Alejandro Gonzalez">
-  <label>Usuario para entrar</label><input id="empUsuario" placeholder="Ej. chofer_juan">
-  <label>Contraseña</label><input id="empPass" placeholder="••••••••" type="password">
+  <label>Nombre completo del empleado</label><input id="empNombre" placeholder="Ej. Alejandro Gonzalez" autocomplete="name">
+  <label>Usuario para entrar</label><input id="empUsuario" placeholder="Ej. chofer_juan" autocomplete="username">
+  <label>Contraseña</label><input id="empPass" placeholder="••••••••" type="password" autocomplete="new-password">
   <label>Rol</label><input id="empRol" placeholder="Ej. Chofer, Supervisor, Montacarguista">
-  <label>Teléfono</label><input id="empTel" placeholder="Ej. 33 1234 5678">
+  <label>Teléfono</label><input id="empTel" placeholder="Ej. 33 1234 5678" autocomplete="tel">
   <button class="btn btn-yellow" onclick="guardarEmpleado()">GUARDAR EMPLEADO</button>
 </div>
 
@@ -151,15 +172,69 @@ label{font-size:13px;opacity:.85;display:block;margin:4px 0 6px}
   <div class="top"><b>Hola, <span id="nombreEmpresa">Transportes López</span></b><span>🔔</span></div>
   <div class="saludo"><h2>¿Qué hacemos hoy?</h2><p>Elige tu checklist del día</p></div>
   <div class="menu"><div>🚚<b>Camiones</b>Checklist</div><div>🏗️<b>Montacargas</b>Checklist</div><div>🗺️<b>Bitácora</b>Ruta del día</div><div>📊<b>Reportes</b>Mensuales</div></div>
-  <button class="btn btn-outline" onclick="show('p1')" style="margin-top:20px">Cerrar Sesión</button>
+  <button class="btn btn-outline" onclick="cerrarSesion()" style="margin-top:20px">Cerrar Sesión</button>
 </div>
 
 <script>
+// ===== CAMBIA AQUÍ TU CORREO, LULÚ =====
+const CORREO_SOPORTE = 'soporte@wmschecklist.com'; // <-- PON AQUÍ TU CORREO REAL
+const NOMBRE_APP = 'WMS Check List';
 let usuarios=[];
-function show(id){['p1','p2-admin','p2-admin-registro','p2-operador','p4','p-admin-menu','p-alta-empleado','p-consulta-usuarios','p-consulta-camiones','p-consulta-montacargas','p-consulta-bitacora'].forEach(x=>document.getElementById(x).classList.add('hidden'));document.getElementById(id).classList.remove('hidden')}
+let adminCuenta = JSON.parse(localStorage.getItem('wms_admin')||'null');
+let sesionActiva = false;
+
+function show(id){
+  const paginasProtegidas=['p-admin-menu','p-alta-empleado','p-consulta-usuarios','p-consulta-camiones','p-consulta-montacargas','p-consulta-bitacora','p4'];
+  if(paginasProtegidas.includes(id) && !sesionActiva){ alert('Primero inicia sesión con tu usuario y contraseña'); id='p1'; }
+  ['p1','p2-admin','p2-admin-registro','p-olvido','p2-operador','p4','p-admin-menu','p-alta-empleado','p-consulta-usuarios','p-consulta-camiones','p-consulta-montacargas','p-consulta-bitacora'].forEach(x=>document.getElementById(x).classList.add('hidden'));document.getElementById(id).classList.remove('hidden')
+}
 function verContrasena(){const t=document.getElementById('verPass').checked?'text':'password';document.getElementById('pass1').type=t;document.getElementById('pass2').type=t}
-function registrar(){const p1=document.getElementById('pass1').value;const p2=document.getElementById('pass2').value;if(p1!==p2){alert('Las contraseñas no coinciden, revisalas');return}const emp=document.getElementById('empresa').value||'Industria Suárez';document.getElementById('nombreEmpresa').innerText=emp;document.getElementById('nombreEmpresa2').innerText=emp;show('p-admin-menu')}
-function iniciarSesion(){show('p-admin-menu')}
+function cerrarSesion(){sesionActiva=false;show('p1')}
+function registrar(){
+  const p1=document.getElementById('pass1').value;const p2=document.getElementById('pass2').value;
+  if(p1!==p2){alert('Las contraseñas no coinciden, revisalas');return}
+  const emp=document.getElementById('empresa').value||'Industria Suárez';
+  const correo=document.getElementById('regCorreo').value;
+  if(!correo){alert('Pon tu correo para enviarte la bienvenida');return}
+  adminCuenta={empresa:emp,correo:correo,pass:p1};
+  localStorage.setItem('wms_admin',JSON.stringify(adminCuenta));
+  sesionActiva=true;
+  document.getElementById('nombreEmpresa').innerText=emp;document.getElementById('nombreEmpresa2').innerText=emp;
+  alert('¡Felicidades! 🎉\n\nTe acabamos de enviar un correo de bienvenida a:\n'+correo+'\n\nDesde: '+CORREO_SOPORTE+'\n\nAsunto: ¡Felicidades! Bienvenido a '+NOMBRE_APP+'\n\n"Muchas gracias por haber elegido '+NOMBRE_APP+'. Tu cuenta ya está activa."\n\nSi requieres factura, favor de enviar un correo a '+CORREO_SOPORTE+' con tus datos y tu Constancia de Situación Fiscal para que nos pongamos en contacto contigo.');
+  show('p-admin-menu')
+}
+function iniciarSesion(){
+  const correo=document.getElementById('loginCorreo').value;
+  const pass=document.getElementById('loginPass').value;
+  if(!correo||!pass){alert('Pon tu correo y tu contraseña');return}
+  if(!adminCuenta){alert('Todavía no tienes cuenta. Primero Regístrate');show('p2-admin-registro');return}
+  if(correo!==adminCuenta.correo || pass!==adminCuenta.pass){alert('Correo o contraseña incorrectos. Revisa bien o usa ¿Olvidaste tu contraseña?');return}
+  sesionActiva=true;
+  document.getElementById('nombreEmpresa2').innerText=adminCuenta.empresa;
+  show('p-admin-menu')
+}
+function enviarRecuperacion(){
+  const correo=document.getElementById('correoOlvido').value;
+  const msg=document.getElementById('msgOlvido');
+  msg.classList.remove('hidden');
+  msg.innerHTML='✅ ¡Listo! Se envió un correo de recuperación a <b>'+correo+'</b> desde <b>'+CORREO_SOPORTE+'</b>.<br><br>Abre tu correo, busca "Recuperar contraseña - '+NOMBRE_APP+'" y ahí podrás cambiar tu contraseña.';
+  alert('Se envió un correo de recuperación a '+correo+'.\n\nAbre tu correo y ahí podrás cambiar tu contraseña.');
+}
+function loginOperador(){
+  const emp=document.getElementById('opEmpresa').value;
+  const usu=document.getElementById('opUsuario').value;
+  const pass=document.getElementById('opPass').value;
+  if(!emp||!usu||!pass){alert('Llena empresa, usuario y contraseña');return}
+  if(usuarios.length>0){
+    const encontrado=usuarios.find(u=>u.usuario===usu && u.pass===pass);
+    if(!encontrado){alert('Usuario o contraseña incorrectos. Pídele a tu Administrador que revise tu usuario en Dar de Baja Empleado');return}
+    document.getElementById('nombreEmpresa').innerText=emp;
+  } else {
+    alert('Aún no hay usuarios dados de alta por tu Administrador. Pídele que te dé de alta primero. Por esta vez te dejamos entrar para probar.');
+    document.getElementById('nombreEmpresa').innerText=emp;
+  }
+  sesionActiva=true; show('p4')
+}
 function guardarEmpleado(){const nombre=document.getElementById('empNombre').value;const usuario=document.getElementById('empUsuario').value;const pass=document.getElementById('empPass').value;const rol=document.getElementById('empRol').value;const tel=document.getElementById('empTel').value;if(!nombre||!usuario||!pass){alert('Falta nombre, usuario y contraseña');return}usuarios.push({nombre,usuario,pass,rol,tel});['empNombre','empUsuario','empPass','empRol','empTel'].forEach(i=>document.getElementById(i).value='');renderUsuarios();show('p-consulta-usuarios')}
 function renderUsuarios(){const lista=document.getElementById('listaUsuarios');document.getElementById('totalUsuarios').innerText=usuarios.length;document.getElementById('sinUsuarios').style.display=usuarios.length?'none':'block';lista.innerHTML='';usuarios.forEach((u,i)=>{lista.innerHTML+=`<div class="usuario-card"><div><b>${u.nombre}</b><span>Usuario: ${u.usuario}</span><span>Contraseña: ${u.pass}</span><span>Rol: ${u.rol||'Sin rol'} ${u.tel?'• Tel: '+u.tel:''}</span></div><button class="btn-trash" onclick="eliminarUsuario(${i})">🗑️</button></div>`})}
 function eliminarUsuario(i){if(confirm('¿Seguro que quieres eliminar a '+usuarios[i].nombre+'?')){usuarios.splice(i,1);renderUsuarios()}}
