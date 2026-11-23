@@ -99,20 +99,20 @@ label{font-size:13px;opacity:.85;display:block;margin:4px 0 6px}
   <div class="top"><span onclick="show('p1')" style="cursor:pointer">←</span><b>Panel Administrador</b><span>🔔</span></div>
   <div class="saludo"><h2>Hola, <span id="nombreEmpresa2">Industria Suárez</span></h2><p>¿Qué hacemos hoy?</p></div>
   <button class="btn btn-yellow" onclick="show('p-alta-empleado')">+ DAR DE ALTA EMPLEADO</button>
-  <p style="font-size:13px;opacity:.7;text-align:center;margin:4px 0 12px">Usuarios ilimitados • El límite es por vehículos de tu plan</p>
-  <button class="btn" onclick="show('p-consulta-usuarios')">👥 CONSULTAR USUARIOS</button>
-  <button class="btn" onclick="show('p-consulta-camiones')">🚚 CONSULTAR CAMIONES</button>
-  <button class="btn" onclick="show('p-consulta-montacargas')">🏗️ CONSULTAR MONTACARGAS</button>
-  <button class="btn" onclick="show('p-consulta-bitacora')">🗺️ CONSULTAR BITÁCORA DE RUTA</button>
+  <p style="font-size:13px;opacity:.7;text-align:center;margin:4px 0 12px">Usuarios ilimitados</p>
+  <button class="btn" onclick="show('p-consulta-usuarios')">👥 - DAR DE BAJA EMPLEADO</button>
+  <button class="btn" onclick="show('p-consulta-camiones')">🚚 CHECK LIST DE VEHICULOS</button>
+  <button class="btn" onclick="show('p-consulta-montacargas')">🏗️ CHECK LIST DE MONTACARGAS</button>
+  <button class="btn" onclick="show('p-consulta-bitacora')">🗺️ BITÁCORA DE RUTA</button>
   <button class="btn btn-outline" onclick="show('p1')" style="margin-top:10px">Cerrar Sesión</button>
 </div>
 
 <div class="container hidden" id="p-alta-empleado" style="background:#0A1E3C">
   <div class="top"><span onclick="show('p-admin-menu')" style="cursor:pointer">←</span><b>Dar de Alta Empleado</b><span></span></div>
-  <label>Nombre completo del empleado</label><input id="empNombre" placeholder="Ej. Juan Pérez">
+  <label>Nombre completo del empleado</label><input id="empNombre" placeholder="Ej. Alejandro Gonzalez">
   <label>Usuario para entrar</label><input id="empUsuario" placeholder="Ej. chofer_juan">
   <label>Contraseña</label><input id="empPass" placeholder="••••••••" type="password">
-  <label>Rol</label><input id="empRol" placeholder="Ej. Chofer, Supervisor, Mecánico">
+  <label>Rol</label><input id="empRol" placeholder="Ej. Chofer, Supervisor, Montacarguista">
   <label>Teléfono</label><input id="empTel" placeholder="Ej. 33 1234 5678">
   <button class="btn btn-yellow" onclick="guardarEmpleado()">GUARDAR EMPLEADO</button>
 </div>
