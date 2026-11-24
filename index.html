@@ -44,6 +44,16 @@ select option{color:#000;background:#fff}label{font-size:13px;opacity:.85;displa
 .foto-item{position:relative;display:inline-block}.btn-borrar-foto{position:absolute;top:-8px;right:-8px;width:26px;height:26px;border-radius:50%;background:#EF4444;color:#fff;border:2px solid #fff;font-size:13px;font-weight:900;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center}
 .btn-foto-mini{padding:11px 10px;font-size:13px;border-radius:12px;font-weight:800;cursor:pointer;border:none}
 .operador-centrado{text-align:center}.operador-centrado label{text-align:center}.operador-centrado input{text-align:center}
+.btn-menu-admin{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.35);padding:7px 12px;border-radius:999px;font-size:13px;font-weight:700;cursor:pointer}
+.menu-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.55);z-index:9000;display:none}
+.menu-panel{position:fixed;top:0;right:0;width:82%;max-width:320px;height:100dvh;background:#0A1E3C;z-index:9001;padding:20px 16px;box-shadow:-10px 0 30px rgba(0,0,0,.4);display:none;flex-direction:column}
+.menu-panel-titulo{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.menu-opcion{background:#132A4D;border:1px solid #1E3A5F;color:#fff;text-align:left;padding:15px 14px;border-radius:14px;font-size:14px;font-weight:700;cursor:pointer;width:100%;margin-bottom:10px}
+.menu-opcion:active{background:#1E3A5F}
+.menu-cerrar{background:transparent;border:none;color:#fff;font-size:20px;cursor:pointer}
+/* FONDO PANEL ADMIN */
+#p-admin-menu{position:relative;background:linear-gradient(180deg,rgba(10,30,60,.72),rgba(10,30,60,.88) 70%,#0A1E3C),url('./fondo-admin.jpg') center/cover no-repeat}
+#p-admin-menu .card{background:rgba(19,42,77,.88)}
 </style>
 </head>
 <body>
@@ -113,19 +123,25 @@ select option{color:#000;background:#fff}label{font-size:13px;opacity:.85;displa
 <div class="link">¿Olvidaste tu contraseña? <b onclick="alert('Pídele a tu Administrador que te recuerde tu contraseña')">Pide ayuda a tu Admin</b></div>
 </div>
 
-<div class="container hidden" id="p-admin-menu" style="background:#0A1E3C">
-<div class="top"><span onclick="show('p1')" style="cursor:pointer">←</span><b>Panel Administrador</b><span>🔔</span></div>
+<div class="container hidden" id="p-admin-menu">
+<div class="top"><span onclick="show('p1')" style="cursor:pointer">←</span><b>Panel Administrador</b><button class="btn-menu-admin" onclick="abrirMenuAdmin()">☰ Menú</button></div>
 <img id="logoAdmin" class="logo-cliente" src="./icon-512.png" style="margin-bottom:12px">
 <div class="saludo"><h2>Hola, <span id="nombreEmpresa2">Administrador</span></h2><p>¿Qué vas a revisar hoy?</p></div>
 <div class="card"><b>⏳ Tu suscripción:</b> <span id="diasPrueba">7 días gratis</span><br><span style="font-size:12px;opacity:.8">Después: $99 / mes • Estado: <b id="estadoEmpresa">prueba</b></span></div>
 <div class="card"><b>🖼️ TU LOGO AQUÍ</b><p style="font-size:12px;opacity:.8;margin:6px 0 10px">Sube el logo de tu empresa.</p><input type="file" id="inputLogo" accept="image/*" onchange="subirLogo(event)" style="padding:10px"><button class="btn btn-outline" style="padding:12px;margin:0" onclick="document.getElementById('inputLogo').click()">SUBIR MI LOGO</button></div>
-<button class="btn btn-yellow" onclick="show('p-alta-empleado')">+ DAR DE ALTA EMPLEADO</button>
-<button class="btn" onclick="show('p-consulta-usuarios')">👥 - DAR DE BAJA EMPLEADO</button>
-<button class="btn" onclick="show('p-consulta-montacargas')">🏗️ CHECK LIST DE MONTACARGAS</button>
-<button class="btn" onclick="show('p-consulta-camiones')">🚚 CHECK LIST DE VEHICULOS</button>
-<button class="btn" onclick="show('p-consulta-bitacora')">🗺️ BITÁCORA DE RUTA</button>
-<button class="btn btn-blue" onclick="show('p-reportes')">📊 REPORTES MENSUALES</button>
-<button class="btn btn-outline" onclick="cerrarSesion()" style="margin-top:10px">Cerrar Sesión</button>
+<p style="font-size:12px;opacity:.75;text-align:center;margin-top:8px">Usa el botón Menú en la esquina para ver todas las opciones.</p>
+</div>
+
+<div id="menuOverlayAdmin" class="menu-overlay" onclick="cerrarMenuAdmin()"></div>
+<div id="menuPanelAdmin" class="menu-panel">
+<div class="menu-panel-titulo"><b>Menú</b><button class="menu-cerrar" onclick="cerrarMenuAdmin()">✖</button></div>
+<button class="menu-opcion" onclick="irMenuAdmin('p-alta-empleado')">+ Dar de Alta Empleado</button>
+<button class="menu-opcion" onclick="irMenuAdmin('p-consulta-usuarios')">Dar de Baja Empleado</button>
+<button class="menu-opcion" onclick="irMenuAdmin('p-consulta-montacargas')">Check List de Montacargas</button>
+<button class="menu-opcion" onclick="irMenuAdmin('p-consulta-camiones')">Check List de Vehiculos</button>
+<button class="menu-opcion" onclick="irMenuAdmin('p-consulta-bitacora')">Bitácora de Ruta</button>
+<button class="menu-opcion" onclick="irMenuAdmin('p-reportes')">Reportes Mensuales</button>
+<button class="menu-opcion" onclick="cerrarMenuAdmin();cerrarSesion()" style="margin-top:auto;border-color:#EF4444">Cerrar Sesión</button>
 </div>
 
 <div class="container hidden" id="p-alta-empleado" style="background:#0A1E3C">
@@ -236,6 +252,9 @@ function show(id, push){
     if(id==='p-consulta-montacargas' && typeof renderLibro==='function')renderLibro('montacargas');
   }catch(e){var d=document.getElementById(id);if(d){d.classList.remove('hidden');}}
 }
+function abrirMenuAdmin(){document.getElementById('menuOverlayAdmin').style.display='block';document.getElementById('menuPanelAdmin').style.display='flex';}
+function cerrarMenuAdmin(){document.getElementById('menuOverlayAdmin').style.display='none';document.getElementById('menuPanelAdmin').style.display='none';}
+function irMenuAdmin(id){cerrarMenuAdmin();show(id);}
 window.addEventListener('popstate', function(e){
   if(navStack.length>1){navStack.pop();var anterior=navStack[navStack.length-1]||'p1';show(anterior, false);}
   else {try{history.pushState({pantalla:'p1'},'', '#p1');}catch(err){}}
@@ -276,7 +295,7 @@ function renderItemsChecklist(){
 }
 function hoyISO(){return new Date().toISOString().slice(0,10)}
 function verContrasena(){try{var t=document.getElementById('verPass').checked?'text':'password';document.getElementById('pass1').type=t;document.getElementById('pass2').type=t;}catch(e){}}
-function cerrarSesion(){window.sesionActiva=false;empresaActual=null;operadorActual=null;navStack=['p1'];show('p1')}
+function cerrarSesion(){window.sesionActiva=false;empresaActual=null;operadorActual=null;navStack=['p1'];cerrarMenuAdmin();show('p1')}
 function aplicarLogo(){try{document.getElementById('logoAdmin').src=logoEmpresaURL;document.getElementById('logoOperador').src=logoEmpresaURL;}catch(e){}}
 function subirLogo(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(){logoEmpresaURL=r.result;try{localStorage.setItem('wms_logo',logoEmpresaURL)}catch(err){}aplicarLogo();alert('¡Listo Lulú! Ya quedó tu logo.')};r.readAsDataURL(f);}
 async function abrirCamaraHD(){var m=document.getElementById('camaraModal');m.style.display='flex';try{if(streamHD){streamHD.getTracks().forEach(function(t){t.stop()});}streamHD=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:1920,min:1280},height:{ideal:1080,min:720}}});var v=document.getElementById('videoHD');v.srcObject=streamHD;await v.play();}catch(e){alert('No se pudo abrir la cámara HD, Lulú. Revisa el permiso de cámara.\n'+e.message);document.getElementById('fotosFinales').click();}}
