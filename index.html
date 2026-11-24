@@ -51,15 +51,15 @@ select option{color:#000;background:#fff}label{font-size:13px;opacity:.85;displa
 <div class="container" id="p1">
 <img class="img-bg" src="https://images.unsplash.com/photo-1553413077-190dd305871c?w=800&q=80"><div class="overlay"></div>
 <div class="content"><div><div class="logo"><b>WMS CHECK LIST</b><span>Revisiones diarias con Calidad.<br>Tus Equipos Siempre Listos.</span></div><img class="logo-principal" src="./icon-512.png"></div>
-<div class="bottom"><h1>Bienvenido</h1><p>¿Cuál es tu rol?</p><button class="btn btn-yellow" id="btnAdmin" onclick="show('p2-admin')">SOY ADMINISTRADOR</button><button class="btn" id="btnOperador" onclick="entrarOperadorDirecto()">SOY OPERADOR</button></div></div>
+<div class="bottom"><h1>Bienvenido</h1><p>¿Cuál es tu rol?</p><button class="btn btn-yellow" id="btnAdmin" onclick="show('p2-admin')">SOY ADMINISTRADOR</button><button class="btn" id="btnOperador" onclick="show('p2-operador')">SOY OPERADOR</button></div></div>
 </div>
 
 <div class="container hidden" id="p2-admin" style="background:#0A1E3C">
 <div class="top"><span onclick="show('p1')" style="cursor:pointer">←</span><b>Soy Administrador</b><span></span></div>
 <div class="saludo"><h2>Bienvenido de nuevo</h2><p>Inicia sesión para continuar</p></div>
 <form onsubmit="event.preventDefault();iniciarSesion()">
-<label>Correo</label><input id="loginCorreo" type="email" placeholder="tu@correo.com" required>
-<label>Contraseña</label><input id="loginPass" type="password" placeholder="••••••••" required>
+<label>Correo</label><input id="loginCorreo" type="email" placeholder="tu@correo.com" required autocomplete="email">
+<label>Contraseña</label><input id="loginPass" type="password" placeholder="••••••••" required autocomplete="current-password">
 <button class="btn btn-yellow" type="submit">INICIAR SESIÓN</button></form>
 <div class="link">¿No tienes cuenta? <b onclick="show('p2-admin-registro')">Activar Suscripción</b></div>
 <div class="link">¿Olvidaste tu contraseña? <b onclick="show('p-olvido')">Recuperarla</b></div>
@@ -102,14 +102,13 @@ select option{color:#000;background:#fff}label{font-size:13px;opacity:.85;displa
 <button class="btn btn-outline" onclick="show('p1')">Regresar</button>
 </div>
 
-<!-- PANTALLA OPERADOR - LIMPIA, SIN CAJITA NI BOTON FEO -->
 <div class="container hidden" id="p2-operador" style="background:#0A1E3C">
 <div class="top"><span onclick="show('p1')" style="cursor:pointer">←</span><b>Soy Operador</b><span></span></div>
 <div class="saludo"><h2>Hola, operador</h2><p>Entra a chambear</p></div>
-<form onsubmit="event.preventDefault();loginOperador()">
-<label>Nombre de la empresa / Industria</label><input id="opEmpresa" placeholder="Ej. Transportes López" required>
-<label>Tu usuario</label><input id="opUsuario" placeholder="Ej. chofer_juan" required>
-<label>Tu contraseña</label><input id="opPass" type="password" placeholder="••••••••" required>
+<form onsubmit="event.preventDefault();loginOperador()" autocomplete="on">
+<label>Nombre de la empresa / Industria</label><input id="opEmpresa" name="organization" placeholder="Ej. Transportes López" required autocomplete="organization">
+<label>Tu usuario</label><input id="opUsuario" name="username" placeholder="Ej. chofer_juan" required autocomplete="username">
+<label>Tu contraseña</label><input id="opPass" name="password" type="password" placeholder="••••••••" required autocomplete="current-password">
 <button class="btn" type="submit">ENTRAR A CHAMBEAR →</button></form>
 <div class="link">¿Olvidaste tu contraseña? <b onclick="alert('Pídele a tu Administrador que te recuerde tu contraseña')">Pide ayuda a tu Admin</b></div>
 </div>
@@ -187,9 +186,12 @@ select option{color:#000;background:#fff}label{font-size:13px;opacity:.85;displa
 <div><label style="color:#000">Numero de unidad:</label><input id="dUnidad" placeholder="Ej. 03" style="background:#FFF7ED;color:#000;border:2px solid #EA580C;font-weight:800"></div>
 <div><label style="color:#000">Tipo:</label><select id="dTipo" onchange="actualizarTipo()" style="background:#fff;color:#000;border:1px solid #CBD5E1"><option value="Gas">Gas</option><option value="Electrico">Eléctrico</option></select></div>
 <div><label style="color:#000">Horometro:</label><input id="dHorometro" placeholder="Ej. 12345" style="background:#fff;color:#000;border:1px solid #CBD5E1"></div>
-<div id="boxCombustible"><label style="color:#000">Nivel de Combustible:</label><select id="dCombustible" style="background:#fff;color:#000;border:1px solid #CBD5E1"><option value="">Selecciona...</option><option>Vacio</option><option>1/8</option><option>1/4</option><option>3/8</option><option>1/2</option><option>5/8</option><option>3/4</option><option>7/8</option><option>Lleno</option></select><input id="dCombustibleOtro" placeholder="Otro: Ej. 93%" style="background:#fff;color:#000;border:1px solid #CBD5E1;margin-top:6px"></div>
-<div id="boxBateria" class="hidden"><label style="color:#000">Nivel de Bateria:</label><select id="dBateria" style="background:#fff;color:#000;border:1px solid #CBD5E1"><option value="">Selecciona...</option><option>Vacio</option><option>1/8</option><option>1/4</option><option>3/8</option><option>1/2</option><option>5/8</option><option>3/4</option><option>7/8</option><option>Lleno</option></select><input id="dBateriaOtro" placeholder="Otro: Ej. 93%" style="background:#fff;color:#000;border:1px solid #CBD5E1;margin-top:6px"></div>
-</div><input type="hidden" id="dClase" value="Montacargas">
+<!-- NIVEL - 1 SOLA CAJITA AUTO-EDITABLE, SIN OTRO -->
+<div id="boxCombustible"><label style="color:#000">Nivel de Combustible:</label><input id="dCombustible" list="listaNivel" placeholder="Selecciona... / Ej. 93%" style="background:#fff;color:#000;border:1px solid #CBD5E1"></div>
+<div id="boxBateria" class="hidden"><label style="color:#000">Nivel de Bateria:</label><input id="dBateria" list="listaNivel" placeholder="Selecciona... / Ej. 93%" style="background:#fff;color:#000;border:1px solid #CBD5E1"></div>
+</div>
+<datalist id="listaNivel"><option value="Vacio"></option><option value="1/8"></option><option value="1/4"></option><option value="3/8"></option><option value="1/2"></option><option value="5/8"></option><option value="3/4"></option><option value="7/8"></option><option value="Lleno"></option></datalist>
+<input type="hidden" id="dClase" value="Montacargas">
 </div>
 <div class="checklist-scroll"><div class="tabla-head"><span style="text-align:left">PUNTOS A REVISION</span><span>BUEN ESTADO</span><span>MAL ESTADO</span></div><div id="itemsChecklist"></div></div>
 <div class="card" style="background:#fff;color:#000;margin-top:16px"><b style="font-size:15px">📝 Explica Golpes en Carrocería / Fallas</b><textarea id="comentarioFinal" placeholder="Ej. Golpe en puerta izquierda..." style="width:100%;min-height:90px;padding:12px;border-radius:12px;border:1px solid #CBD5E1;background:#fff;color:#000;font-size:14px"></textarea>
@@ -218,22 +220,9 @@ function show(id){
     for(var i=0;i<todos.length;i++){var el=document.getElementById(todos[i]);if(el)el.classList.add('hidden');}
     var dest=document.getElementById(id);if(dest)dest.classList.remove('hidden');
     window.scrollTo(0,0);
+    if(id==='p2-operador'){cargarDatosGuardados();}
     if(id==='p-consulta-montacargas' && typeof renderLibro==='function')renderLibro('montacargas');
   }catch(e){var d=document.getElementById(id);if(d){d.classList.remove('hidden');}}
-}
-// EVITAR PANTALLA OPERADOR SI YA ESTA GUARDADO
-async function entrarOperadorDirecto(){
-  try{
-    var guardado=JSON.parse(localStorage.getItem('wms_op_login')||'null');
-    if(guardado && guardado.usuario && guardado.pass){
-      document.getElementById('opEmpresa').value=guardado.empresa||'';
-      document.getElementById('opUsuario').value=guardado.usuario||'';
-      document.getElementById('opPass').value=guardado.pass||'';
-      await loginOperador(true);
-      return;
-    }
-  }catch(e){}
-  show('p2-operador');
 }
 var SUPABASE_URL='https://jcubuvoilbqbtpeuajrp.supabase.co';
 var SUPABASE_ANON_KEY='sb_publishable_MVCEb9ZZxJRPunTz5uJExg_vMn3xduY';
@@ -264,12 +253,12 @@ function activarSuscripcionGoogle(){alert('Aquí Google Play va a abrir su venta
 async function enviarRecuperacion(){var correo=document.getElementById('correoOlvido').value;if(!correo){alert('Pon tu correo');return}if(!supabaseClient){alert('Sin internet');return}var res=await supabaseClient.from('empresas').select('*').eq('correo',correo).single();if(!res.data){alert('Ese correo no está dado de alta.');return}try{await supabaseClient.auth.resetPasswordForEmail(correo,{redirectTo:window.location.origin+window.location.pathname+'#nueva-pass'})}catch(e){}var m=document.getElementById('msgOlvido');m.classList.remove('hidden');m.innerHTML='✅ ¡Listo! Se envió correo a <b>'+correo+'</b> desde <b>'+CORREO_SOPORTE+'</b>.<br>1. Recuperar contraseña<br>2. Crear contraseña nueva y Actualizar';document.getElementById('nuevoPassCorreo').value=correo;show('p-nueva-pass')}
 async function actualizarPass(){var correo=document.getElementById('nuevoPassCorreo').value,n1=document.getElementById('nuevoPass1').value,n2=document.getElementById('nuevoPass2').value;if(n1!==n2){alert('Las contraseñas no coinciden');return}if(n1.length<4){alert('Mínimo 4 caracteres');return}if(!supabaseClient){alert('Sin internet');return}var res=await supabaseClient.from('empresas').update({pass:n1}).eq('correo',correo);if(res.error){alert('No se pudo: '+res.error.message);return}alert('¡Listo! Tu contraseña nueva ya quedó.');show('p2-admin')}
 async function cargarUsuarios(){if(!empresaActual||!supabaseClient)return;var res=await supabaseClient.from('usuarios').select('*').eq('empresa_correo',empresaActual.correo);usuarios=res.data||[];renderUsuarios()}
-async function loginOperador(silencioso){
+async function loginOperador(){
   var emp=document.getElementById('opEmpresa').value,usu=document.getElementById('opUsuario').value,pass=document.getElementById('opPass').value;
-  if(!emp||!usu||!pass){if(!silencioso)alert('Llena empresa, usuario y contraseña');else show('p2-operador');return}
+  if(!emp||!usu||!pass){alert('Llena empresa, usuario y contraseña');return}
   if(!supabaseClient){alert('Sin internet, Lulú.');return}
   var res=await supabaseClient.from('usuarios').select('*').eq('usuario',usu).eq('pass',pass).single();
-  if(res.error||!res.data){if(silencioso){show('p2-operador');}else{alert('Usuario o contraseña incorrectos.');}return}
+  if(res.error||!res.data){alert('Usuario o contraseña incorrectos.');return}
   try{localStorage.setItem('wms_op_login',JSON.stringify({empresa:emp,usuario:usu,pass:pass}))}catch(e){}
   operadorActual=res.data;document.getElementById('nombreEmpresa').innerText=res.data.nombre||usu;window.sesionActiva=true;aplicarLogo();show('p4');
 }
@@ -277,14 +266,14 @@ async function guardarEmpleado(){var nombre=document.getElementById('empNombre')
 function renderUsuarios(){var l=document.getElementById('listaUsuarios');document.getElementById('totalUsuarios').innerText=usuarios.length;document.getElementById('sinUsuarios').style.display=usuarios.length?'none':'block';l.innerHTML='';usuarios.forEach(function(u){l.innerHTML+='<div class="usuario-card"><div><b>'+u.nombre+'</b><span>Usuario: '+u.usuario+'</span><span>Contraseña: '+u.pass+'</span><span>Rol: '+(u.rol||'Sin rol')+' '+(u.telefono?'• Tel: '+u.telefono:'')+'</span></div><button class="btn-trash" onclick="eliminarUsuario(\''+u.id+'\',\''+u.nombre+'\')">🗑️</button></div>'});}
 async function eliminarUsuario(id,nombre){if(!confirm('¿Seguro que quieres eliminar a '+nombre+'?'))return;if(supabaseClient)await supabaseClient.from('usuarios').delete().eq('id',id);await cargarUsuarios();}
 function actualizarTipo(){var t=document.getElementById('dTipo').value,esGas=t==='Gas';document.getElementById('boxCombustible').classList.toggle('hidden',!esGas);document.getElementById('boxBateria').classList.toggle('hidden',esGas);document.getElementById('dClase').value=esGas?'Montacargas Gas':'Montacargas Eléctrico'}
-function abrirChecklist(tipo){tipoChecklistActual=tipo;var tit={camiones:'🚚 Checklist Camión',montacargas:'🏗️ Checklist Montacargas - 29 puntos',bitacora:'🗺️ Bitácora de Ruta'};document.getElementById('tituloChecklist').innerText=tit[tipo];document.getElementById('dFecha').value=hoyISO();document.getElementById('dOperador').value=operadorActual?operadorActual.nombre:'';document.getElementById('dUnidad').value='';document.getElementById('dHorometro').value='';document.getElementById('dTipo').value='Gas';actualizarTipo();document.getElementById('dCombustible').value='';document.getElementById('dBateria').value='';document.getElementById('dCombustibleOtro').value='';document.getElementById('dBateriaOtro').value='';document.getElementById('comentarioFinal').value='';document.getElementById('previewFotos').innerHTML='';document.getElementById('fotosFinales').value='';fotosFinalesArr=[];var c=document.getElementById('itemsChecklist');c.innerHTML='';puntosDe(tipo).forEach(function(item,i){c.innerHTML+='<div class="fila-check"><b>'+(i+1)+'. '+item+'</b><label class="check-mini"><input type="radio" name="chk'+i+'" value="BUEN ESTADO" checked></label><label class="check-mini mal"><input type="radio" name="chk'+i+'" value="MAL ESTADO"></label></div>'});show('p-checklist')}
+function abrirChecklist(tipo){tipoChecklistActual=tipo;var tit={camiones:'🚚 Checklist Camión',montacargas:'🏗️ Checklist Montacargas - 29 puntos',bitacora:'🗺️ Bitácora de Ruta'};document.getElementById('tituloChecklist').innerText=tit[tipo];document.getElementById('dFecha').value=hoyISO();document.getElementById('dOperador').value=operadorActual?operadorActual.nombre:'';document.getElementById('dUnidad').value='';document.getElementById('dHorometro').value='';document.getElementById('dTipo').value='Gas';actualizarTipo();document.getElementById('dCombustible').value='';document.getElementById('dBateria').value='';document.getElementById('comentarioFinal').value='';document.getElementById('previewFotos').innerHTML='';document.getElementById('fotosFinales').value='';fotosFinalesArr=[];var c=document.getElementById('itemsChecklist');c.innerHTML='';puntosDe(tipo).forEach(function(item,i){c.innerHTML+='<div class="fila-check"><b>'+(i+1)+'. '+item+'</b><label class="check-mini"><input type="radio" name="chk'+i+'" value="BUEN ESTADO" checked></label><label class="check-mini mal"><input type="radio" name="chk'+i+'" value="MAL ESTADO"></label></div>'});show('p-checklist')}
 try{document.getElementById('fotosFinales').addEventListener('change',function(e){var files=Array.from(e.target.files||[]);var pv=document.getElementById('previewFotos');files.slice(0,8).forEach(function(f){var r=new FileReader();r.onload=function(){fotosFinalesArr.push(r.result);var img=document.createElement('img');img.src=r.result;img.className='preview-foto';pv.appendChild(img)};r.readAsDataURL(f)});});}catch(e){}
 function getLibro(){try{return JSON.parse(localStorage.getItem('wms_libro')||'{}')}catch(e){return{}}}
 function setLibro(d){try{localStorage.setItem('wms_libro',JSON.stringify(d))}catch(e){}}
 async function guardarChecklist(){
   var unidad=document.getElementById('dUnidad').value.trim();if(!unidad){alert('Pon el Numero de unidad, Lulú. Ej. 03');document.getElementById('dUnidad').focus();return}
   var fecha=document.getElementById('dFecha').value||hoyISO(),mes=fecha.slice(0,7),tipoUnidad=document.getElementById('dTipo').value,esGas=tipoUnidad==='Gas';
-  var nivel=esGas?(document.getElementById('dCombustibleOtro').value||document.getElementById('dCombustible').value):(document.getElementById('dBateriaOtro').value||document.getElementById('dBateria').value);
+  var nivel=esGas?document.getElementById('dCombustible').value:document.getElementById('dBateria').value;
   var datos={fecha:fecha,operador:document.getElementById('dOperador').value,turno:document.getElementById('dTurno').value,unidad:unidad,clase:document.getElementById('dClase').value,tipoUnidad:tipoUnidad,horometro:document.getElementById('dHorometro').value,combustible:esGas?nivel:'',bateria:!esGas?nivel:'',tipo:tipoChecklistActual,guardado:new Date().toISOString()};
   datos.filas=puntosDe(tipoChecklistActual).map(function(item,i){var s=document.querySelector('input[name="chk'+i+'"]:checked');return{punto:item,estado:s?s.value:'',comentario:'',tieneFoto:'NO',ligaFoto:''}});
   datos.comentarioFinal=document.getElementById('comentarioFinal').value||'';datos.fotosFinales=fotosFinalesArr.length+' fotos';datos.ligasFotos=fotosFinalesArr.map(function(_,idx){return 'foto_'+unidad+'_'+fecha+'_'+(idx+1)});
