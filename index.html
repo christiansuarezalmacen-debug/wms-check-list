@@ -2,10 +2,9 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>WMS Check List</title>
-<link rel="manifest" href="manifest.json">
-<link rel="icon" href="icon-192.png">
+<link rel="manifest" href="manifest.json"><link rel="icon" href="icon-192.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
@@ -13,250 +12,189 @@ html,body{background:#0A1E3C;color:#fff;min-height:100dvh}
 .container{max-width:480px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column;padding:20px 16px 30px;overflow-y:auto}
 .hidden{display:none!important}
 .img-bg{position:fixed;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:0}
-.overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(180deg,rgba(10,30,60,.55) 0%,rgba(10,30,60,.85) 70%,#0A1E3C 100%);z-index:1}
+.overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(180deg,rgba(10,30,60,.55),rgba(10,30,60,.85) 70%,#0A1E3C);z-index:1}
 .content{position:relative;z-index:2;display:flex;flex-direction:column;justify-content:center;gap:24px;min-height:100dvh}
-.logo{text-align:center}
-.logo b{display:block;font-size:23px;letter-spacing:.5px}
-.logo span{font-size:14px;opacity:.9;line-height:1.3;display:block;margin-top:6px}
+.logo{text-align:center}.logo b{display:block;font-size:23px}.logo span{font-size:14px;opacity:.9;display:block;margin-top:6px}
 .logo-principal{width:260px;background:#fff;border-radius:22px;padding:16px;object-fit:contain;margin:20px auto 0;display:block}
 .logo-cliente{width:130px;max-height:80px;background:#fff;border-radius:16px;padding:10px;object-fit:contain;margin:0 auto;display:block}
 .logo-cliente-small{width:90px;max-height:55px;background:#fff;border-radius:12px;padding:6px;object-fit:contain}
-.bottom{text-align:center}
-.bottom h1{font-size:34px;line-height:1.1;margin-bottom:6px}
-.bottom p{font-size:21px;opacity:.9;margin-bottom:18px}
+.bottom{text-align:center}.bottom h1{font-size:34px;margin-bottom:6px}.bottom p{font-size:21px;opacity:.9;margin-bottom:18px}
 .btn{background:#fff;color:#0A1E3C;border:none;padding:19px;border-radius:999px;font-weight:800;font-size:17px;width:100%;cursor:pointer;margin-bottom:12px}
-.btn-blue{background:#2563EB;color:#fff}
-.btn-outline{background:transparent;color:#fff;border:2px solid #fff}
-.btn-yellow{background:#FBBF24;color:#0A1E3C}
+.btn-blue{background:#2563EB;color:#fff}.btn-outline{background:transparent;color:#fff;border:2px solid #fff}.btn-yellow{background:#FBBF24;color:#0A1E3C}
+.btn-mini-guardar{background:#0A1E3C;color:#fff;border:none;padding:8px 14px;border-radius:999px;font-size:12px;font-weight:800;cursor:pointer;float:right}
 input,select,textarea{width:100%;padding:14px;border-radius:12px;border:1px solid #334155;background:#132A4D;color:#fff;margin-bottom:10px;font-size:15px;outline:none}
-select option{color:#000;background:#fff}
-label{font-size:13px;opacity:.85;display:block;margin:4px 0 6px}
+select option{color:#000;background:#fff}label{font-size:13px;opacity:.85;display:block;margin:4px 0 6px}
 .card{background:#132A4D;border:1px solid #1E3A5F;border-radius:20px;padding:18px;margin-bottom:14px}
 .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
-.saludo{text-align:center;margin:10px 0 18px}
-.saludo h2{font-size:26px;font-weight:900;line-height:1.2}
-.saludo p{font-size:17px;opacity:.9;margin-top:6px}
+.saludo{text-align:center;margin:10px 0 18px}.saludo h2{font-size:26px;font-weight:900}.saludo p{font-size:17px;opacity:.9;margin-top:6px}
 .usuario-card{background:#132A4D;border:1px solid #1E3A5F;border-radius:16px;padding:14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px}
-.usuario-card b{font-size:15px;display:block}
-.usuario-card span{font-size:13px;opacity:.8;display:block;margin-top:3px}
+.usuario-card b{font-size:15px;display:block}.usuario-card span{font-size:13px;opacity:.8;display:block;margin-top:3px}
 .btn-trash{background:#EF4444;color:#fff;border:none;width:44px;height:44px;border-radius:12px;font-size:20px;cursor:pointer;flex-shrink:0}
-.link{text-align:center;margin-top:14px;font-size:14px;opacity:.9}
-.link b{color:#FBBF24;cursor:pointer}
+.link{text-align:center;margin-top:14px;font-size:14px;opacity:.9}.link b{color:#FBBF24;cursor:pointer}
 .ok{background:#065F46;border:1px solid #10B981;border-radius:14px;padding:14px;font-size:13px;line-height:1.5;margin-bottom:14px}
-.precio{background:#132A4D;border:1px solid #FBBF24;border-radius:16px;padding:16px;text-align:center;margin-bottom:16px}
-.precio b{font-size:22px;color:#FBBF24}
-.precio span{font-size:13px;opacity:.85;display:block;margin-top:4px}
+.precio{background:#132A4D;border:1px solid #FBBF24;border-radius:16px;padding:16px;text-align:center;margin-bottom:16px}.precio b{font-size:22px;color:#FBBF24}.precio span{font-size:13px;opacity:.85;display:block;margin-top:4px}
 .terminos{font-size:11px;opacity:.7;text-align:center;line-height:1.5;margin-top:6px}
-.datos-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
-.datos-grid .full{grid-column:1/3}
-.libro-wrap{overflow-x:auto;background:#fff;color:#000;border-radius:14px;padding:10px;margin-bottom:14px}
-.libro-wrap table{border-collapse:collapse;min-width:700px;font-size:12px;width:100%}
-.libro-wrap th,.libro-wrap td{border:1px solid #CBD5E1;padding:6px;text-align:center;white-space:nowrap}
-.libro-wrap th{background:#0A1E3C;color:#fff}
-.libro-wrap td:first-child{text-align:left;max-width:280px;white-space:normal}
+.datos-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}.datos-grid .full{grid-column:1/3}
+.libro-wrap{overflow-x:auto;background:#fff;color:#000;border-radius:14px;padding:10px;margin-bottom:14px}.libro-wrap table{border-collapse:collapse;min-width:700px;font-size:12px;width:100%}.libro-wrap th,.libro-wrap td{border:1px solid #CBD5E1;padding:6px;text-align:center;white-space:nowrap}.libro-wrap th{background:#0A1E3C;color:#fff}.libro-wrap td:first-child{text-align:left;max-width:280px;white-space:normal}
 .badge{display:inline-block;background:#FBBF24;color:#0A1E3C;font-size:11px;font-weight:800;padding:3px 8px;border-radius:999px}
-/* CHECKLIST LIMPIO - SOLO PALOMITA Y TACHA */
-.checklist-scroll{overflow-x:auto;padding-bottom:8px;-webkit-overflow-scrolling:touch}
-.tabla-head{display:grid;grid-template-columns:1fr 78px 78px;gap:8px;font-size:12px;font-weight:800;text-align:center;background:#FBBF24;color:#0A1E3C;padding:12px 8px;border-radius:12px 12px 0 0;margin-top:10px}
-.fila-check{display:grid;grid-template-columns:1fr 78px 78px;gap:8px;align-items:center;background:#132A4D;border-bottom:1px solid #1E3A5F;padding:14px 8px;min-height:64px}
-.fila-check b{font-size:14px;line-height:1.35;font-weight:700}
-.check-mini{display:flex;justify-content:center;align-items:center}
-.check-mini input{width:32px;height:32px;margin:0;accent-color:#22C55E;cursor:pointer}
-.check-mini.mal input{accent-color:#EF4444}
-.check-mini input:checked{outline:3px solid #22C55E;outline-offset:2px}
-.check-mini.mal input:checked{outline:3px solid #EF4444}
+.checklist-scroll{overflow-x:auto;padding-bottom:8px}.tabla-head{display:grid;grid-template-columns:1fr 78px 78px;gap:8px;font-size:12px;font-weight:800;text-align:center;background:#FBBF24;color:#0A1E3C;padding:12px 8px;border-radius:12px 12px 0 0;margin-top:10px}
+.fila-check{display:grid;grid-template-columns:1fr 78px 78px;gap:8px;align-items:center;background:#132A4D;border-bottom:1px solid #1E3A5F;padding:14px 8px;min-height:64px}.fila-check b{font-size:14px;line-height:1.35}
+.check-mini{display:flex;justify-content:center}.check-mini input{width:32px;height:32px;margin:0;accent-color:#22C55E;cursor:pointer}.check-mini.mal input{accent-color:#EF4444}.check-mini input:checked{outline:3px solid #22C55E;outline-offset:2px}.check-mini.mal input:checked{outline:3px solid #EF4444}
 .preview-foto{width:80px;height:80px;object-fit:cover;border-radius:10px;border:2px solid #CBD5E1}
+.check-guardar{display:flex;align-items:center;gap:10px;background:#132A4D;border:1px solid #FBBF24;border-radius:12px;padding:12px;margin-bottom:12px;cursor:pointer;font-size:14px}.check-guardar input{width:20px;height:20px;margin:0;accent-color:#FBBF24}
 </style>
 </head>
 <body>
 
 <div class="container" id="p1">
-  <img class="img-bg" src="https://images.unsplash.com/photo-1553413077-190dd305871c?w=800&q=80" alt="Almacén">
-  <div class="overlay"></div>
-  <div class="content">
-    <div><div class="logo"><b>WMS CHECK LIST</b><span>Revisiones diarias con Calidad.<br>Tus Equipos Siempre Listos.</span></div><img class="logo-principal" src="./icon-512.png" alt="WMS Check List"></div>
-    <div class="bottom"><h1>Bienvenido</h1><p>¿Cuál es tu rol?</p><button class="btn btn-yellow" onclick="show('p2-admin')">SOY ADMINISTRADOR</button><button class="btn" onclick="show('p2-operador')">SOY OPERADOR</button></div>
-  </div>
+<img class="img-bg" src="https://images.unsplash.com/photo-1553413077-190dd305871c?w=800&q=80"><div class="overlay"></div>
+<div class="content"><div><div class="logo"><b>WMS CHECK LIST</b><span>Revisiones diarias con Calidad.<br>Tus Equipos Siempre Listos.</span></div><img class="logo-principal" src="./icon-512.png"></div>
+<div class="bottom"><h1>Bienvenido</h1><p>¿Cuál es tu rol?</p><button class="btn btn-yellow" onclick="show('p2-admin')">SOY ADMINISTRADOR</button><button class="btn" onclick="show('p2-operador')">SOY OPERADOR</button></div></div>
 </div>
 
 <div class="container hidden" id="p2-admin" style="background:#0A1E3C">
-  <div class="top"><span onclick="show('p1')" style="cursor:pointer">←</span><b>Soy Administrador</b><span></span></div>
-  <div class="saludo"><h2>Bienvenido de nuevo</h2><p>Inicia sesión para continuar</p></div>
-  <form onsubmit="event.preventDefault();iniciarSesion()">
-  <label>Correo</label><input id="loginCorreo" placeholder="tu@correo.com" type="email" required>
-  <label>Contraseña</label><input id="loginPass" placeholder="••••••••" type="password" required>
-  <button class="btn btn-yellow" type="submit">INICIAR SESIÓN</button></form>
-  <div class="link">¿No tienes cuenta? <b onclick="show('p2-admin-registro')">Activar Suscripción</b></div>
-  <div class="link">¿Olvidaste tu contraseña? <b onclick="show('p-olvido')">Recuperarla</b></div>
+<div class="top"><span onclick="show('p1')" style="cursor:pointer">←</span><b>Soy Administrador</b><span></span></div>
+<div class="saludo"><h2>Bienvenido de nuevo</h2><p>Inicia sesión para continuar</p></div>
+<form onsubmit="event.preventDefault();iniciarSesion()">
+<label>Correo</label><input id="loginCorreo" type="email" placeholder="tu@correo.com" required>
+<label>Contraseña</label><input id="loginPass" type="password" placeholder="••••••••" required>
+<label class="check-guardar"><input type="checkbox" id="adminGuardar" checked> Guardar datos para iniciar sesión</label>
+<button class="btn btn-yellow" type="submit">INICIAR SESIÓN</button></form>
+<div class="link">¿No tienes cuenta? <b onclick="show('p2-admin-registro')">Activar Suscripción</b></div>
+<div class="link">¿Olvidaste tu contraseña? <b onclick="show('p-olvido')">Recuperarla</b></div>
 </div>
 
 <div class="container hidden" id="p2-admin-registro" style="background:#0A1E3C">
-  <div class="top"><span onclick="show('p2-admin')" style="cursor:pointer">←</span><b>Activar Suscripción</b><span></span></div>
-  <div class="precio"><b>7 DÍAS GRATIS</b><span>Después $99 / mes • Cancela cuando quieras</span><span>Usuarios ilimitados</span></div>
-  <form onsubmit="event.preventDefault();registrar()">
-  <label>Nombre de empresa</label><input id="empresa" placeholder="Ej. Transportes Suárez S.A." required>
-  <label>Correo</label><input id="regCorreo" placeholder="tu@correo.com" type="email" required>
-  <label>Contraseña</label><input id="pass1" placeholder="••••••••" type="password" required>
-  <label>Confirma tu contraseña</label><input id="pass2" placeholder="Repite tu contraseña" type="password" required>
-  <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:14px"><input type="checkbox" id="verPass" onclick="verContrasena()" style="width:18px;margin:0"> Ver contraseña</label>
-  <button class="btn btn-blue" type="submit">ACTIVAR SUSCRIPCIÓN - 7 DÍAS GRATIS</button></form>
-  <p class="terminos">Al activar tu suscripción aceptas que después de tus 7 días gratis se cobrarán $99 MXN al mes en automático hasta que canceles. Puedes cancelar cuando quieras desde tu cuenta de Google Play.</p>
-  <div class="link">¿Ya tienes cuenta? <b onclick="show('p2-admin')">Inicia Sesión</b></div>
+<div class="top"><span onclick="show('p2-admin')" style="cursor:pointer">←</span><b>Activar Suscripción</b><span></span></div>
+<div class="precio"><b>7 DÍAS GRATIS</b><span>Después $99 / mes • Cancela cuando quieras</span><span>Usuarios ilimitados</span></div>
+<form onsubmit="event.preventDefault();registrar()">
+<label>Nombre de empresa</label><input id="empresa" placeholder="Ej. Transportes Suárez S.A." required>
+<label>Correo</label><input id="regCorreo" type="email" placeholder="tu@correo.com" required>
+<label>Contraseña</label><input id="pass1" type="password" placeholder="••••••••" required>
+<label>Confirma tu contraseña</label><input id="pass2" type="password" placeholder="Repite tu contraseña" required>
+<label style="display:flex;align-items:center;gap:8px"><input type="checkbox" id="verPass" onclick="verContrasena()" style="width:18px;margin:0"> Ver contraseña</label>
+<button class="btn btn-blue" type="submit">ACTIVAR SUSCRIPCIÓN - 7 DÍAS GRATIS</button></form>
+<p class="terminos">Al activar tu suscripción aceptas que después de tus 7 días gratis se cobrarán $99 MXN al mes en automático hasta que canceles.</p>
+<div class="link">¿Ya tienes cuenta? <b onclick="show('p2-admin')">Inicia Sesión</b></div>
 </div>
 
 <div class="container hidden" id="p-olvido" style="background:#0A1E3C">
-  <div class="top"><span onclick="show('p2-admin')" style="cursor:pointer">←</span><b>Recuperar Contraseña</b><span></span></div>
-  <div class="saludo"><h2>¿Olvidaste tu contraseña?</h2><p>Te enviamos un correo para cambiarla</p></div>
-  <div id="msgOlvido" class="ok hidden"></div>
-  <form onsubmit="event.preventDefault();enviarRecuperacion()">
-  <label>Ingresa el correo que registraste</label><input id="correoOlvido" placeholder="tu@correo.com" type="email" required>
-  <button class="btn btn-yellow" type="submit">ENVIAR CORREO DE RECUPERACIÓN</button></form>
-  <div class="card"><b>¿Ya te llegó el correo?</b><p style="font-size:13px;opacity:.85;margin:8px 0">Te llega de <b>teamsupporthelp@gmail.com</b> con 2 opciones:</p><p style="font-size:13px">1. Recuperar contraseña<br>2. Crear contraseña nueva y Actualizar</p></div>
-  <button class="btn btn-outline" onclick="show('p2-admin')">Regresar a Iniciar Sesión</button>
+<div class="top"><span onclick="show('p2-admin')" style="cursor:pointer">←</span><b>Recuperar Contraseña</b><span></span></div>
+<div class="saludo"><h2>¿Olvidaste tu contraseña?</h2><p>Te enviamos un correo para cambiarla</p></div>
+<div id="msgOlvido" class="ok hidden"></div>
+<form onsubmit="event.preventDefault();enviarRecuperacion()"><label>Ingresa el correo que registraste</label><input id="correoOlvido" type="email" placeholder="tu@correo.com" required><button class="btn btn-yellow" type="submit">ENVIAR CORREO DE RECUPERACIÓN</button></form>
+<div class="card"><b>¿Ya te llegó el correo?</b><p style="font-size:13px;opacity:.85;margin:8px 0">Te llega de <b>teamsupporthelp@gmail.com</b></p><p style="font-size:13px">1. Recuperar contraseña<br>2. Crear contraseña nueva y Actualizar</p></div>
+<button class="btn btn-outline" onclick="show('p2-admin')">Regresar a Iniciar Sesión</button>
 </div>
 
 <div class="container hidden" id="p-nueva-pass" style="background:#0A1E3C">
-  <div class="top"><span onclick="show('p2-admin')" style="cursor:pointer">←</span><b>Nueva Contraseña</b><span></span></div>
-  <div class="saludo"><h2>Crea tu contraseña nueva</h2><p>Ya casi terminas</p></div>
-  <div id="msgNuevaPass" class="ok hidden"></div>
-  <form onsubmit="event.preventDefault();actualizarPass()">
-  <label>Tu correo</label><input id="nuevoPassCorreo" placeholder="tu@correo.com" type="email" required>
-  <label>Contraseña nueva</label><input id="nuevoPass1" placeholder="••••••••" type="password" required>
-  <label>Confirma contraseña nueva</label><input id="nuevoPass2" placeholder="Repite tu contraseña" type="password" required>
-  <button class="btn btn-yellow" type="submit">ACTUALIZAR CONTRASEÑA</button></form>
+<div class="top"><span onclick="show('p2-admin')" style="cursor:pointer">←</span><b>Nueva Contraseña</b><span></span></div>
+<div class="saludo"><h2>Crea tu contraseña nueva</h2><p>Ya casi terminas</p></div>
+<form onsubmit="event.preventDefault();actualizarPass()"><label>Tu correo</label><input id="nuevoPassCorreo" type="email" required><label>Contraseña nueva</label><input id="nuevoPass1" type="password" required><label>Confirma contraseña nueva</label><input id="nuevoPass2" type="password" required><button class="btn btn-yellow" type="submit">ACTUALIZAR CONTRASEÑA</button></form>
 </div>
 
 <div class="container hidden" id="p-suscripcion" style="background:#0A1E3C">
-  <div class="top"><span onclick="show('p1')" style="cursor:pointer">←</span><b>Suscripción</b><span></span></div>
-  <div class="saludo"><h2>Se acabaron tus 7 días gratis 😔</h2><p>Para seguir usando WMS Check List, activa tu suscripción</p></div>
-  <div class="precio"><b>$99 / MES</b><span>Usuarios ilimitados • Cancela cuando quieras</span></div>
-  <button class="btn btn-yellow" onclick="activarSuscripcionGoogle()">ACTIVAR SUSCRIPCIÓN - $99 / MES</button>
-  <p class="terminos">El cobro lo hace Google Play en automático cada mes. Tú puedes cancelar cuando quieras desde Play Store.</p>
-  <button class="btn btn-outline" onclick="show('p1')">Regresar</button>
+<div class="top"><span onclick="show('p1')" style="cursor:pointer">←</span><b>Suscripción</b><span></span></div>
+<div class="saludo"><h2>Se acabaron tus 7 días gratis 😔</h2><p>Activa tu suscripción</p></div>
+<div class="precio"><b>$99 / MES</b><span>Usuarios ilimitados • Cancela cuando quieras</span></div>
+<button class="btn btn-yellow" onclick="activarSuscripcionGoogle()">ACTIVAR SUSCRIPCIÓN - $99 / MES</button>
+<button class="btn btn-outline" onclick="show('p1')">Regresar</button>
 </div>
 
 <div class="container hidden" id="p2-operador" style="background:#0A1E3C">
-  <div class="top"><span onclick="show('p1')" style="cursor:pointer">←</span><b>Soy Operador</b><span></span></div>
-  <form onsubmit="event.preventDefault();loginOperador()">
-  <label>Nombre de la empresa</label><input id="opEmpresa" placeholder="Ej. Transportes López" required>
-  <label>Tu usuario</label><input id="opUsuario" placeholder="Ej. chofer_juan" required>
-  <label>Tu contraseña</label><input id="opPass" placeholder="••••••••" type="password" required>
-  <button class="btn" type="submit">ENTRAR A CHAMBEAR →</button></form>
-  <div class="link">¿Olvidaste tu contraseña? <b onclick="alert('Pídele a tu Administrador que te recuerde tu contraseña en Dar de Baja Empleado')">Pide ayuda a tu Admin</b></div>
+<div class="top"><span onclick="show('p1')" style="cursor:pointer">←</span><b>Soy Operador</b><span></span></div>
+<div class="saludo"><h2>Hola, operador</h2><p>Ya no escribas todo cada vez, Lulú</p></div>
+<form onsubmit="event.preventDefault();loginOperador()">
+<label>Nombre de la empresa / Industria</label><input id="opEmpresa" placeholder="Ej. Transportes López" required>
+<label>Tu usuario</label><input id="opUsuario" placeholder="Ej. chofer_juan" required>
+<label>Tu contraseña</label><input id="opPass" type="password" placeholder="••••••••" required>
+<label class="check-guardar"><input type="checkbox" id="opGuardar" checked> ✅ Guardar datos para iniciar sesión</label>
+<button class="btn" type="submit">ENTRAR A CHAMBEAR →</button></form>
+<button class="btn btn-outline" onclick="borrarDatosGuardados()">🗑️ Borrar datos guardados</button>
+<div class="link">¿Olvidaste tu contraseña? <b onclick="alert('Pídele a tu Administrador que te recuerde tu contraseña')">Pide ayuda a tu Admin</b></div>
 </div>
 
 <div class="container hidden" id="p-admin-menu" style="background:#0A1E3C">
-  <div class="top"><span onclick="show('p1')" style="cursor:pointer">←</span><b>Panel Administrador</b><span>🔔</span></div>
-  <img id="logoAdmin" class="logo-cliente" src="./icon-512.png" style="margin-bottom:12px">
-  <div class="saludo"><h2>Hola, <span id="nombreEmpresa2">Administrador</span></h2><p>¿Qué vas a revisar hoy?</p></div>
-  <div class="card" id="infoPrueba"><b>⏳ Tu suscripción:</b> <span id="diasPrueba">7 días gratis</span><br><span style="font-size:12px;opacity:.8">Después: $99 / mes • Estado: <b id="estadoEmpresa">prueba</b></span></div>
-  <div class="card"><b>🖼️ TU LOGO AQUÍ</b><p style="font-size:12px;opacity:.8;margin:6px 0 10px">Sube el logo de tu empresa y la app se personaliza con tu logo, no el de WMS.</p><input type="file" id="inputLogo" accept="image/*" onchange="subirLogo(event)" style="padding:10px"><button class="btn btn-outline" style="padding:12px;margin:0" onclick="document.getElementById('inputLogo').click()">SUBIR MI LOGO</button></div>
-  <button class="btn btn-yellow" onclick="show('p-alta-empleado')">+ DAR DE ALTA EMPLEADO</button>
-  <p style="font-size:13px;opacity:.7;text-align:center;margin:4px 0 12px">Usuarios ilimitados</p>
-  <button class="btn" onclick="show('p-consulta-usuarios')">👥 - DAR DE BAJA EMPLEADO</button>
-  <button class="btn" onclick="show('p-consulta-camiones')">🚚 CHECK LIST DE VEHICULOS</button>
-  <button class="btn" onclick="show('p-consulta-montacargas')">🏗️ CHECK LIST DE MONTACARGAS</button>
-  <button class="btn" onclick="show('p-consulta-bitacora')">🗺️ BITÁCORA DE RUTA</button>
-  <button class="btn btn-blue" onclick="show('p-reportes')">📊 REPORTES MENSUALES</button>
-  <button class="btn btn-outline" onclick="cerrarSesion()" style="margin-top:10px">Cerrar Sesión</button>
+<div class="top"><span onclick="show('p1')" style="cursor:pointer">←</span><b>Panel Administrador</b><span>🔔</span></div>
+<img id="logoAdmin" class="logo-cliente" src="./icon-512.png" style="margin-bottom:12px">
+<div class="saludo"><h2>Hola, <span id="nombreEmpresa2">Administrador</span></h2><p>¿Qué vas a revisar hoy?</p></div>
+<div class="card"><b>⏳ Tu suscripción:</b> <span id="diasPrueba">7 días gratis</span><br><span style="font-size:12px;opacity:.8">Después: $99 / mes • Estado: <b id="estadoEmpresa">prueba</b></span></div>
+<div class="card"><b>🖼️ TU LOGO AQUÍ</b><p style="font-size:12px;opacity:.8;margin:6px 0 10px">Sube el logo de tu empresa.</p><input type="file" id="inputLogo" accept="image/*" onchange="subirLogo(event)" style="padding:10px"><button class="btn btn-outline" style="padding:12px;margin:0" onclick="document.getElementById('inputLogo').click()">SUBIR MI LOGO</button></div>
+<button class="btn btn-yellow" onclick="show('p-alta-empleado')">+ DAR DE ALTA EMPLEADO</button>
+<button class="btn" onclick="show('p-consulta-usuarios')">👥 - DAR DE BAJA EMPLEADO</button>
+<button class="btn" onclick="show('p-consulta-montacargas')">🏗️ CHECK LIST DE MONTACARGAS</button>
+<button class="btn" onclick="show('p-consulta-camiones')">🚚 CHECK LIST DE VEHICULOS</button>
+<button class="btn" onclick="show('p-consulta-bitacora')">🗺️ BITÁCORA DE RUTA</button>
+<button class="btn btn-blue" onclick="show('p-reportes')">📊 REPORTES MENSUALES</button>
+<button class="btn btn-outline" onclick="cerrarSesion()" style="margin-top:10px">Cerrar Sesión</button>
 </div>
 
 <div class="container hidden" id="p-alta-empleado" style="background:#0A1E3C">
-  <div class="top"><span onclick="show('p-admin-menu')" style="cursor:pointer">←</span><b>Dar de Alta Empleado</b><span></span></div>
-  <label>Nombre completo del empleado</label><input id="empNombre" placeholder="Ej. Alejandro Gonzalez">
-  <label>Usuario para entrar</label><input id="empUsuario" placeholder="Ej. chofer_juan">
-  <label>Contraseña</label><input id="empPass" placeholder="••••••••" type="password">
-  <label>Rol</label><input id="empRol" placeholder="Ej. Chofer, Supervisor, Montacarguista">
-  <label>Teléfono</label><input id="empTel" placeholder="Ej. 33 1234 5678">
-  <button class="btn btn-yellow" onclick="guardarEmpleado()">GUARDAR EMPLEADO</button>
+<div class="top"><span onclick="show('p-admin-menu')" style="cursor:pointer">←</span><b>Dar de Alta Empleado</b><span></span></div>
+<label>Nombre completo</label><input id="empNombre" placeholder="Ej. Alejandro Gonzalez">
+<label>Usuario para entrar</label><input id="empUsuario" placeholder="Ej. chofer_juan">
+<label>Contraseña</label><input id="empPass" type="password" placeholder="••••••••">
+<label>Rol</label><input id="empRol" placeholder="Ej. Chofer, Montacarguista">
+<label>Teléfono</label><input id="empTel" placeholder="Ej. 33 1234 5678">
+<button class="btn btn-yellow" onclick="guardarEmpleado()">GUARDAR EMPLEADO</button>
 </div>
 
 <div class="container hidden" id="p-consulta-usuarios" style="background:#0A1E3C">
-  <div class="top"><span onclick="show('p-admin-menu')" style="cursor:pointer">←</span><b>Consultar Usuarios</b><span></span></div>
-  <p style="font-size:13px;opacity:.8;margin-bottom:14px">Tienes <b id="totalUsuarios">0</b> usuarios dados de alta</p>
-  <div id="listaUsuarios"></div>
-  <div id="sinUsuarios" class="card"><p style="font-size:14px">Aún no tienes usuarios. Dale a DAR DE ALTA EMPLEADO para agregar al primero.</p></div>
-  <button class="btn btn-yellow" onclick="show('p-alta-empleado')">+ AGREGAR OTRO USUARIO</button>
-  <button class="btn btn-outline" onclick="show('p-admin-menu')">Regresar</button>
-</div>
-
-<div class="container hidden" id="p-consulta-camiones" style="background:#0A1E3C">
-  <div class="top"><span onclick="show('p-admin-menu')" style="cursor:pointer">←</span><b>Consultar Camiones</b><span></span></div>
-  <div id="libroCamiones"></div>
-  <button class="btn btn-outline" onclick="show('p-admin-menu')">Regresar</button>
+<div class="top"><span onclick="show('p-admin-menu')" style="cursor:pointer">←</span><b>Consultar Usuarios</b><span></span></div>
+<p style="font-size:13px;margin-bottom:14px">Tienes <b id="totalUsuarios">0</b> usuarios</p>
+<div id="listaUsuarios"></div><div id="sinUsuarios" class="card"><p>Aún no tienes usuarios.</p></div>
+<button class="btn btn-yellow" onclick="show('p-alta-empleado')">+ AGREGAR OTRO USUARIO</button>
+<button class="btn btn-outline" onclick="show('p-admin-menu')">Regresar</button>
 </div>
 
 <div class="container hidden" id="p-consulta-montacargas" style="background:#0A1E3C">
-  <div class="top"><span onclick="show('p-admin-menu')" style="cursor:pointer">←</span><b>Consultar Montacargas</b><span></span></div>
-  <div class="card"><b>🏗️ Libro de Montacargas - por unidad</b><p style="font-size:13px;opacity:.8;margin-top:6px">Eliges la unidad, Lulú. Y se ve como tu hoja: A-G un día, H-N otro día, hacia un lado, Lulú. No hacia abajo.</p>
-  <label>Unidad</label><select id="selUnidadMontacargas" onchange="renderLibro('montacargas')"><option value="">Todas las unidades</option></select>
-  <label>Mes del libro</label><input type="month" id="mesMontacargas" value="2026-11" onchange="renderLibro('montacargas')">
-  <button class="btn btn-yellow" onclick="descargarMes('montacargas')">⬇ DESCARGAR TODO EL MES</button></div>
-  <div id="libroMontacargas"></div>
-  <button class="btn btn-outline" onclick="show('p-admin-menu')">Regresar</button>
+<div class="top"><span onclick="show('p-admin-menu')" style="cursor:pointer">←</span><b>Consultar Montacargas</b><span></span></div>
+<div class="card"><b>🏗️ Libro de Montacargas - por unidad</b><p style="font-size:13px;opacity:.8;margin-top:6px">A-G un día, H-N otro día, hacia un lado. No hacia abajo.</p>
+<label>Unidad</label><select id="selUnidadMontacargas" onchange="renderLibro('montacargas')"><option value="">Todas las unidades</option></select>
+<label>Mes del libro</label><input type="month" id="mesMontacargas" value="2026-11" onchange="renderLibro('montacargas')">
+<button class="btn btn-yellow" onclick="descargarMes('montacargas')">⬇ DESCARGAR TODO EL MES</button></div>
+<div id="libroMontacargas"></div>
+<button class="btn btn-outline" onclick="show('p-admin-menu')">Regresar</button>
 </div>
 
-<div class="container hidden" id="p-consulta-bitacora" style="background:#0A1E3C">
-  <div class="top"><span onclick="show('p-admin-menu')" style="cursor:pointer">←</span><b>Consultar Bitácora de Ruta</b><span></span></div>
-  <div id="libroBitacora"></div>
-  <button class="btn btn-outline" onclick="show('p-admin-menu')">Regresar</button>
-</div>
+<div class="container hidden" id="p-consulta-camiones" style="background:#0A1E3C"><div class="top"><span onclick="show('p-admin-menu')" style="cursor:pointer">←</span><b>Consultar Camiones</b><span></span></div><div id="libroCamiones"></div><button class="btn btn-outline" onclick="show('p-admin-menu')">Regresar</button></div>
+<div class="container hidden" id="p-consulta-bitacora" style="background:#0A1E3C"><div class="top"><span onclick="show('p-admin-menu')" style="cursor:pointer">←</span><b>Consultar Bitácora</b><span></span></div><div id="libroBitacora"></div><button class="btn btn-outline" onclick="show('p-admin-menu')">Regresar</button></div>
 
 <div class="container hidden" id="p-reportes" style="background:#0A1E3C">
-  <div class="top"><span onclick="show('p-admin-menu')" style="cursor:pointer">←</span><b>Reportes Mensuales</b><span></span></div>
-  <div class="card"><h3>📊 Libro del Mes</h3><p style="font-size:13px;opacity:.8;margin-top:8px">Cada mes se genera un libro nuevo. El mes anterior queda guardado en historial.</p>
-  <label>Mes</label><input type="month" id="mesReporte" value="2026-11">
-  <button class="btn btn-yellow" onclick="verReporteMes()">VER LIBRO DE ESTE MES</button>
-  <button class="btn" onclick="exportarCSV()">⬇ EXPORTAR CSV - PARA EXCEL</button></div>
-  <div id="contenidoReporte"></div>
-  <button class="btn btn-outline" onclick="show('p-admin-menu')">Regresar</button>
+<div class="top"><span onclick="show('p-admin-menu')" style="cursor:pointer">←</span><b>Reportes Mensuales</b><span></span></div>
+<div class="card"><h3>📊 Libro del Mes</h3><label>Mes</label><input type="month" id="mesReporte" value="2026-11"><button class="btn btn-yellow" onclick="verReporteMes()">VER LIBRO DE ESTE MES</button><button class="btn" onclick="exportarCSV()">⬇ EXPORTAR CSV - PARA EXCEL</button></div>
+<div id="contenidoReporte"></div><button class="btn btn-outline" onclick="show('p-admin-menu')">Regresar</button>
 </div>
 
 <div class="container hidden" id="p4" style="background:#0A1E3C">
-  <div class="top"><img id="logoOperador" class="logo-cliente-small" src="./icon-512.png"><span>🔔</span></div>
-  <div class="saludo"><h2>Hola, <span id="nombreEmpresa">Operador</span></h2><p>¿Qué vas a revisar hoy?</p><p style="font-size:14px;opacity:.7">Elige tu checklist del día</p></div>
-  <div style="display:grid;gap:14px;margin-top:10px">
-    <div style="background:#EA580C;border-radius:20px;padding:22px 18px;display:flex;gap:16px;cursor:pointer;align-items:center" onclick="abrirChecklist('montacargas')"><div style="font-size:38px">🏗️</div><div><b style="font-size:19px">Montacargas</b><span style="font-size:13px;display:block">Checklist de 29 puntos</span></div></div>
-    <div style="background:#2563EB;border-radius:20px;padding:22px 18px;display:flex;gap:16px;cursor:pointer;align-items:center" onclick="abrirChecklist('camiones')"><div style="font-size:38px">🚚</div><div><b style="font-size:19px">Camiones</b><span style="font-size:13px;display:block">Checklist de unidad</span></div></div>
-    <div style="background:#059669;border-radius:20px;padding:22px 18px;display:flex;gap:16px;cursor:pointer;align-items:center" onclick="abrirChecklist('bitacora')"><div style="font-size:38px">🗺️</div><div><b style="font-size:19px">Bitácora de Ruta</b><span style="font-size:13px;display:block">Ruta del día</span></div></div>
-  </div>
-  <button class="btn btn-outline" onclick="cerrarSesion()" style="margin-top:20px">Cerrar Sesión</button>
+<div class="top"><img id="logoOperador" class="logo-cliente-small" src="./icon-512.png"><span>🔔</span></div>
+<div class="saludo"><h2>Hola, <span id="nombreEmpresa">Operador</span></h2><p>¿Qué vas a revisar hoy?</p></div>
+<div style="display:grid;gap:14px;margin-top:10px">
+<div style="background:#EA580C;border-radius:20px;padding:22px 18px;display:flex;gap:16px;cursor:pointer;align-items:center" onclick="abrirChecklist('montacargas')"><div style="font-size:38px">🏗️</div><div><b style="font-size:19px">Montacargas</b><span style="font-size:13px;display:block">Checklist de 29 puntos</span></div></div>
+<div style="background:#2563EB;border-radius:20px;padding:22px 18px;display:flex;gap:16px;cursor:pointer;align-items:center" onclick="abrirChecklist('camiones')"><div style="font-size:38px">🚚</div><div><b style="font-size:19px">Camiones</b><span style="font-size:13px;display:block">Checklist de unidad</span></div></div>
+<div style="background:#059669;border-radius:20px;padding:22px 18px;display:flex;gap:16px;cursor:pointer;align-items:center" onclick="abrirChecklist('bitacora')"><div style="font-size:38px">🗺️</div><div><b style="font-size:19px">Bitácora de Ruta</b><span style="font-size:13px;display:block">Ruta del día</span></div></div>
+</div><button class="btn btn-outline" onclick="cerrarSesion()" style="margin-top:20px">Cerrar Sesión</button>
 </div>
 
 <div class="container hidden" id="p-checklist" style="background:#0A1E3C;max-width:720px">
-  <div class="top"><span onclick="show('p4')" style="cursor:pointer">←</span><b id="tituloChecklist">Checklist</b><span></span></div>
-  <div class="card" style="background:#fff;color:#000"><b style="font-size:14px">A - DATOS DE LA UNIDAD</b>
-    <div class="datos-grid" style="margin-top:10px">
-      <div class="full"><label style="color:#000">Fecha:</label><input id="dFecha" type="date" style="background:#fff;color:#000;border:1px solid #CBD5E1"></div>
-      <div><label style="color:#000">Nombre del Operador:</label><input id="dOperador" placeholder="Nombre" style="background:#fff;color:#000;border:1px solid #CBD5E1"></div>
-      <div><label style="color:#000">Turno:</label><select id="dTurno" style="background:#fff;color:#000;border:1px solid #CBD5E1"><option>Matutino</option><option>Vespertino</option><option>Nocturno</option></select></div>
-      <div><label style="color:#000">Numero de unidad: * CLAVE</label><input id="dUnidad" placeholder="Ej. 03 / C-03" style="background:#FFF7ED;color:#000;border:2px solid #EA580C;font-weight:800"></div>
-      <div><label style="color:#000">Clase:</label><input id="dClase" placeholder="Ej. Montacargas / Camión" style="background:#fff;color:#000;border:1px solid #CBD5E1"></div>
-      <div><label style="color:#000">Horometro:</label><input id="dHorometro" placeholder="Ej. 12345" style="background:#fff;color:#000;border:1px solid #CBD5E1"></div>
-      <div><label style="color:#000">Nivel de Combustible: (B8)</label><select id="dCombustible" style="background:#fff;color:#000;border:1px solid #CBD5E1"><option>Lleno</option><option>3/4</option><option>1/2</option><option>1/4</option><option>Reserva / Vacío</option></select></div>
-      <div><label style="color:#000">Nivel de Bateria:</label><select id="dBateria" style="background:#fff;color:#000;border:1px solid #CBD5E1"><option>Lleno</option><option>3/4</option><option>1/2</option><option>1/4</option><option>Reserva / Vacío</option><option>No Aplica</option></select></div>
-    </div>
-    <p style="font-size:12px;color:#EA580C;font-weight:800;margin-top:6px">⚠️ La CLAVE es el Numero de unidad. Al poner 03 se va solito a la hoja Unidad 03.</p>
-  </div>
-
-  <div class="checklist-scroll">
-    <div class="tabla-head"><span style="text-align:left">PUNTOS A REVISION</span><span>BUEN ESTADO</span><span>MAL ESTADO</span></div>
-    <div id="itemsChecklist"></div>
-  </div>
-
-  <div class="card" style="background:#fff;color:#000;margin-top:16px">
-    <b style="font-size:15px">📝 Explica Golpes en Carrocería / Fallas</b>
-    <p style="font-size:12px;opacity:.7;margin:6px 0 10px">Aquí pon tus comentarios, Lulú. Y tus fotos, Pampión.</p>
-    <textarea id="comentarioFinal" placeholder="Ej. Golpe en puerta izquierda, falla en luz trasera..." style="width:100%;min-height:90px;padding:12px;border-radius:12px;border:1px solid #CBD5E1;background:#fff;color:#000;font-size:14px"></textarea>
-    <label style="color:#000;margin-top:10px">📷 Toma tus fotos (5, 6, 7, 8 fotos)</label>
-    <input type="file" id="fotosFinales" accept="image/*" capture="environment" multiple style="background:#fff;color:#000;border:1px solid #CBD5E1">
-    <div id="previewFotos" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"></div>
-    <p style="font-size:12px;opacity:.7;margin-top:6px">Las fotos se guardan como ligas, Lulú. No se quedan pegadas.</p>
-  </div>
-
-  <button class="btn btn-yellow" onclick="guardarChecklist()" style="margin-top:16px">💾 GUARDAR TODO EL CHECKLIST</button>
-  <button class="btn btn-outline" onclick="show('p4')">Regresar</button>
-  <p style="font-size:12px;opacity:.7;text-align:center">Al guardar, se replica solito. Mañana, misma unidad, se abre un bloque nuevo de la H para allá.</p>
+<div class="top"><span onclick="show('p4')" style="cursor:pointer">←</span><b id="tituloChecklist">Checklist</b><span></span></div>
+<div class="card" style="background:#fff;color:#000">
+<div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:14px">A - DATOS DE LA UNIDAD</b><button class="btn-mini-guardar" onclick="guardarChecklist()">💾 Guardar</button></div>
+<div class="datos-grid" style="margin-top:10px">
+<div class="full"><label style="color:#000">Fecha:</label><input id="dFecha" type="date" style="background:#fff;color:#000;border:1px solid #CBD5E1"></div>
+<div><label style="color:#000">Nombre del Operador:</label><input id="dOperador" placeholder="Nombre" style="background:#fff;color:#000;border:1px solid #CBD5E1"></div>
+<div><label style="color:#000">Turno:</label><select id="dTurno" style="background:#fff;color:#000;border:1px solid #CBD5E1"><option>Matutino</option><option>Vespertino</option><option>Nocturno</option></select></div>
+<div><label style="color:#000">Numero de unidad:</label><input id="dUnidad" placeholder="Ej. 03" style="background:#FFF7ED;color:#000;border:2px solid #EA580C;font-weight:800"></div>
+<div><label style="color:#000">Tipo:</label><select id="dTipo" onchange="actualizarTipo()" style="background:#fff;color:#000;border:1px solid #CBD5E1"><option value="Gas">Gas</option><option value="Electrico">Eléctrico</option></select></div>
+<div><label style="color:#000">Horometro:</label><input id="dHorometro" placeholder="Ej. 12345" style="background:#fff;color:#000;border:1px solid #CBD5E1"></div>
+<div id="boxCombustible"><label style="color:#000">Nivel de Combustible:</label><select id="dCombustible" style="background:#fff;color:#000;border:1px solid #CBD5E1"><option value="">Selecciona...</option><option>Vacio</option><option>1/8</option><option>1/4</option><option>3/8</option><option>1/2</option><option>5/8</option><option>3/4</option><option>7/8</option><option>Lleno</option></select><input id="dCombustibleOtro" placeholder="Otro: Ej. 93%" style="background:#fff;color:#000;border:1px solid #CBD5E1;margin-top:6px"></div>
+<div id="boxBateria" class="hidden"><label style="color:#000">Nivel de Bateria:</label><select id="dBateria" style="background:#fff;color:#000;border:1px solid #CBD5E1"><option value="">Selecciona...</option><option>Vacio</option><option>1/8</option><option>1/4</option><option>3/8</option><option>1/2</option><option>5/8</option><option>3/4</option><option>7/8</option><option>Lleno</option></select><input id="dBateriaOtro" placeholder="Otro: Ej. 93%" style="background:#fff;color:#000;border:1px solid #CBD5E1;margin-top:6px"></div>
+</div><input type="hidden" id="dClase" value="Montacargas">
+</div>
+<div class="checklist-scroll"><div class="tabla-head"><span style="text-align:left">PUNTOS A REVISION</span><span>BUEN ESTADO</span><span>MAL ESTADO</span></div><div id="itemsChecklist"></div></div>
+<div class="card" style="background:#fff;color:#000;margin-top:16px"><b style="font-size:15px">📝 Explica Golpes en Carrocería / Fallas</b><textarea id="comentarioFinal" placeholder="Ej. Golpe en puerta izquierda..." style="width:100%;min-height:90px;padding:12px;border-radius:12px;border:1px solid #CBD5E1;background:#fff;color:#000;font-size:14px"></textarea><label style="color:#000;margin-top:10px">📷 Toma tus fotos (5, 6, 7, 8 fotos)</label><input type="file" id="fotosFinales" accept="image/*" capture="environment" multiple style="background:#fff;color:#000;border:1px solid #CBD5E1"><div id="previewFotos" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"></div></div>
+<button class="btn btn-yellow" onclick="guardarChecklist()" style="margin-top:16px">💾 GUARDAR TODO EL CHECKLIST</button>
+<button class="btn btn-outline" onclick="show('p4')">Regresar</button>
 </div>
 
 <script>
@@ -264,254 +202,70 @@ const SUPABASE_URL='https://jcubuvoilbqbtpeuajrp.supabase.co';
 const SUPABASE_ANON_KEY='sb_publishable_MVCEb9ZZxJRPunTz5uJExg_vMn3xduY';
 const CORREO_SOPORTE='teamsupporthelp@gmail.com';
 const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
-let usuarios=[];let adminCuenta=null;let sesionActiva=false;let empresaActual=null;let operadorActual=null;let tipoChecklistActual='montacargas';
+let usuarios=[],sesionActiva=false,empresaActual=null,operadorActual=null,tipoChecklistActual='montacargas';
 let logoEmpresaURL=localStorage.getItem('wms_logo')||'./icon-512.png';
 let fotosFinalesArr=[];
-
-const PUNTOS_MONTACARGAS=[
-"Horquillas en Buen estado (No quebradas, dobladas o fisuradas)",
-"Carro porta horquillas",
-"Mastil o torre de elevacion (Sube y Baja sin dificultad)",
-"Desplazador del mastil",
-"Inclinacion del mastil",
-"Mangueras en buen estado",
-"Cadenas en buen estado",
-"Llanta delantera izquierda",
-"Llanta delantera derecha",
-"Llanta trasera izquierda",
-"Llanta trasera derecha",
-"Direccion del volante",
-"Nivel del aceite Hidraulico",
-"Asiento en buen estado",
-"Cinturon de seguridad",
-"Palancas de control hidraulico (Todas hacen su funcion)",
-"Freno de mano",
-"Espejo retrovisor",
-"Direccionales",
-"Alarma de reversa",
-"Luces de navegacion",
-"Luces de trabajo o reflectores delanteros",
-"Guarda o parrilla protectora de cabina",
-"Torreta",
-"Boton de emergencia",
-"Extinguidor (Vigente y Cargado)",
-"Cilindro de Gas LP (Si Aplica o No Aplica) Comenta",
-"Mangueras de Gas LP (Si Aplica o No Aplica) Comenta",
-"Explica Golpes y Daños en Carroceria (Comenta)"
-];
+const PUNTOS_MONTACARGAS=["Horquillas en Buen estado (No quebradas, dobladas o fisuradas)","Carro porta horquillas","Mastil o torre de elevacion (Sube y Baja sin dificultad)","Desplazador del mastil","Inclinacion del mastil","Mangueras en buen estado","Cadenas en buen estado","Llanta delantera izquierda","Llanta delantera derecha","Llanta trasera izquierda","Llanta trasera derecha","Direccion del volante","Nivel del aceite Hidraulico","Asiento en buen estado","Cinturon de seguridad","Palancas de control hidraulico (Todas hacen su funcion)","Freno de mano","Espejo retrovisor","Direccionales","Alarma de reversa","Luces de navegacion","Luces de trabajo o reflectores delanteros","Guarda o parrilla protectora de cabina","Torreta","Boton de emergencia","Extinguidor (Vigente y Cargado)","Cilindro de Gas LP (Si Aplica o No Aplica) Comenta","Mangueras de Gas LP (Si Aplica o No Aplica) Comenta","Explica Golpes y Daños en Carroceria (Comenta)"];
 const PUNTOS_CAMIONES=["Luces","Frenos","Llantas","Espejos","Claxon","Nivel de aceite","Nivel de anticongelante","Documentos"];
 const PUNTOS_BITACORA=["Kilometraje inicial","Nivel de combustible","Destino de ruta","Hora de salida","Documentos de carga"];
-function puntosDe(tipo){ return tipo==='montacargas'?PUNTOS_MONTACARGAS : tipo==='camiones'?PUNTOS_CAMIONES : PUNTOS_BITACORA; }
-function hoyISO(){ return new Date().toISOString().slice(0,10); }
-
-function show(id){
-  const protegidas=['p-admin-menu','p-alta-empleado','p-consulta-usuarios','p-consulta-camiones','p-consulta-montacargas','p-consulta-bitacora','p-reportes','p4','p-checklist','p-nueva-pass'];
-  if(protegidas.includes(id) && !sesionActiva && id!=='p-nueva-pass'){ alert('Primero inicia sesión'); id='p1'; }
-  ['p1','p2-admin','p2-admin-registro','p-olvido','p-suscripcion','p2-operador','p4','p-admin-menu','p-alta-empleado','p-consulta-usuarios','p-consulta-camiones','p-consulta-montacargas','p-consulta-bitacora','p-reportes','p-checklist','p-nueva-pass'].forEach(x=>document.getElementById(x).classList.add('hidden'));
-  document.getElementById(id).classList.remove('hidden');
-  if(id==='p-consulta-montacargas') renderLibro('montacargas');
-}
+function puntosDe(t){return t==='montacargas'?PUNTOS_MONTACARGAS:t==='camiones'?PUNTOS_CAMIONES:PUNTOS_BITACORA}
+function hoyISO(){return new Date().toISOString().slice(0,10)}
+function show(id){const p=['p-admin-menu','p-alta-empleado','p-consulta-usuarios','p-consulta-camiones','p-consulta-montacargas','p-consulta-bitacora','p-reportes','p4','p-checklist','p-nueva-pass'];if(p.includes(id)&&!sesionActiva&&id!=='p-nueva-pass'){alert('Primero inicia sesión');id='p1'};['p1','p2-admin','p2-admin-registro','p-olvido','p-suscripcion','p2-operador','p4','p-admin-menu','p-alta-empleado','p-consulta-usuarios','p-consulta-camiones','p-consulta-montacargas','p-consulta-bitacora','p-reportes','p-checklist','p-nueva-pass'].forEach(x=>document.getElementById(x).classList.add('hidden'));document.getElementById(id).classList.remove('hidden');if(id==='p-consulta-montacargas')renderLibro('montacargas')}
 function verContrasena(){const t=document.getElementById('verPass').checked?'text':'password';document.getElementById('pass1').type=t;document.getElementById('pass2').type=t}
 function cerrarSesion(){sesionActiva=false;empresaActual=null;operadorActual=null;show('p1')}
 function aplicarLogo(){document.getElementById('logoAdmin').src=logoEmpresaURL;document.getElementById('logoOperador').src=logoEmpresaURL}
-function subirLogo(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{logoEmpresaURL=r.result;localStorage.setItem('wms_logo',logoEmpresaURL);aplicarLogo();alert('¡Listo Lulú! Ya quedó tu logo.');};r.readAsDataURL(f);}
-async function enviarCorreoAutomatico(tipo,destino,nombreEmpresa){
-  try{ if(tipo==='recuperar'){ await supabaseClient.auth.resetPasswordForEmail(destino,{redirectTo:window.location.origin+window.location.pathname+'#nueva-pass'}); } }catch(e){console.log(e)}
-  return true;
+function subirLogo(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{logoEmpresaURL=r.result;localStorage.setItem('wms_logo',logoEmpresaURL);aplicarLogo();alert('¡Listo Lulú! Ya quedó tu logo.')};r.readAsDataURL(f)}
+
+// === GUARDAR DATOS LOGIN ===
+function cargarDatosGuardados(){
+  try{const op=JSON.parse(localStorage.getItem('wms_op_login')||'null');if(op){document.getElementById('opEmpresa').value=op.empresa||'';document.getElementById('opUsuario').value=op.usuario||'';document.getElementById('opPass').value=op.pass||'';document.getElementById('opGuardar').checked=true;}}catch(e){}
+  try{const ad=JSON.parse(localStorage.getItem('wms_admin_login')||'null');if(ad){document.getElementById('loginCorreo').value=ad.correo||'';document.getElementById('loginPass').value=ad.pass||'';document.getElementById('adminGuardar').checked=true;}}catch(e){}
 }
-function mostrarPrueba(){
-  if(!empresaActual) return;
-  document.getElementById('estadoEmpresa').innerText=empresaActual.estado||'prueba';
-  const fin=new Date(empresaActual.fin_prueba);const hoy=new Date();const dias=Math.ceil((fin-hoy)/(1000*60*60*24));
-  if(empresaActual.estado==='activo'){document.getElementById('diasPrueba').innerText='Suscripción activa - $99 / mes';}
-  else if(dias>0){document.getElementById('diasPrueba').innerText='Te quedan '+dias+' días gratis, después $99 / mes';}
-  else{document.getElementById('diasPrueba').innerText='Tu prueba terminó - Activa tu suscripción $99 / mes';}
-}
-async function registrar(){
-  const p1=document.getElementById('pass1').value;const p2=document.getElementById('pass2').value;
-  if(p1!==p2){alert('Las contraseñas no coinciden');return}
-  const emp=document.getElementById('empresa').value||'Industria Suárez';const correo=document.getElementById('regCorreo').value;
-  if(!correo){alert('Pon tu correo para enviarte la bienvenida');return}
-  const {data,error}=await supabaseClient.from('empresas').insert([{nombre_empresa:emp,correo:correo,pass:p1,estado:'prueba'}]).select().single();
-  if(error){alert('No se pudo activar: '+error.message);return}
-  empresaActual=data;adminCuenta=data;sesionActiva=true;
-  document.getElementById('nombreEmpresa2').innerText=emp;mostrarPrueba();aplicarLogo();
-  await enviarCorreoAutomatico('bienvenida',correo,emp);
-  alert('¡Felicidades! 🎉\n\nTu suscripción quedó ACTIVADA.\n\nTienes 7 DÍAS GRATIS. Después $99 al mes.\n\n✅ Te mandamos correo de bienvenida en tiempo real a '+correo+' desde '+CORREO_SOPORTE);
-  show('p-admin-menu');
-}
-async function iniciarSesion(){
-  const correo=document.getElementById('loginCorreo').value;const pass=document.getElementById('loginPass').value;
-  if(!correo||!pass){alert('Pon tu correo y tu contraseña');return}
-  const {data,error}=await supabaseClient.from('empresas').select('*').eq('correo',correo).eq('pass',pass).single();
-  if(error||!data){alert('Correo o contraseña incorrectos.');return}
-  const fin=new Date(data.fin_prueba);const hoy=new Date();
-  if(data.estado==='bloqueado'||(data.estado==='prueba'&&fin<hoy)){empresaActual=data;alert('Se acabaron tus 7 días gratis.\n\nActiva tu suscripción de $99 / mes.');show('p-suscripcion');return;}
-  empresaActual=data;adminCuenta=data;sesionActiva=true;document.getElementById('nombreEmpresa2').innerText=data.nombre_empresa;mostrarPrueba();aplicarLogo();await cargarUsuarios();show('p-admin-menu');
-}
-function activarSuscripcionGoogle(){alert('Aquí Google Play va a abrir su ventana de pago.\n\nSuscripción: $99 / mes\n\nPor mientras, escríbenos a '+CORREO_SOPORTE+' para activar tu suscripción manual.');}
-async function enviarRecuperacion(){
-  const correo=document.getElementById('correoOlvido').value;if(!correo){alert('Pon tu correo');return;}
-  const {data}=await supabaseClient.from('empresas').select('*').eq('correo',correo).single();
-  if(!data){alert('Ese correo no está dado de alta.');return;}
-  await enviarCorreoAutomatico('recuperar',correo,data.nombre_empresa);
-  const msg=document.getElementById('msgOlvido');msg.classList.remove('hidden');
-  msg.innerHTML='✅ ¡Listo! Se envió correo en tiempo real a <b>'+correo+'</b> desde <b>'+CORREO_SOPORTE+'</b>.<br><br>2 opciones:<br><b>1. Recuperar contraseña</b><br><b>2. Crear contraseña nueva y Actualizar</b>';
-  alert('Se envió correo a '+correo+' desde '+CORREO_SOPORTE+'\n\n1. Recuperar contraseña\n2. Crear contraseña nueva y Actualizar');
-  document.getElementById('nuevoPassCorreo').value=correo;show('p-nueva-pass');
-}
-async function actualizarPass(){
-  const correo=document.getElementById('nuevoPassCorreo').value;const n1=document.getElementById('nuevoPass1').value;const n2=document.getElementById('nuevoPass2').value;
-  if(n1!==n2){alert('Las contraseñas no coinciden');return;}
-  if(n1.length<4){alert('Mínimo 4 caracteres');return;}
-  const {error}=await supabaseClient.from('empresas').update({pass:n1}).eq('correo',correo);
-  if(error){alert('No se pudo actualizar: '+error.message);return;}
-  alert('¡Listo! Tu contraseña nueva ya quedó actualizada.');show('p2-admin');
-}
-async function cargarUsuarios(){
-  if(!empresaActual) return;
-  const {data}=await supabaseClient.from('usuarios').select('*').eq('empresa_correo',empresaActual.correo);
-  usuarios=data||[];renderUsuarios();
-}
+function borrarDatosGuardados(){localStorage.removeItem('wms_op_login');localStorage.removeItem('wms_admin_login');document.getElementById('opEmpresa').value='';document.getElementById('opUsuario').value='';document.getElementById('opPass').value='';alert('Listo, Lulú. Ya borré los datos guardados.')}
+function mostrarPrueba(){if(!empresaActual)return;document.getElementById('estadoEmpresa').innerText=empresaActual.estado||'prueba';const fin=new Date(empresaActual.fin_prueba);const dias=Math.ceil((fin-new Date())/(1000*60*60*24));document.getElementById('diasPrueba').innerText=empresaActual.estado==='activo'?'Suscripción activa - $99 / mes':dias>0?'Te quedan '+dias+' días gratis, después $99 / mes':'Tu prueba terminó';}
+async function registrar(){const p1=document.getElementById('pass1').value,p2=document.getElementById('pass2').value;if(p1!==p2){alert('Las contraseñas no coinciden');return}const emp=document.getElementById('empresa').value||'Industria Suárez',correo=document.getElementById('regCorreo').value;if(!correo){alert('Pon tu correo');return}const {data,error}=await supabaseClient.from('empresas').insert([{nombre_empresa:emp,correo:correo,pass:p1,estado:'prueba'}]).select().single();if(error){alert('No se pudo activar: '+error.message);return}empresaActual=data;sesionActiva=true;document.getElementById('nombreEmpresa2').innerText=emp;mostrarPrueba();aplicarLogo();alert('¡Felicidades! Tu suscripción quedó ACTIVADA. Tienes 7 DÍAS GRATIS. Después $99 al mes.');show('p-admin-menu')}
+async function iniciarSesion(){const correo=document.getElementById('loginCorreo').value,pass=document.getElementById('loginPass').value;if(!correo||!pass){alert('Pon tu correo y tu contraseña');return}const {data,error}=await supabaseClient.from('empresas').select('*').eq('correo',correo).eq('pass',pass).single();if(error||!data){alert('Correo o contraseña incorrectos.');return}const fin=new Date(data.fin_prueba);if(data.estado==='bloqueado'||(data.estado==='prueba'&&fin<new Date())){empresaActual=data;alert('Se acabaron tus 7 días gratis. Activa tu suscripción de $99 / mes.');show('p-suscripcion');return}if(document.getElementById('adminGuardar').checked){localStorage.setItem('wms_admin_login',JSON.stringify({correo:correo,pass:pass}))}else{localStorage.removeItem('wms_admin_login')}empresaActual=data;sesionActiva=true;document.getElementById('nombreEmpresa2').innerText=data.nombre_empresa;mostrarPrueba();aplicarLogo();await cargarUsuarios();show('p-admin-menu')}
+function activarSuscripcionGoogle(){alert('Aquí Google Play va a abrir su ventana de pago. Suscripción: $99 / mes. Escríbenos a '+CORREO_SOPORTE)}
+async function enviarRecuperacion(){const correo=document.getElementById('correoOlvido').value;if(!correo){alert('Pon tu correo');return}const {data}=await supabaseClient.from('empresas').select('*').eq('correo',correo).single();if(!data){alert('Ese correo no está dado de alta.');return}try{await supabaseClient.auth.resetPasswordForEmail(correo,{redirectTo:window.location.origin+window.location.pathname+'#nueva-pass'})}catch(e){}const m=document.getElementById('msgOlvido');m.classList.remove('hidden');m.innerHTML='✅ ¡Listo! Se envió correo a <b>'+correo+'</b> desde <b>'+CORREO_SOPORTE+'</b>.<br>1. Recuperar contraseña<br>2. Crear contraseña nueva y Actualizar';document.getElementById('nuevoPassCorreo').value=correo;show('p-nueva-pass')}
+async function actualizarPass(){const correo=document.getElementById('nuevoPassCorreo').value,n1=document.getElementById('nuevoPass1').value,n2=document.getElementById('nuevoPass2').value;if(n1!==n2){alert('Las contraseñas no coinciden');return}if(n1.length<4){alert('Mínimo 4 caracteres');return}const {error}=await supabaseClient.from('empresas').update({pass:n1}).eq('correo',correo);if(error){alert('No se pudo: '+error.message);return}alert('¡Listo! Tu contraseña nueva ya quedó.');show('p2-admin')}
+async function cargarUsuarios(){if(!empresaActual)return;const {data}=await supabaseClient.from('usuarios').select('*').eq('empresa_correo',empresaActual.correo);usuarios=data||[];renderUsuarios()}
 async function loginOperador(){
-  const emp=document.getElementById('opEmpresa').value;const usu=document.getElementById('opUsuario').value;const pass=document.getElementById('opPass').value;
+  const emp=document.getElementById('opEmpresa').value,usu=document.getElementById('opUsuario').value,pass=document.getElementById('opPass').value;
   if(!emp||!usu||!pass){alert('Llena empresa, usuario y contraseña');return}
   const {data}=await supabaseClient.from('usuarios').select('*').eq('usuario',usu).eq('pass',pass).single();
-  if(!data){alert('Usuario o contraseña incorrectos. Pídele a tu Admin que te dé de alta.');return}
+  if(!data){alert('Usuario o contraseña incorrectos.');return}
+  // GUARDAR EMPRESA + USUARIO + CONTRASEÑA
+  if(document.getElementById('opGuardar').checked){localStorage.setItem('wms_op_login',JSON.stringify({empresa:emp,usuario:usu,pass:pass}))}else{localStorage.removeItem('wms_op_login')}
   operadorActual=data;document.getElementById('nombreEmpresa').innerText=data.nombre||usu;sesionActiva=true;aplicarLogo();show('p4');
 }
-async function guardarEmpleado(){
-  const nombre=document.getElementById('empNombre').value;const usuario=document.getElementById('empUsuario').value;const pass=document.getElementById('empPass').value;const rol=document.getElementById('empRol').value;const tel=document.getElementById('empTel').value;
-  if(!nombre||!usuario||!pass){alert('Falta nombre, usuario y contraseña');return}
-  const {error}=await supabaseClient.from('usuarios').insert([{empresa_correo:empresaActual.correo,nombre:nombre,usuario:usuario,pass:pass,rol:rol,telefono:tel}]);
-  if(error){alert('No se pudo guardar: '+error.message);return}
-  ['empNombre','empUsuario','empPass','empRol','empTel'].forEach(i=>document.getElementById(i).value='');
-  await cargarUsuarios();show('p-consulta-usuarios');
-}
-function renderUsuarios(){
-  const lista=document.getElementById('listaUsuarios');document.getElementById('totalUsuarios').innerText=usuarios.length;document.getElementById('sinUsuarios').style.display=usuarios.length?'none':'block';lista.innerHTML='';
-  usuarios.forEach((u)=>{lista.innerHTML+=`<div class="usuario-card"><div><b>${u.nombre}</b><span>Usuario: ${u.usuario}</span><span>Contraseña: ${u.pass}</span><span>Rol: ${u.rol||'Sin rol'} ${u.telefono?'• Tel: '+u.telefono:''}</span></div><button class="btn-trash" onclick="eliminarUsuario('${u.id}','${u.nombre}')">🗑️</button></div>`});
-}
-async function eliminarUsuario(id,nombre){if(!confirm('¿Seguro que quieres eliminar a '+nombre+'?'))return;await supabaseClient.from('usuarios').delete().eq('id',id);await cargarUsuarios();}
-
-// ===== CHECKLIST LIMPIO =====
-function abrirChecklist(tipo){
-  tipoChecklistActual=tipo;
-  const titulos={camiones:'🚚 Checklist Camión',montacargas:'🏗️ Checklist Montacargas - 29 puntos',bitacora:'🗺️ Bitácora de Ruta'};
-  document.getElementById('tituloChecklist').innerText=titulos[tipo];
-  document.getElementById('dFecha').value=hoyISO();
-  document.getElementById('dOperador').value=operadorActual?operadorActual.nombre:'';
-  document.getElementById('dUnidad').value='';document.getElementById('dHorometro').value='';document.getElementById('dClase').value=tipo==='montacargas'?'Montacargas':tipo==='camiones'?'Camión':'Ruta';
-  document.getElementById('comentarioFinal').value='';
-  document.getElementById('previewFotos').innerHTML='';
-  document.getElementById('fotosFinales').value='';
-  fotosFinalesArr=[];
-  const cont=document.getElementById('itemsChecklist');cont.innerHTML='';
-  puntosDe(tipo).forEach((item,i)=>{
-    cont.innerHTML+=`<div class="fila-check"><b>${i+1}. ${item}</b>
-    <label class="check-mini"><input type="radio" name="chk${i}" value="BUEN ESTADO" checked></label>
-    <label class="check-mini mal"><input type="radio" name="chk${i}" value="MAL ESTADO"></label></div>`;
-  });
-  show('p-checklist');
-}
-document.getElementById('fotosFinales').addEventListener('change',function(e){
-  const files=Array.from(e.target.files||[]);
-  const preview=document.getElementById('previewFotos');preview.innerHTML='';fotosFinalesArr=[];
-  files.slice(0,8).forEach((f,idx)=>{
-    const r=new FileReader();
-    r.onload=()=>{fotosFinalesArr.push(r.result);const img=document.createElement('img');img.src=r.result;img.className='preview-foto';preview.appendChild(img);};
-    r.readAsDataURL(f);
-  });
-});
-function getLibro(){ try{return JSON.parse(localStorage.getItem('wms_libro')||'{}');}catch(e){return {}} }
-function setLibro(d){ localStorage.setItem('wms_libro',JSON.stringify(d)); }
-
+async function guardarEmpleado(){const nombre=document.getElementById('empNombre').value,usuario=document.getElementById('empUsuario').value,pass=document.getElementById('empPass').value,rol=document.getElementById('empRol').value,tel=document.getElementById('empTel').value;if(!nombre||!usuario||!pass){alert('Falta nombre, usuario y contraseña');return}const {error}=await supabaseClient.from('usuarios').insert([{empresa_correo:empresaActual.correo,nombre:nombre,usuario:usuario,pass:pass,rol:rol,telefono:tel}]);if(error){alert('No se pudo: '+error.message);return}['empNombre','empUsuario','empPass','empRol','empTel'].forEach(i=>document.getElementById(i).value='');await cargarUsuarios();show('p-consulta-usuarios')}
+function renderUsuarios(){const l=document.getElementById('listaUsuarios');document.getElementById('totalUsuarios').innerText=usuarios.length;document.getElementById('sinUsuarios').style.display=usuarios.length?'none':'block';l.innerHTML='';usuarios.forEach(u=>{l.innerHTML+=`<div class="usuario-card"><div><b>${u.nombre}</b><span>Usuario: ${u.usuario}</span><span>Contraseña: ${u.pass}</span><span>Rol: ${u.rol||'Sin rol'} ${u.telefono?'• Tel: '+u.telefono:''}</span></div><button class="btn-trash" onclick="eliminarUsuario('${u.id}','${u.nombre}')">🗑️</button></div>`})}
+async function eliminarUsuario(id,nombre){if(!confirm('¿Seguro que quieres eliminar a '+nombre+'?'))return;await supabaseClient.from('usuarios').delete().eq('id',id);await cargarUsuarios()}
+function actualizarTipo(){const t=document.getElementById('dTipo').value,esGas=t==='Gas';document.getElementById('boxCombustible').classList.toggle('hidden',!esGas);document.getElementById('boxBateria').classList.toggle('hidden',esGas);document.getElementById('dClase').value=esGas?'Montacargas Gas':'Montacargas Eléctrico'}
+function abrirChecklist(tipo){tipoChecklistActual=tipo;const tit={camiones:'🚚 Checklist Camión',montacargas:'🏗️ Checklist Montacargas - 29 puntos',bitacora:'🗺️ Bitácora de Ruta'};document.getElementById('tituloChecklist').innerText=tit[tipo];document.getElementById('dFecha').value=hoyISO();document.getElementById('dOperador').value=operadorActual?operadorActual.nombre:'';document.getElementById('dUnidad').value='';document.getElementById('dHorometro').value='';document.getElementById('dTipo').value='Gas';actualizarTipo();document.getElementById('dCombustible').value='';document.getElementById('dBateria').value='';document.getElementById('dCombustibleOtro').value='';document.getElementById('dBateriaOtro').value='';document.getElementById('comentarioFinal').value='';document.getElementById('previewFotos').innerHTML='';document.getElementById('fotosFinales').value='';fotosFinalesArr=[];const c=document.getElementById('itemsChecklist');c.innerHTML='';puntosDe(tipo).forEach((item,i)=>{c.innerHTML+=`<div class="fila-check"><b>${i+1}. ${item}</b><label class="check-mini"><input type="radio" name="chk${i}" value="BUEN ESTADO" checked></label><label class="check-mini mal"><input type="radio" name="chk${i}" value="MAL ESTADO"></label></div>`});show('p-checklist')}
+document.getElementById('fotosFinales').addEventListener('change',function(e){const files=Array.from(e.target.files||[]);const pv=document.getElementById('previewFotos');pv.innerHTML='';fotosFinalesArr=[];files.slice(0,8).forEach(f=>{const r=new FileReader();r.onload=()=>{fotosFinalesArr.push(r.result);const img=document.createElement('img');img.src=r.result;img.className='preview-foto';pv.appendChild(img)};r.readAsDataURL(f)})});
+function getLibro(){try{return JSON.parse(localStorage.getItem('wms_libro')||'{}')}catch(e){return{}}}
+function setLibro(d){localStorage.setItem('wms_libro',JSON.stringify(d))}
 async function guardarChecklist(){
-  const unidad=document.getElementById('dUnidad').value.trim();
-  if(!unidad){alert('Pon el Numero de unidad, Lulú. Esa es la CLAVE. Ej. 03');document.getElementById('dUnidad').focus();return;}
-  const fecha=document.getElementById('dFecha').value||hoyISO();
-  const mes=fecha.slice(0,7);
-  const datos={fecha:fecha,operador:document.getElementById('dOperador').value,turno:document.getElementById('dTurno').value,unidad:unidad,clase:document.getElementById('dClase').value,horometro:document.getElementById('dHorometro').value,combustible:document.getElementById('dCombustible').value,bateria:document.getElementById('dBateria').value,tipo:tipoChecklistActual,guardado:new Date().toISOString()};
-  const filas=puntosDe(tipoChecklistActual).map((item,i)=>{
-    const sel=document.querySelector(`input[name="chk${i}"]:checked`);
-    return {punto:item,estado:sel?sel.value:'',comentario:'',tieneFoto:'NO',ligaFoto:''};
-  });
-  datos.filas=filas;
-  datos.comentarioFinal=document.getElementById('comentarioFinal').value||'';
-  datos.fotosFinales=fotosFinalesArr.length+' fotos';
-  datos.ligasFotos=fotosFinalesArr.map((_,idx)=>'foto_'+unidad+'_'+fecha+'_'+(idx+1));
-  const libro=getLibro();
-  if(!libro[mes]) libro[mes]={};
-  if(!libro[mes][tipoChecklistActual]) libro[mes][tipoChecklistActual]={};
-  if(!libro[mes][tipoChecklistActual][unidad]) libro[mes][tipoChecklistActual][unidad]=[];
-  const idx=libro[mes][tipoChecklistActual][unidad].findIndex(d=>d.fecha===fecha);
-  if(idx>=0) libro[mes][tipoChecklistActual][unidad][idx]=datos;
-  else libro[mes][tipoChecklistActual][unidad].push(datos);
-  libro[mes][tipoChecklistActual][unidad].sort((a,b)=>a.fecha.localeCompare(b.fecha));
-  setLibro(libro);
-  try{ await supabaseClient.from('checklists').insert([{tipo:tipoChecklistActual,unidad:unidad,operador:datos.operador,resultados:filas.map(f=>f.punto+': '+f.estado).join(' || '),observaciones:'Turno:'+datos.turno+' Horometro:'+datos.horometro+' Combustible:'+datos.combustible+' Bateria:'+datos.bateria+' | GOLPES/FALLAS: '+datos.comentarioFinal+' | FOTOS: '+datos.fotosFinales,tiene_foto:fotosFinalesArr.length?'SI':'NO',fecha:new Date(fecha).toISOString()}]); }catch(e){}
-  alert('¡Guardado, Lulú! ✅\n\n'+tipoChecklistActual+' - Unidad '+unidad+'\nFecha: '+fecha+'\n\nSe fue solito a:\nLibro '+mes+' > Hoja Unidad '+unidad+'\n\nComentario: '+(datos.comentarioFinal||'Sin comentario')+'\nFotos: '+datos.fotosFinales);
-  show('p4');
+  const unidad=document.getElementById('dUnidad').value.trim();if(!unidad){alert('Pon el Numero de unidad, Lulú. Ej. 03');document.getElementById('dUnidad').focus();return}
+  const fecha=document.getElementById('dFecha').value||hoyISO(),mes=fecha.slice(0,7),tipoUnidad=document.getElementById('dTipo').value,esGas=tipoUnidad==='Gas';
+  const nivel=esGas?(document.getElementById('dCombustibleOtro').value||document.getElementById('dCombustible').value):(document.getElementById('dBateriaOtro').value||document.getElementById('dBateria').value);
+  const datos={fecha:fecha,operador:document.getElementById('dOperador').value,turno:document.getElementById('dTurno').value,unidad:unidad,clase:document.getElementById('dClase').value,tipoUnidad:tipoUnidad,horometro:document.getElementById('dHorometro').value,combustible:esGas?nivel:'',bateria:!esGas?nivel:'',tipo:tipoChecklistActual,guardado:new Date().toISOString()};
+  datos.filas=puntosDe(tipoChecklistActual).map((item,i)=>{const s=document.querySelector(`input[name="chk${i}"]:checked`);return{punto:item,estado:s?s.value:'',comentario:'',tieneFoto:'NO',ligaFoto:''}});
+  datos.comentarioFinal=document.getElementById('comentarioFinal').value||'';datos.fotosFinales=fotosFinalesArr.length+' fotos';datos.ligasFotos=fotosFinalesArr.map((_,idx)=>'foto_'+unidad+'_'+fecha+'_'+(idx+1));
+  const libro=getLibro();if(!libro[mes])libro[mes]={};if(!libro[mes][tipoChecklistActual])libro[mes][tipoChecklistActual]={};if(!libro[mes][tipoChecklistActual][unidad])libro[mes][tipoChecklistActual][unidad]=[];
+  const idx=libro[mes][tipoChecklistActual][unidad].findIndex(d=>d.fecha===fecha);if(idx>=0)libro[mes][tipoChecklistActual][unidad][idx]=datos;else libro[mes][tipoChecklistActual][unidad].push(datos);
+  libro[mes][tipoChecklistActual][unidad].sort((a,b)=>a.fecha.localeCompare(b.fecha));setLibro(libro);
+  try{await supabaseClient.from('checklists').insert([{tipo:tipoChecklistActual,unidad:unidad,operador:datos.operador,resultados:datos.filas.map(f=>f.punto+': '+f.estado).join(' || '),observaciones:'Tipo:'+tipoUnidad+' Turno:'+datos.turno+' Horometro:'+datos.horometro+' Combustible:'+datos.combustible+' Bateria:'+datos.bateria+' | GOLPES: '+datos.comentarioFinal+' | FOTOS: '+datos.fotosFinales,tiene_foto:fotosFinalesArr.length?'SI':'NO',fecha:new Date(fecha).toISOString()}])}catch(e){}
+  alert('¡Guardado, Lulú! ✅\nUnidad '+unidad+' ('+tipoUnidad+')\nFecha: '+fecha+'\nNivel: '+nivel);show('p4');
 }
-
-function renderLibro(tipo){
-  const mes=document.getElementById(tipo==='montacargas'?'mesMontacargas':'mesReporte').value||'2026-11';
-  const sel=document.getElementById('selUnidadMontacargas');
-  const libro=getLibro();
-  const hojas=(libro[mes]&&libro[mes][tipo])||{};
-  const unidades=Object.keys(hojas);
-  if(sel && sel.options.length<=1){
-    sel.innerHTML='<option value="">Todas las unidades</option>'+unidades.map(u=>`<option value="${u}">Unidad ${u}</option>`).join('');
-  }
-  const filtro=sel?sel.value:'';
-  const cont=document.getElementById('libroMontacargas');
-  if(!unidades.length){cont.innerHTML='<div class="card"><p>No hay registros en '+mes+' todavía. Cuando tus operadores guarden, aquí aparecen por unidad.</p></div>';return;}
-  let html='';
-  const letras=['A-G','H-N','O-U','V-AB','AC-AI'];
-  unidades.filter(u=>!filtro||u===filtro).forEach(unidad=>{
-    const dias=hojas[unidad];
-    html+=`<div class="card"><b>📄 Hoja Unidad ${unidad}</b> <span class="badge">${dias.length} día(s) en ${mes}</span><p style="font-size:12px;opacity:.8;margin-top:6px">Replica hacia un lado: ${dias.map((d,i)=>letras[i]||'Bloque '+(i+1)+' = '+d.fecha).join(' • ')}</p></div>`;
-    html+='<div class="libro-wrap"><table><tr><th>A - Datos / B - Punto</th>'+dias.map(d=>`<th>${d.fecha}<br>${d.operador}<br>Turno ${d.turno}<br>Horom ${d.horometro}<br>Comb ${d.combustible} / Bat ${d.bateria}<br><small>${d.comentarioFinal||''}<br>Fotos: ${d.fotosFinales||'0 fotos'}</small></th>`).join('')+'</tr>';
-    puntosDe(tipo).forEach((punto,pi)=>{
-      html+=`<tr><td>${pi+1}. ${punto}</td>`+dias.map(d=>{const f=d.filas[pi]||{};return `<td>${f.estado==='MAL ESTADO'?'❌ MAL':'✅ BUEN'}</td>`}).join('')+'</tr>';
-    });
-    html+='</table></div>';
-  });
-  cont.innerHTML=html;
-}
-function verReporteMes(){
-  const mes=document.getElementById('mesReporte').value;
-  const libro=getLibro();const hojas=(libro[mes]&&libro[mes]['montacargas'])||{};
-  const cont=document.getElementById('contenidoReporte');
-  const unidades=Object.keys(hojas);
-  if(!unidades.length){cont.innerHTML='<div class="card"><p>No hay registros en '+mes+' todavía.</p></div>';return;}
-  cont.innerHTML=unidades.map(u=>`<div class="card"><b>Unidad ${u}</b> - ${hojas[u].length} día(s)<br><span style="font-size:12px">${hojas[u].map(d=>d.fecha+' ('+d.operador+')').join(' • ')}</span></div>`).join('');
-}
-function descargarMes(tipo){
-  const mes=document.getElementById('mesMontacargas').value||'2026-11';
-  exportarCSVPorMes(mes,tipo);
-}
-function exportarCSVPorMes(mes,tipo){
-  const libro=getLibro();const hojas=(libro[mes]&&libro[mes][tipo])||{};
-  const unidades=Object.keys(hojas);
-  if(!unidades.length){alert('Aún no hay datos en '+mes+' para descargar');return;}
-  let csv='Libro '+mes+' - '+tipo+'\n';
-  unidades.forEach(u=>{
-    const dias=hojas[u];
-    csv+='\nHoja Unidad '+u+'\nA - Datos / B - Punto,'+dias.map(d=>d.fecha+' - '+d.operador+' - Turno '+d.turno+' - Horometro '+d.horometro+' - Combustible '+d.combustible+' - Bateria '+d.bateria+' - GOLPES/FALLAS: '+(d.comentarioFinal||'')+' - FOTOS: '+(d.fotosFinales||'')).join(',')+'\n';
-    puntosDe(tipo).forEach((punto,pi)=>{
-      csv+='"'+(pi+1)+'. '+punto.replace(/"/g,'')+'",'+dias.map(d=>{const f=d.filas[pi]||{};return '"'+(f.estado||'')+'"'}).join(',')+'\n';
-    });
-  });
-  const blob=new Blob([csv],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='wms_libro_'+mes+'_'+tipo+'_por_unidad.csv';a.click();
-  alert('¡Listo! Se descargó todo el mes '+mes+', Lulú.\n\nPor unidad, con réplica hacia un lado.');
-}
-function exportarCSV(){
-  const mes=document.getElementById('mesReporte').value||'2026-11';
-  exportarCSVPorMes(mes,'montacargas');
-}
-if(window.location.hash==='#nueva-pass'){show('p-nueva-pass');}
-aplicarLogo();
+function renderLibro(tipo){const mes=document.getElementById(tipo==='montacargas'?'mesMontacargas':'mesReporte').value||'2026-11',sel=document.getElementById('selUnidadMontacargas'),libro=getLibro(),hojas=(libro[mes]&&libro[mes][tipo])||{},unidades=Object.keys(hojas);if(sel&&sel.options.length<=1){sel.innerHTML='<option value="">Todas las unidades</option>'+unidades.map(u=>`<option value="${u}">Unidad ${u}</option>`).join('')}const filtro=sel?sel.value:'',cont=document.getElementById('libroMontacargas');if(!unidades.length){cont.innerHTML='<div class="card"><p>No hay registros en '+mes+' todavía.</p></div>';return}let html='';const letras=['A-G','H-N','O-U','V-AB','AC-AI'];unidades.filter(u=>!filtro||u===filtro).forEach(unidad=>{const dias=hojas[unidad];html+=`<div class="card"><b>📄 Hoja Unidad ${unidad}</b> <span class="badge">${dias.length} día(s) en ${mes}</span><p style="font-size:12px;opacity:.8;margin-top:6px">Replica hacia un lado: ${dias.map((d,i)=>letras[i]||'Bloque '+(i+1)+' = '+d.fecha).join(' • ')}</p></div>`;html+='<div class="libro-wrap"><table><tr><th>A - Datos / B - Punto</th>'+dias.map(d=>`<th>${d.fecha}<br>${d.operador}<br>${d.tipoUnidad||''} - Turno ${d.turno}<br>Horom ${d.horometro}<br>${d.tipoUnidad==='Electrico'?'Bat '+d.bateria:'Comb '+d.combustible}<br><small>${d.comentarioFinal||''}<br>Fotos: ${d.fotosFinales||'0 fotos'}</small></th>`).join('')+'</tr>';puntosDe(tipo).forEach((punto,pi)=>{html+=`<tr><td>${pi+1}. ${punto}</td>`+dias.map(d=>{const f=d.filas[pi]||{};return `<td>${f.estado==='MAL ESTADO'?'❌ MAL':'✅ BUEN'}</td>`}).join('')+'</tr>')});html+='</table></div>'});cont.innerHTML=html}
+function verReporteMes(){const mes=document.getElementById('mesReporte').value,libro=getLibro(),hojas=(libro[mes]&&libro[mes]['montacargas'])||{},cont=document.getElementById('contenidoReporte'),unidades=Object.keys(hojas);if(!unidades.length){cont.innerHTML='<div class="card"><p>No hay registros en '+mes+' todavía.</p></div>';return}cont.innerHTML=unidades.map(u=>`<div class="card"><b>Unidad ${u}</b> - ${hojas[u].length} día(s)<br><span style="font-size:12px">${hojas[u].map(d=>d.fecha+' ('+d.operador+')').join(' • ')}</span></div>`).join('')}
+function descargarMes(tipo){const mes=document.getElementById('mesMontacargas').value||'2026-11';exportarCSVPorMes(mes,tipo)}
+function exportarCSVPorMes(mes,tipo){const libro=getLibro(),hojas=(libro[mes]&&libro[mes][tipo])||{},unidades=Object.keys(hojas);if(!unidades.length){alert('Aún no hay datos en '+mes);return}let csv='Libro '+mes+' - '+tipo+'\n';unidades.forEach(u=>{const dias=hojas[u];csv+='\nHoja Unidad '+u+'\nA - Datos / B - Punto,'+dias.map(d=>d.fecha+' - '+d.operador+' - Tipo '+(d.tipoUnidad||'')+' - Turno '+d.turno+' - Horometro '+d.horometro+' - Combustible '+d.combustible+' - Bateria '+d.bateria+' - GOLPES: '+(d.comentarioFinal||'')+' - FOTOS: '+(d.fotosFinales||'')).join(',')+'\n';puntosDe(tipo).forEach((punto,pi)=>{csv+='"'+(pi+1)+'. '+punto.replace(/"/g,'')+'",'+dias.map(d=>{const f=d.filas[pi]||{};return '"'+(f.estado||'')+'"'}).join(',')+'\n'})});const blob=new Blob([csv],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='wms_libro_'+mes+'_'+tipo+'_por_unidad.csv';a.click();alert('¡Listo! Se descargó todo el mes '+mes+', Lulú.')}
+function exportarCSV(){const mes=document.getElementById('mesReporte').value||'2026-11';exportarCSVPorMes(mes,'montacargas')}
+if(window.location.hash==='#nueva-pass'){show('p-nueva-pass')}
+cargarDatosGuardados();aplicarLogo();
 </script>
 </body>
 </html>
