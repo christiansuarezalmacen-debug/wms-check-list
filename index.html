@@ -41,6 +41,8 @@ select option{color:#000;background:#fff}label{font-size:13px;opacity:.85;displa
 .fila-check{display:grid;grid-template-columns:1fr 78px 78px;gap:8px;align-items:center;background:#132A4D;border-bottom:1px solid #1E3A5F;padding:14px 8px;min-height:64px}.fila-check b{font-size:14px;line-height:1.35}
 .check-mini{display:flex;justify-content:center}.check-mini input{width:32px;height:32px;margin:0;accent-color:#22C55E;cursor:pointer}.check-mini.mal input{accent-color:#EF4444}.check-mini input:checked{outline:3px solid #22C55E;outline-offset:2px}.check-mini.mal input:checked{outline:3px solid #EF4444}
 .preview-foto{width:80px;height:80px;object-fit:cover;border-radius:10px;border:2px solid #CBD5E1}
+.foto-item{position:relative;display:inline-block}.btn-borrar-foto{position:absolute;top:-8px;right:-8px;width:26px;height:26px;border-radius:50%;background:#EF4444;color:#fff;border:2px solid #fff;font-size:13px;font-weight:900;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center}
+.btn-foto-mini{padding:11px 10px;font-size:13px;border-radius:12px;font-weight:800;cursor:pointer;border:none}
 </style>
 </head>
 <body>
@@ -162,7 +164,6 @@ select option{color:#000;background:#fff}label{font-size:13px;opacity:.85;displa
 <div id="contenidoReporte"></div><button class="btn btn-outline" onclick="show('p-admin-menu')">Regresar</button>
 </div>
 
-<!-- MENU OPERADOR - CON TUS FOTOS -->
 <div class="container hidden" id="p4" style="background:#0A1E3C">
 <div class="top"><img id="logoOperador" class="logo-cliente-small" src="./icon-512.png"><span>🔔</span></div>
 <div class="saludo"><h2>Hola, <span id="nombreEmpresa">Operador</span></h2><p>¿Qué vas a revisar hoy?</p></div>
@@ -173,7 +174,6 @@ select option{color:#000;background:#fff}label{font-size:13px;opacity:.85;displa
 </div><button class="btn btn-outline" onclick="cerrarSesion()" style="margin-top:20px">Cerrar Sesión</button>
 </div>
 
-<!-- CHECKLIST -->
 <div class="container hidden" id="p-checklist" style="background:#0A1E3C;max-width:720px">
 <div class="top"><span onclick="show('p4')" style="cursor:pointer">←</span><b id="tituloChecklist">Checklist</b><span></span></div>
 <div class="card" style="background:#fff;color:#000">
@@ -185,34 +185,40 @@ select option{color:#000;background:#fff}label{font-size:13px;opacity:.85;displa
 <div><label style="color:#000">Numero de unidad:</label><input id="dUnidad" placeholder="Ej. 03" style="background:#FFF7ED;color:#000;border:2px solid #EA580C;font-weight:800"></div>
 <div><label style="color:#000">Tipo:</label><select id="dTipo" onchange="actualizarTipo()" style="background:#fff;color:#000;border:1px solid #CBD5E1"><option value="Gas">Gas</option><option value="Electrico">Eléctrico</option></select></div>
 <div><label style="color:#000">Horometro:</label><input id="dHorometro" placeholder="Ej. 12345" style="background:#fff;color:#000;border:1px solid #CBD5E1"></div>
-<!-- NIVEL - MENU DESPLEGABLE DE A DE VERAS, SIN OTRO, SIN AUTOCOMPLETAR -->
+<!-- GAS = MENU DESPLEGABLE / ELECTRICO = ESCRIBIR A MANO -->
 <div id="boxCombustible"><label style="color:#000">Nivel de Combustible:</label><select id="dCombustible" style="background:#fff;color:#000;border:1px solid #CBD5E1"><option value="">Selecciona...</option><option>Vacio</option><option>1/8</option><option>1/4</option><option>3/8</option><option>1/2</option><option>5/8</option><option>3/4</option><option>7/8</option><option>Lleno</option></select></div>
-<div id="boxBateria" class="hidden"><label style="color:#000">Nivel de Bateria:</label><select id="dBateria" style="background:#fff;color:#000;border:1px solid #CBD5E1"><option value="">Selecciona...</option><option>Vacio</option><option>1/8</option><option>1/4</option><option>3/8</option><option>1/2</option><option>5/8</option><option>3/4</option><option>7/8</option><option>Lleno</option></select></div>
+<div id="boxBateria" class="hidden"><label style="color:#000">Nivel de Bateria:</label><input id="dBateria" placeholder="Escribe... Ej. 85%" style="background:#fff;color:#000;border:1px solid #CBD5E1"></div>
 </div>
 <input type="hidden" id="dClase" value="Montacargas">
 </div>
 <div class="checklist-scroll"><div class="tabla-head"><span style="text-align:left">PUNTOS A REVISION</span><span>BUEN ESTADO</span><span>MAL ESTADO</span></div><div id="itemsChecklist"></div></div>
 <div class="card" style="background:#fff;color:#000;margin-top:16px"><b style="font-size:15px">📝 Explica Golpes en Carrocería / Fallas</b><textarea id="comentarioFinal" placeholder="Ej. Golpe en puerta izquierda..." style="width:100%;min-height:90px;padding:12px;border-radius:12px;border:1px solid #CBD5E1;background:#fff;color:#000;font-size:14px"></textarea>
-<label style="color:#000;margin-top:14px">📷 Fotos en HD - Bien bonitas</label>
-<button type="button" class="btn btn-blue" style="padding:14px;margin-bottom:8px" onclick="abrirCamaraHD()">📷 ABRIR CÁMARA HD</button>
-<button type="button" class="btn btn-outline" style="padding:12px;color:#000;border-color:#CBD5E1" onclick="document.getElementById('fotosFinales').click()">🖼️ O elegir de galería</button>
+<label style="color:#000;margin-top:14px">Fotos</label>
+<!-- BOTONES CHIQUITOS - MAS PRO -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+<button type="button" class="btn-foto-mini" style="background:#2563EB;color:#fff" onclick="abrirCamaraHD()">📷 Capturar Foto</button>
+<button type="button" class="btn-foto-mini" style="background:#fff;color:#000;border:1px solid #CBD5E1" onclick="document.getElementById('fotosFinales').click()">📁 Galería</button>
+</div>
 <input type="file" id="fotosFinales" accept="image/*" multiple style="display:none">
-<div id="previewFotos" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"></div></div>
+<div id="previewFotos" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px"></div>
+<p style="font-size:11px;color:#64748B;margin-top:6px">Si repetiste una foto, pícale a la ❌ para borrarla.</p></div>
 <button class="btn btn-yellow" onclick="guardarChecklist()" style="margin-top:16px">💾 GUARDAR TODO EL CHECKLIST</button>
 <button class="btn btn-outline" onclick="show('p4')">Regresar</button>
 </div>
 
-<!-- CAMARA HD - BOTONES SIEMPRE VISIBLES - ARREGLADA -->
+<!-- CAMARA HD - MAS PRO, BOTON CHIQUITO -->
 <div id="camaraModal" style="position:fixed;top:0;left:0;width:100%;height:100dvh;background:#000;z-index:9999;display:none;flex-direction:column">
-<div style="padding:12px;background:#0A1E3C;display:flex;justify-content:space-between;align-items:center;flex-shrink:0"><b>📷 Cámara HD</b><span style="font-size:12px;opacity:.8">1080p • Android</span></div>
+<div style="padding:12px 14px;background:#0A1E3C;display:flex;justify-content:space-between;align-items:center;flex-shrink:0"><b style="font-size:14px">📷 Cámara</b><span style="font-size:11px;opacity:.7">HD</span></div>
 <div style="flex:1;min-height:0;position:relative;overflow:hidden;background:#000">
 <video id="videoHD" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover;display:block"></video>
-<button onclick="tomarFotoHD()" style="position:absolute;bottom:16px;left:50%;transform:translateX(-50%);width:78px;height:78px;border-radius:50%;background:#FBBF24;border:4px solid #fff;font-size:32px;cursor:pointer;z-index:10">📸</button>
+<button onclick="tomarFotoHD()" style="position:absolute;bottom:18px;left:50%;transform:translateX(-50%);width:62px;height:62px;border-radius:50%;background:#fff;border:3px solid #FBBF24;cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center"><span style="width:44px;height:44px;border-radius:50%;background:#FBBF24;display:block"></span></button>
 </div>
-<div style="padding:12px;background:#0A1E3C;display:grid;gap:10px;flex-shrink:0;padding-bottom:calc(12px + env(safe-area-inset-bottom))">
-<div style="text-align:center;color:#fff;font-size:12px">Apunta bien, Lulú. Pícale al botón amarillo.</div>
-<button class="btn btn-yellow" style="margin:0;padding:16px" onclick="tomarFotoHD()">📸 TOMAR FOTO HD</button>
-<button class="btn btn-outline" style="margin:0;padding:14px" onclick="cerrarCamaraHD()">✖ Cerrar cámara</button>
+<div style="padding:10px 12px;background:#0A1E3C;display:grid;gap:8px;flex-shrink:0;padding-bottom:calc(10px + env(safe-area-inset-bottom))">
+<div style="text-align:center;color:#fff;font-size:12px;opacity:.85">Encuadra bien • Que se vea clarito</div>
+<div style="display:grid;grid-template-columns:1fr auto;gap:8px">
+<button class="btn btn-yellow" style="margin:0;padding:11px;font-size:13px" onclick="tomarFotoHD()">Capturar</button>
+<button class="btn btn-outline" style="margin:0;padding:11px 16px;font-size:13px" onclick="cerrarCamaraHD()">✖ Cerrar</button>
+</div>
 </div>
 </div>
 
@@ -249,7 +255,9 @@ function aplicarLogo(){try{document.getElementById('logoAdmin').src=logoEmpresaU
 function subirLogo(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(){logoEmpresaURL=r.result;try{localStorage.setItem('wms_logo',logoEmpresaURL)}catch(err){}aplicarLogo();alert('¡Listo Lulú! Ya quedó tu logo.')};r.readAsDataURL(f);}
 async function abrirCamaraHD(){var m=document.getElementById('camaraModal');m.style.display='flex';try{if(streamHD){streamHD.getTracks().forEach(function(t){t.stop()});}streamHD=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:1920,min:1280},height:{ideal:1080,min:720}}});var v=document.getElementById('videoHD');v.srcObject=streamHD;await v.play();}catch(e){alert('No se pudo abrir la cámara HD, Lulú. Revisa el permiso de cámara.\n'+e.message);document.getElementById('fotosFinales').click();}}
 function cerrarCamaraHD(){try{if(streamHD)streamHD.getTracks().forEach(function(t){t.stop()});}catch(e){}document.getElementById('camaraModal').style.display='none';}
-function tomarFotoHD(){try{var v=document.getElementById('videoHD');if(!v.videoWidth){alert('Espera que cargue la cámara, Lulú.');return;}var c=document.createElement('canvas');c.width=v.videoWidth;c.height=v.videoHeight;var ctx=c.getContext('2d');ctx.drawImage(v,0,0,c.width,c.height);var data=c.toDataURL('image/jpeg',0.92);if(fotosFinalesArr.length>=8){alert('Ya tienes 8 fotos, Lulú.');return;}fotosFinalesArr.push(data);var img=document.createElement('img');img.src=data;img.className='preview-foto';document.getElementById('previewFotos').appendChild(img);alert('¡Foto HD lista, Lulú! Ya llevas '+fotosFinalesArr.length+' foto(s).');}catch(e){alert('No se pudo tomar la foto: '+e.message);}}
+// FOTOS CON BOTON ❌ PARA BORRAR
+function renderFotos(){var pv=document.getElementById('previewFotos');pv.innerHTML='';fotosFinalesArr.forEach(function(data,idx){var wrap=document.createElement('div');wrap.className='foto-item';var img=document.createElement('img');img.src=data;img.className='preview-foto';var btn=document.createElement('button');btn.className='btn-borrar-foto';btn.innerHTML='×';btn.type='button';btn.onclick=function(){fotosFinalesArr.splice(idx,1);renderFotos();};wrap.appendChild(img);wrap.appendChild(btn);pv.appendChild(wrap);});}
+function tomarFotoHD(){try{var v=document.getElementById('videoHD');if(!v.videoWidth){alert('Espera que cargue la cámara, Lulú.');return;}var c=document.createElement('canvas');c.width=v.videoWidth;c.height=v.videoHeight;var ctx=c.getContext('2d');ctx.drawImage(v,0,0,c.width,c.height);var data=c.toDataURL('image/jpeg',0.92);if(fotosFinalesArr.length>=8){alert('Ya tienes 8 fotos, Lulú.');return;}fotosFinalesArr.push(data);renderFotos();}catch(e){alert('No se pudo tomar la foto: '+e.message);}}
 function cargarDatosGuardados(){try{var op=JSON.parse(localStorage.getItem('wms_op_login')||'null');if(op){document.getElementById('opEmpresa').value=op.empresa||'';document.getElementById('opUsuario').value=op.usuario||'';document.getElementById('opPass').value=op.pass||'';}}catch(e){}try{var ad=JSON.parse(localStorage.getItem('wms_admin_login')||'null');if(ad){document.getElementById('loginCorreo').value=ad.correo||'';document.getElementById('loginPass').value=ad.pass||'';}}catch(e){}}
 function mostrarPrueba(){if(!empresaActual)return;try{document.getElementById('estadoEmpresa').innerText=empresaActual.estado||'prueba';var fin=new Date(empresaActual.fin_prueba);var dias=Math.ceil((fin-new Date())/(1000*60*60*24));document.getElementById('diasPrueba').innerText=empresaActual.estado==='activo'?'Suscripción activa - $99 / mes':dias>0?'Te quedan '+dias+' días gratis, después $99 / mes':'Tu prueba terminó';}catch(e){}}
 async function registrar(){var p1=document.getElementById('pass1').value,p2=document.getElementById('pass2').value;if(p1!==p2){alert('Las contraseñas no coinciden');return}var emp=document.getElementById('empresa').value||'Industria Suárez',correo=document.getElementById('regCorreo').value;if(!correo){alert('Pon tu correo');return}if(!supabaseClient){alert('Sin internet, Lulú.');return}var res=await supabaseClient.from('empresas').insert([{nombre_empresa:emp,correo:correo,pass:p1,estado:'prueba'}]).select().single();if(res.error){alert('No se pudo activar: '+res.error.message);return}empresaActual=res.data;window.sesionActiva=true;document.getElementById('nombreEmpresa2').innerText=emp;mostrarPrueba();aplicarLogo();alert('¡Felicidades! Tu suscripción quedó ACTIVADA. Tienes 7 DÍAS GRATIS. Después $99 al mes.');show('p-admin-menu')}
@@ -272,7 +280,7 @@ function renderUsuarios(){var l=document.getElementById('listaUsuarios');documen
 async function eliminarUsuario(id,nombre){if(!confirm('¿Seguro que quieres eliminar a '+nombre+'?'))return;if(supabaseClient)await supabaseClient.from('usuarios').delete().eq('id',id);await cargarUsuarios();}
 function actualizarTipo(){var t=document.getElementById('dTipo').value,esGas=t==='Gas';document.getElementById('boxCombustible').classList.toggle('hidden',!esGas);document.getElementById('boxBateria').classList.toggle('hidden',esGas);document.getElementById('dClase').value=esGas?'Montacargas Gas':'Montacargas Eléctrico'}
 function abrirChecklist(tipo){tipoChecklistActual=tipo;var tit={camiones:'🚚 Checklist Camión',montacargas:'🏗️ Checklist Montacargas - 29 puntos',bitacora:'🗺️ Bitácora de Ruta'};document.getElementById('tituloChecklist').innerText=tit[tipo];document.getElementById('dFecha').value=hoyISO();document.getElementById('dOperador').value=operadorActual?operadorActual.nombre:'';document.getElementById('dUnidad').value='';document.getElementById('dHorometro').value='';document.getElementById('dTipo').value='Gas';actualizarTipo();document.getElementById('dCombustible').value='';document.getElementById('dBateria').value='';document.getElementById('comentarioFinal').value='';document.getElementById('previewFotos').innerHTML='';document.getElementById('fotosFinales').value='';fotosFinalesArr=[];var c=document.getElementById('itemsChecklist');c.innerHTML='';puntosDe(tipo).forEach(function(item,i){c.innerHTML+='<div class="fila-check"><b>'+(i+1)+'. '+item+'</b><label class="check-mini"><input type="radio" name="chk'+i+'" value="BUEN ESTADO" checked></label><label class="check-mini mal"><input type="radio" name="chk'+i+'" value="MAL ESTADO"></label></div>'});show('p-checklist')}
-try{document.getElementById('fotosFinales').addEventListener('change',function(e){var files=Array.from(e.target.files||[]);var pv=document.getElementById('previewFotos');files.slice(0,8).forEach(function(f){var r=new FileReader();r.onload=function(){fotosFinalesArr.push(r.result);var img=document.createElement('img');img.src=r.result;img.className='preview-foto';pv.appendChild(img)};r.readAsDataURL(f)});});}catch(e){}
+try{document.getElementById('fotosFinales').addEventListener('change',function(e){var files=Array.from(e.target.files||[]);files.slice(0,8).forEach(function(f){var r=new FileReader();r.onload=function(){fotosFinalesArr.push(r.result);renderFotos();};r.readAsDataURL(f)});document.getElementById('fotosFinales').value='';});}catch(e){}
 function getLibro(){try{return JSON.parse(localStorage.getItem('wms_libro')||'{}')}catch(e){return{}}}
 function setLibro(d){try{localStorage.setItem('wms_libro',JSON.stringify(d))}catch(e){}}
 async function guardarChecklist(){
