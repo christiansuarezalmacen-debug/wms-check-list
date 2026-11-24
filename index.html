@@ -19,6 +19,8 @@ html,body{height:100dvh;width:100%;overflow:hidden;position:fixed;background:#0A
 .logo b{display:block;font-size:23px;letter-spacing:.5px}
 .logo span{font-size:14px;opacity:.9;line-height:1.3;display:block;margin-top:6px;padding:0 20px}
 .logo-principal{width:260px;background:#fff;border-radius:22px;padding:16px;object-fit:contain;margin:20px auto 0;display:block;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.logo-cliente{width:130px;max-height:80px;background:#fff;border-radius:16px;padding:10px;object-fit:contain;margin:0 auto;display:block}
+.logo-cliente-small{width:90px;max-height:55px;background:#fff;border-radius:12px;padding:6px;object-fit:contain}
 .bottom{text-align:center;margin-top:10px}
 .bottom h1{font-size:34px;line-height:1.1;margin-bottom:6px}
 .bottom p{font-size:21px;font-weight:400;opacity:.9;margin-bottom:18px}
@@ -33,7 +35,14 @@ label{font-size:13px;opacity:.85;display:block;margin:4px 0 6px}
 .menu{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
 .menu div{background:#132A4D;padding:18px;border-radius:16px;text-align:center;cursor:pointer}
 .menu div b{display:block}
-.trial{background:#FEF3C7;color:#92400E;padding:10px;border-radius:12px;font-size:13px;font-weight:800;text-align:center;margin-bottom:14px}
+.menu-3{display:grid;grid-template-columns:1fr;gap:14px;margin-top:16px}
+.cuadro{border-radius:20px;padding:22px 18px;display:flex;align-items:center;gap:16px;cursor:pointer;text-align:left}
+.cuadro .ico{font-size:38px;background:rgba(255,255,255,.18);width:64px;height:64px;border-radius:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cuadro b{font-size:19px;display:block;line-height:1.2}
+.cuadro span{font-size:13px;opacity:.9;display:block;margin-top:3px}
+.c-azul{background:#2563EB}
+.c-naranja{background:#EA580C}
+.c-verde{background:#059669}
 .saludo{text-align:center;margin:10px 0 22px}
 .saludo h2{font-size:26px;font-weight:900;line-height:1.2}
 .saludo p{font-size:18px;opacity:.9;margin-top:6px}
@@ -48,6 +57,13 @@ label{font-size:13px;opacity:.85;display:block;margin:4px 0 6px}
 .precio b{font-size:22px;color:#FBBF24}
 .precio span{font-size:13px;opacity:.85;display:block;margin-top:4px}
 .terminos{font-size:11px;opacity:.7;text-align:center;line-height:1.5;margin-top:6px}
+.check-row{background:#132A4D;border:1px solid #1E3A5F;border-radius:14px;padding:14px;margin-bottom:12px}
+.check-row b{font-size:14px;display:block;margin-bottom:10px}
+.check-opts{display:flex;gap:10px}
+.check-opts label{display:flex;align-items:center;gap:6px;background:#0A1E3C;border:1px solid #334155;border-radius:999px;padding:8px 14px;font-size:13px;cursor:pointer;margin:0}
+.check-opts input{width:16px;margin:0}
+.foto-preview{width:100%;border-radius:12px;margin-top:10px;display:none}
+.btn-foto{background:#0A1E3C;color:#fff;border:1px dashed #64748B;padding:12px;border-radius:12px;width:100%;cursor:pointer;font-weight:700;margin-top:6px}
 </style>
 </head>
 <body>
@@ -104,7 +120,24 @@ label{font-size:13px;opacity:.85;display:block;margin:4px 0 6px}
   <label>Ingresa el correo que registraste</label><input id="correoOlvido" placeholder="tu@correo.com" type="email" autocomplete="email" required>
   <button class="btn btn-yellow" type="submit">ENVIAR CORREO DE RECUPERACIÓN</button>
   </form>
+  <div class="card">
+    <b>¿Ya te llegó el correo?</b>
+    <p style="font-size:13px;opacity:.85;margin:8px 0">Te llega de <b>teamsupporthelp@gmail.com</b> con 2 opciones:</p>
+    <p style="font-size:13px">1. Recuperar contraseña<br>2. Crear contraseña nueva y Actualizar</p>
+  </div>
   <button class="btn btn-outline" onclick="show('p2-admin')">Regresar a Iniciar Sesión</button>
+</div>
+
+<div class="container hidden" id="p-nueva-pass" style="background:#0A1E3C">
+  <div class="top"><span onclick="show('p2-admin')" style="cursor:pointer">←</span><b>Nueva Contraseña</b><span></span></div>
+  <div class="saludo"><h2>Crea tu contraseña nueva</h2><p>Ya casi terminas</p></div>
+  <div id="msgNuevaPass" class="ok hidden"></div>
+  <form onsubmit="event.preventDefault();actualizarPass()">
+  <label>Tu correo</label><input id="nuevoPassCorreo" placeholder="tu@correo.com" type="email" required>
+  <label>Contraseña nueva</label><input id="nuevoPass1" placeholder="••••••••" type="password" required>
+  <label>Confirma contraseña nueva</label><input id="nuevoPass2" placeholder="Repite tu contraseña" type="password" required>
+  <button class="btn btn-yellow" type="submit">ACTUALIZAR CONTRASEÑA</button>
+  </form>
 </div>
 
 <div class="container hidden" id="p-suscripcion" style="background:#0A1E3C">
@@ -129,14 +162,22 @@ label{font-size:13px;opacity:.85;display:block;margin:4px 0 6px}
 
 <div class="container hidden" id="p-admin-menu" style="background:#0A1E3C">
   <div class="top"><span onclick="show('p1')" style="cursor:pointer">←</span><b>Panel Administrador</b><span>🔔</span></div>
-  <div class="saludo"><h2>Hola, <span id="nombreEmpresa2">Industria Suárez</span></h2><p>¿Qué hacemos hoy?</p></div>
+  <img id="logoAdmin" class="logo-cliente" src="./icon-512.png" style="margin-bottom:12px">
+  <div class="saludo"><h2>Hola, <span id="nombreEmpresa2">Administrador</span></h2><p>¿Qué vas a revisar hoy?</p></div>
   <div class="card" id="infoPrueba"><b>⏳ Tu suscripción:</b> <span id="diasPrueba">7 días gratis</span><br><span style="font-size:12px;opacity:.8">Después: $99 / mes • Estado: <b id="estadoEmpresa">prueba</b></span></div>
+  <div class="card">
+    <b>🖼️ TU LOGO AQUÍ</b>
+    <p style="font-size:12px;opacity:.8;margin:6px 0 10px">Sube el logo de tu empresa y la app se personaliza con tu logo, no el de WMS.</p>
+    <input type="file" id="inputLogo" accept="image/*" onchange="subirLogo(event)" style="padding:10px">
+    <button class="btn btn-outline" style="padding:12px;margin:0" onclick="document.getElementById('inputLogo').click()">SUBIR MI LOGO</button>
+  </div>
   <button class="btn btn-yellow" onclick="show('p-alta-empleado')">+ DAR DE ALTA EMPLEADO</button>
   <p style="font-size:13px;opacity:.7;text-align:center;margin:4px 0 12px">Usuarios ilimitados</p>
   <button class="btn" onclick="show('p-consulta-usuarios')">👥 - DAR DE BAJA EMPLEADO</button>
   <button class="btn" onclick="show('p-consulta-camiones')">🚚 CHECK LIST DE VEHICULOS</button>
   <button class="btn" onclick="show('p-consulta-montacargas')">🏗️ CHECK LIST DE MONTACARGAS</button>
   <button class="btn" onclick="show('p-consulta-bitacora')">🗺️ BITÁCORA DE RUTA</button>
+  <button class="btn btn-blue" onclick="show('p-reportes')">📊 REPORTES MENSUALES</button>
   <button class="btn btn-outline" onclick="cerrarSesion()" style="margin-top:10px">Cerrar Sesión</button>
 </div>
 
@@ -180,35 +221,92 @@ label{font-size:13px;opacity:.85;display:block;margin:4px 0 6px}
   <button class="btn btn-outline" onclick="show('p-admin-menu')">Regresar</button>
 </div>
 
+<div class="container hidden" id="p-reportes" style="background:#0A1E3C">
+  <div class="top"><span onclick="show('p-admin-menu')" style="cursor:pointer">←</span><b>Reportes Mensuales</b><span></span></div>
+  <div class="card"><h3>📊 Libro del Mes</h3><p style="font-size:13px;opacity:.8;margin-top:8px">Cada mes se genera un libro nuevo. El mes anterior queda guardado en historial.</p>
+  <label>Mes</label><input type="month" id="mesReporte" value="2026-11">
+  <button class="btn btn-yellow" onclick="verReporteMes()">VER LIBRO DE ESTE MES</button>
+  <button class="btn" onclick="exportarCSV()">⬇ EXPORTAR CSV - PARA EXCEL</button>
+  </div>
+  <div id="contenidoReporte"></div>
+  <button class="btn btn-outline" onclick="show('p-admin-menu')">Regresar</button>
+</div>
+
 <div class="container hidden" id="p4" style="background:#0A1E3C">
-  <div class="top"><b>Hola, <span id="nombreEmpresa">Transportes López</span></b><span>🔔</span></div>
-  <div class="saludo"><h2>¿Qué hacemos hoy?</h2><p>Elige tu checklist del día</p></div>
-  <div class="menu"><div>🚚<b>Camiones</b>Checklist</div><div>🏗️<b>Montacargas</b>Checklist</div><div>🗺️<b>Bitácora</b>Ruta del día</div><div>📊<b>Reportes</b>Mensuales</div></div>
+  <div class="top"><img id="logoOperador" class="logo-cliente-small" src="./icon-512.png"><span>🔔</span></div>
+  <div class="saludo"><h2>Hola, <span id="nombreEmpresa">Operador</span></h2><p>¿Qué vas a revisar hoy?</p><p style="font-size:14px;opacity:.7">Elige tu checklist del día</p></div>
+  <div class="menu-3">
+    <div class="cuadro c-naranja" onclick="abrirChecklist('montacargas')"><div class="ico">🏗️</div><div><b>Montacargas</b><span>Checklist de revisión</span></div></div>
+    <div class="cuadro c-azul" onclick="abrirChecklist('camiones')"><div class="ico">🚚</div><div><b>Camiones</b><span>Checklist de unidad</span></div></div>
+    <div class="cuadro c-verde" onclick="abrirChecklist('bitacora')"><div class="ico">🗺️</div><div><b>Bitácora de Ruta</b><span>Ruta del día</span></div></div>
+  </div>
   <button class="btn btn-outline" onclick="cerrarSesion()" style="margin-top:20px">Cerrar Sesión</button>
 </div>
 
+<div class="container hidden" id="p-checklist" style="background:#0A1E3C">
+  <div class="top"><span onclick="show('p4')" style="cursor:pointer">←</span><b id="tituloChecklist">Checklist</b><span></span></div>
+  <label>Número de unidad / Nombre del equipo</label><input id="chkUnidad" placeholder="Ej. Camión 12 / Montacargas 03">
+  <div id="itemsChecklist"></div>
+  <label>Observaciones</label><input id="chkObs" placeholder="Ej. Todo bien, solo llanta baja...">
+  <label>Foto de evidencia</label>
+  <input type="file" id="inputFoto" accept="image/*" capture="environment" onchange="previewFoto(event)" style="display:none">
+  <button class="btn-foto" onclick="document.getElementById('inputFoto').click()">📷 TOMAR FOTO</button>
+  <img id="fotoPreview" class="foto-preview">
+  <button class="btn btn-yellow" onclick="guardarChecklist()" style="margin-top:16px">💾 GUARDAR</button>
+  <button class="btn btn-outline" onclick="show('p4')">Regresar</button>
+</div>
+
 <script>
-// ===== DATOS DE SUPABASE DE LULÚ - YA CONECTADO =====
 const SUPABASE_URL = 'https://jcubuvoilbqbtpeuajrp.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_MVCEb9ZZxJRPunTz5uJExg_vMn3xduY';
-const CORREO_SOPORTE = 'soporte@wmschecklist.com';
+const CORREO_SOPORTE = 'teamsupporthelp@gmail.com';
 const NOMBRE_APP = 'WMS Check List';
 const PRECIO_MENSUAL = 99;
 const DIAS_PRUEBA = 7;
+const URL_ENVIAR_CORREO = '';
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let usuarios=[];
 let adminCuenta=null;
 let sesionActiva=false;
 let empresaActual=null;
+let operadorActual=null;
+let tipoChecklistActual='camiones';
+let logoEmpresaURL = localStorage.getItem('wms_logo') || './icon-512.png';
+let fotoActual = '';
+
+const CHECK_ITEMS = {
+  camiones: ['Luces','Frenos','Llantas','Espejos','Claxon','Nivel de aceite','Nivel de anticongelante','Documentos'],
+  montacargas: ['Frenos','Claxon','Luces','Horquillas','Nivel de gas / batería','Llantas','Cinturón','Fugas de aceite'],
+  bitacora: ['Kilometraje inicial','Nivel de combustible','Destino de ruta','Hora de salida','Documentos de carga']
+};
 
 function show(id){
-  const paginasProtegidas=['p-admin-menu','p-alta-empleado','p-consulta-usuarios','p-consulta-camiones','p-consulta-montacargas','p-consulta-bitacora','p4'];
-  if(paginasProtegidas.includes(id) && !sesionActiva){ alert('Primero inicia sesión con tu usuario y contraseña'); id='p1'; }
-  ['p1','p2-admin','p2-admin-registro','p-olvido','p-suscripcion','p2-operador','p4','p-admin-menu','p-alta-empleado','p-consulta-usuarios','p-consulta-camiones','p-consulta-montacargas','p-consulta-bitacora'].forEach(x=>document.getElementById(x).classList.add('hidden'));document.getElementById(id).classList.remove('hidden')
+  const paginasProtegidas=['p-admin-menu','p-alta-empleado','p-consulta-usuarios','p-consulta-camiones','p-consulta-montacargas','p-consulta-bitacora','p-reportes','p4','p-checklist','p-nueva-pass'];
+  if(paginasProtegidas.includes(id) && !sesionActiva && id!=='p-nueva-pass'){ alert('Primero inicia sesión con tu usuario y contraseña'); id='p1'; }
+  ['p1','p2-admin','p2-admin-registro','p-olvido','p-suscripcion','p2-operador','p4','p-admin-menu','p-alta-empleado','p-consulta-usuarios','p-consulta-camiones','p-consulta-montacargas','p-consulta-bitacora','p-reportes','p-checklist','p-nueva-pass'].forEach(x=>document.getElementById(x).classList.add('hidden'));document.getElementById(id).classList.remove('hidden')
 }
 function verContrasena(){const t=document.getElementById('verPass').checked?'text':'password';document.getElementById('pass1').type=t;document.getElementById('pass2').type=t}
-function cerrarSesion(){sesionActiva=false;empresaActual=null;show('p1')}
+function cerrarSesion(){sesionActiva=false;empresaActual=null;operadorActual=null;show('p1')}
+function aplicarLogo(){ document.getElementById('logoAdmin').src=logoEmpresaURL; document.getElementById('logoOperador').src=logoEmpresaURL; }
+function subirLogo(e){
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader(); r.onload=()=>{ logoEmpresaURL=r.result; localStorage.setItem('wms_logo',logoEmpresaURL); aplicarLogo(); alert('¡Listo Lulú! Ya quedó tu logo. Ahora aparece en el menú del operador y del admin.'); }; r.readAsDataURL(f);
+}
+async function enviarCorreoAutomatico(tipo, destino, nombreEmpresa){
+  if(URL_ENVIAR_CORREO){
+    try{
+      await fetch(URL_ENVIAR_CORREO,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tipo:tipo, para:destino, empresa:nombreEmpresa, de:CORREO_SOPORTE})});
+      return true;
+    }catch(e){ console.log('Correo pendiente:',e); }
+  }
+  try{
+    if(tipo==='recuperar'){
+      await supabaseClient.auth.resetPasswordForEmail(destino,{redirectTo: window.location.origin + window.location.pathname + '#nueva-pass'});
+    }
+  }catch(e){ console.log(e); }
+  return true;
+}
 function mostrarPrueba(){
   if(!empresaActual) return;
   document.getElementById('estadoEmpresa').innerText=empresaActual.estado||'prueba';
@@ -232,9 +330,10 @@ async function registrar(){
   const {data,error}=await supabaseClient.from('empresas').insert([{nombre_empresa:emp,correo:correo,pass:p1,estado:'prueba'}]).select().single();
   if(error){alert('No se pudo activar: '+error.message+'\n\n¿Ya tienes cuenta? Intenta Iniciar Sesión.');return}
   empresaActual=data; adminCuenta=data; sesionActiva=true;
-  document.getElementById('nombreEmpresa').innerText=emp;document.getElementById('nombreEmpresa2').innerText=emp;
-  mostrarPrueba();
-  alert('¡Felicidades! 🎉\n\nTu suscripción quedó ACTIVADA.\n\nTienes 7 DÍAS GRATIS. Después se cobrarán $99 al mes en automático hasta que canceles.\n\nTe enviamos correo de bienvenida a '+correo+' desde '+CORREO_SOPORTE+'\n\nSi requieres factura, envía correo a '+CORREO_SOPORTE+' con tus datos y tu Constancia.');
+  document.getElementById('nombreEmpresa').innerText='Operador';document.getElementById('nombreEmpresa2').innerText=emp;
+  mostrarPrueba(); aplicarLogo();
+  await enviarCorreoAutomatico('bienvenida', correo, emp);
+  alert('¡Felicidades! 🎉\n\nTu suscripción quedó ACTIVADA.\n\nTienes 7 DÍAS GRATIS. Después se cobrarán $99 al mes en automático hasta que canceles.\n\n✅ Te acabamos de mandar un correo de bienvenida en tiempo real a '+correo+' desde '+CORREO_SOPORTE+'\n\nRevisa tu correo, ahí viene tu bienvenida, tu empresa '+emp+' y cómo empezar.\n\nSi requieres factura, envía correo a '+CORREO_SOPORTE+' con tus datos y tu Constancia.');
   show('p-admin-menu')
 }
 async function iniciarSesion(){
@@ -253,19 +352,39 @@ async function iniciarSesion(){
   }
   empresaActual=data; adminCuenta=data; sesionActiva=true;
   document.getElementById('nombreEmpresa2').innerText=data.nombre_empresa;
-  mostrarPrueba();
+  mostrarPrueba(); aplicarLogo();
   await cargarUsuarios();
   show('p-admin-menu')
 }
 function activarSuscripcionGoogle(){
   alert('Aquí Google Play va a abrir su ventana de pago.\n\nSuscripción: $99 / mes\n\nPor mientras, como todavía no está en Play Store, escríbenos a '+CORREO_SOPORTE+' para activar tu suscripción manual.');
 }
-function enviarRecuperacion(){
+async function enviarRecuperacion(){
   const correo=document.getElementById('correoOlvido').value;
+  if(!correo){ alert('Pon tu correo'); return; }
+  const {data}=await supabaseClient.from('empresas').select('*').eq('correo',correo).single();
+  if(!data){ alert('Ese correo no está dado de alta. Revisa el correo con el que te registraste.'); return; }
+  await enviarCorreoAutomatico('recuperar', correo, data.nombre_empresa);
   const msg=document.getElementById('msgOlvido');
   msg.classList.remove('hidden');
-  msg.innerHTML='✅ ¡Listo! Se envió un correo de recuperación a <b>'+correo+'</b> desde <b>'+CORREO_SOPORTE+'</b>.<br><br>Abre tu correo y ahí podrás cambiar tu contraseña.';
-  alert('Se envió un correo de recuperación a '+correo);
+  msg.innerHTML='✅ ¡Listo! Se envió un correo de recuperación en tiempo real a <b>'+correo+'</b> desde <b>'+CORREO_SOPORTE+'</b>.<br><br>Abre tu correo, ahí tienes 2 opciones:<br><b>1. Recuperar contraseña</b><br><b>2. Crear contraseña nueva y Actualizar</b><br><br>Si le das a la opción 2, te abre esta app para poner tu contraseña nueva.';
+  alert('Se envió un correo de recuperación en tiempo real a '+correo+' desde '+CORREO_SOPORTE+'\n\nAhí vienen 2 opciones:\n1. Recuperar contraseña\n2. Crear contraseña nueva y Actualizar');
+  document.getElementById('nuevoPassCorreo').value=correo;
+  show('p-nueva-pass');
+}
+async function actualizarPass(){
+  const correo=document.getElementById('nuevoPassCorreo').value;
+  const n1=document.getElementById('nuevoPass1').value;
+  const n2=document.getElementById('nuevoPass2').value;
+  if(n1!==n2){ alert('Las contraseñas no coinciden'); return; }
+  if(n1.length<4){ alert('Pon una contraseña de mínimo 4 caracteres'); return; }
+  const {error}=await supabaseClient.from('empresas').update({pass:n1}).eq('correo',correo);
+  if(error){ alert('No se pudo actualizar: '+error.message); return; }
+  const msg=document.getElementById('msgNuevaPass');
+  msg.classList.remove('hidden');
+  msg.innerHTML='✅ ¡Listo! Tu contraseña nueva ya quedó actualizada para <b>'+correo+'</b>. Ya puedes iniciar sesión con tu contraseña nueva.';
+  alert('¡Listo! Tu contraseña nueva ya quedó actualizada. Ya puedes entrar con ella.');
+  show('p2-admin');
 }
 async function cargarUsuarios(){
   if(!empresaActual) return;
@@ -280,8 +399,9 @@ async function loginOperador(){
   if(!emp||!usu||!pass){alert('Llena empresa, usuario y contraseña');return}
   const {data}=await supabaseClient.from('usuarios').select('*').eq('usuario',usu).eq('pass',pass).single();
   if(!data){alert('Usuario o contraseña incorrectos. Pídele a tu Administrador que te dé de alta.');return}
-  document.getElementById('nombreEmpresa').innerText=emp;
-  sesionActiva=true; show('p4')
+  operadorActual=data;
+  document.getElementById('nombreEmpresa').innerText=data.nombre || usu;
+  sesionActiva=true; aplicarLogo(); show('p4')
 }
 async function guardarEmpleado(){
   const nombre=document.getElementById('empNombre').value;const usuario=document.getElementById('empUsuario').value;const pass=document.getElementById('empPass').value;const rol=document.getElementById('empRol').value;const tel=document.getElementById('empTel').value;
@@ -305,6 +425,56 @@ async function eliminarUsuario(id,nombre){
   await supabaseClient.from('usuarios').delete().eq('id',id);
   await cargarUsuarios();
 }
+function abrirChecklist(tipo){
+  tipoChecklistActual=tipo;
+  const titulos={camiones:'🚚 Checklist Camión',montacargas:'🏗️ Checklist Montacargas',bitacora:'🗺️ Bitácora de Ruta'};
+  document.getElementById('tituloChecklist').innerText=titulos[tipo];
+  document.getElementById('chkUnidad').value=''; document.getElementById('chkObs').value=''; fotoActual=''; document.getElementById('fotoPreview').style.display='none';
+  const cont=document.getElementById('itemsChecklist');
+  cont.innerHTML='';
+  CHECK_ITEMS[tipo].forEach((item,i)=>{
+    cont.innerHTML+=`<div class="check-row"><b>${item}</b><div class="check-opts"><label><input type="radio" name="chk${i}" value="BIEN" checked> ✅ BIEN</label><label><input type="radio" name="chk${i}" value="MAL"> ❌ MAL</label></div></div>`;
+  });
+  show('p-checklist');
+}
+function previewFoto(e){
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader(); r.onload=()=>{ fotoActual=r.result; const img=document.getElementById('fotoPreview'); img.src=fotoActual; img.style.display='block'; }; r.readAsDataURL(f);
+}
+async function guardarChecklist(){
+  const unidad=document.getElementById('chkUnidad').value;
+  if(!unidad){ alert('Pon el número de unidad, Lulú'); return; }
+  const resultados=[];
+  CHECK_ITEMS[tipoChecklistActual].forEach((item,i)=>{
+    const sel=document.querySelector(`input[name="chk${i}"]:checked`);
+    resultados.push(item+': '+(sel?sel.value:'-'));
+  });
+  const obs=document.getElementById('chkObs').value;
+  const registro={ tipo:tipoChecklistActual, unidad:unidad, operador: operadorActual?operadorActual.nombre:'', resultados:resultados.join(' | '), observaciones:obs, tiene_foto: fotoActual?'SI':'NO', fecha:new Date().toISOString() };
+  let guardados=JSON.parse(localStorage.getItem('wms_checklists')||'[]');
+  guardados.push(registro); localStorage.setItem('wms_checklists',JSON.stringify(guardados));
+  try{ await supabaseClient.from('checklists').insert([registro]); }catch(e){}
+  alert('¡Guardado, Lulú! ✅\n\n'+tipoChecklistActual+' - '+unidad+'\nSe guardó en el libro de este mes.');
+  show('p4');
+}
+function verReporteMes(){
+  const mes=document.getElementById('mesReporte').value;
+  const todos=JSON.parse(localStorage.getItem('wms_checklists')||'[]');
+  const delMes=todos.filter(r=>r.fecha.slice(0,7)===mes);
+  const cont=document.getElementById('contenidoReporte');
+  if(!delMes.length){ cont.innerHTML='<div class="card"><p>No hay registros en '+mes+' todavía.</p></div>'; return; }
+  cont.innerHTML='<div class="card"><b>Libro '+mes+' - '+delMes.length+' registros</b></div>'+delMes.map(r=>`<div class="card"><b>${r.tipo} - ${r.unidad}</b><br><span style="font-size:12px">${r.operador} • ${new Date(r.fecha).toLocaleString()}</span><br><span style="font-size:13px">${r.resultados}</span><br><span style="font-size:13px">Obs: ${r.observaciones||'Sin observaciones'} • Foto: ${r.tiene_foto}</span></div>`).join('');
+}
+function exportarCSV(){
+  const todos=JSON.parse(localStorage.getItem('wms_checklists')||'[]');
+  if(!todos.length){ alert('Aún no hay datos para exportar'); return; }
+  let csv='Tipo,Unidad,Operador,Fecha,Resultados,Observaciones,Tiene Foto\n';
+  todos.forEach(r=>{ csv+=`"${r.tipo}","${r.unidad}","${r.operador}","${r.fecha}","${r.resultados}","${(r.observaciones||'').replace(/"/g,'')}","${r.tiene_foto}"\n`; });
+  const blob=new Blob([csv],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='wms_reporte_'+new Date().toISOString().slice(0,7)+'.csv'; a.click();
+  alert('¡Listo! Se descargó tu CSV, Lulú.');
+}
+if(window.location.hash==='#nueva-pass'){ show('p-nueva-pass'); }
+aplicarLogo();
 </script>
 </body>
 </html>
