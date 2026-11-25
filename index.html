@@ -56,6 +56,17 @@ select option{color:#000;background:#fff}label{font-size:13px;opacity:.85;displa
 .check-terminos{display:flex;gap:10px;align-items:flex-start;background:#132A4D;border:1px solid #1E3A5F;border-radius:12px;padding:12px;margin:10px 0}
 .check-terminos input{width:20px;height:20px;margin:0;flex-shrink:0;accent-color:#FBBF24}
 .check-terminos span{font-size:12px;line-height:1.5;opacity:.9}
+.req-list{margin:2px 0 12px;padding:0;list-style:none}
+.req-list li{font-size:13px;color:#94A3B8;margin-bottom:4px;transition:color .2s}
+.req-list li.ok{color:#22C55E;font-weight:700}
+.input-ok{border:2px solid #22C55E!important}
+.input-mal{border:2px solid #EF4444!important}
+.ver-link{color:#FBBF24;cursor:pointer;font-weight:800}
+.modal-legal{position:fixed;top:0;left:0;width:100%;height:100dvh;background:rgba(0,0,0,.65);z-index:9998;display:none;align-items:flex-end;justify-content:center}
+.modal-legal .box{background:#fff;color:#111;border-radius:20px 20px 0 0;max-width:480px;width:100%;max-height:85dvh;overflow-y:auto;padding:20px}
+.modal-legal h3{font-size:17px;margin-bottom:10px}.modal-legal p,.modal-legal li{font-size:13px;line-height:1.6;color:#334155}.modal-legal ul{padding-left:18px;margin:8px 0}
+.codigo-input{text-align:center;font-size:28px;letter-spacing:8px;font-weight:900}
+.timer{font-size:26px;font-weight:900;color:#FBBF24;text-align:center;margin:10px 0}
 </style>
 </head>
 <body>
@@ -77,27 +88,61 @@ select option{color:#000;background:#fff}label{font-size:13px;opacity:.85;displa
 <div class="link">¿Olvidaste tu contraseña? <b onclick="show('p-olvido')">Recuperarla</b></div>
 </div>
 
+<!-- REGISTRO NUEVO -->
 <div class="container hidden" id="p2-admin-registro" style="background:#0A1E3C">
 <div class="top"><span onclick="show('p2-admin')" style="cursor:pointer">←</span><b>Activar Suscripción</b><span></span></div>
 <div class="precio"><b>7 DÍAS GRATIS</b><span>Después $99 / mes • Cancela cuando quieras</span><span>Usuarios ilimitados</span></div>
 <form onsubmit="event.preventDefault();registrar()">
-<label>Nombre de empresa</label><input id="empresa" placeholder="Ej. Transportes Suárez S.A." required>
-<label>Correo</label><input id="regCorreo" type="email" placeholder="tu@correo.com" required>
-<label>Teléfono WhatsApp - Solo Admin</label><input id="regTelefono" type="tel" inputmode="numeric" placeholder="Ej. 33 1234 5678" required maxlength="14">
-<label>Contraseña</label><input id="pass1" type="password" placeholder="••••••••" required>
-<label>Confirma tu contraseña</label><input id="pass2" type="password" placeholder="Repite tu contraseña" required>
+<label>*Nombre de la Empresa</label><input id="empresa" required autocomplete="organization">
+<label>*Nombre y Apellido</label><input id="regNombre" required autocomplete="name">
+<label>*Numero Celular para SMS</label><input id="regTelefono" type="tel" inputmode="numeric" required maxlength="14">
+<label>*Correo Electrónico</label><input id="regCorreo" type="email" required autocomplete="email">
+<label>*Contraseña</label><input id="pass1" type="password" required autocomplete="new-password">
+<ul class="req-list" id="reqList">
+<li id="req8">8 caracteres</li>
+<li id="reqMay">1 Mayúscula</li>
+<li id="reqMin">1 Minúscula</li>
+<li id="reqEsp">1 Caracter especial @$#%&</li>
+</ul>
+<label>*Confirma tu contraseña</label><input id="pass2" type="password" required autocomplete="new-password">
 <label style="display:flex;align-items:center;gap:8px"><input type="checkbox" id="verPass" onclick="verContrasena()" style="width:18px;margin:0"> Ver contraseña</label>
-<label class="check-terminos"><input type="checkbox" id="aceptoTerminos" required><span>Acepto <b>Términos y Condiciones</b> y <b>Aviso de Privacidad</b>. No compartiremos tus datos con terceros.</span></label>
+<p style="font-size:12px;opacity:.8;margin:10px 0 4px">* Los campos marcados con * son obligatorios</p>
+<label class="check-terminos"><input type="checkbox" id="aceptoTerminos" required><span>Acepto términos y condiciones <b class="ver-link" onclick="abrirLegal('terminos')">Ver</b></span></label>
+<label class="check-terminos"><input type="checkbox" id="aceptoPrivacidad" required><span>He leído aviso de privacidad <b class="ver-link" onclick="abrirLegal('privacidad')">Ver</b></span></label>
+<p style="font-size:12px;opacity:.8;text-align:center;margin:6px 0 12px">No compartiremos tus datos con terceros.</p>
 <button class="btn btn-blue" type="submit">ACTIVAR SUSCRIPCIÓN - 7 DÍAS GRATIS</button></form>
-<p class="terminos">Al activar tu suscripción aceptas que después de tus 7 días gratis se cobrarán $99 MXN al mes en automático hasta que canceles. Tu teléfono solo se usa para verificar tu cuenta por WhatsApp.</p>
+<p class="terminos">Al activar tu suscripción aceptas que después de tus 7 días gratis se cobrarán $99 MXN al mes en automático hasta que canceles. Tu teléfono solo se usa para verificar tu cuenta por SMS.</p>
 <div class="link">¿Ya tienes cuenta? <b onclick="show('p2-admin')">Inicia Sesión</b></div>
 </div>
+
+<!-- VERIFICACION SMS -->
+<div class="container hidden" id="p-verificacion" style="background:#0A1E3C">
+<div class="top"><span onclick="show('p2-admin-registro')" style="cursor:pointer">←</span><b>Verificación SMS</b><span></span></div>
+<div class="saludo"><h2>Revisa tu SMS 📱</h2><p id="textoVerificacion">Te enviamos un código por SMS a tu número</p></div>
+<div class="timer" id="timerVerif">2:00</div>
+<div id="msgVerif" class="ok hidden"></div>
+<form onsubmit="event.preventDefault();confirmarCodigoVerificacion()">
+<label>Código de 6 dígitos</label><input id="codigoVerif" class="codigo-input" type="tel" inputmode="numeric" maxlength="6" required>
+<button class="btn btn-yellow" type="submit">VERIFICAR CÓDIGO</button></form>
+<div class="link">¿No te llegó el código? <b id="btnReenviar" onclick="reenviarCodigoVerificacion()">REENVIAR CÓDIGO</b></div>
+</div>
+
+<!-- FELICIDADES -->
+<div class="container hidden" id="p-felicidades" style="background:#0A1E3C">
+<div class="saludo"><h2>✅ ¡Felicidades!</h2><p>Has creado tu cuenta WMS Check List</p></div>
+<div class="card" style="text-align:center"><b>Ahora cuentas con 7 días de prueba Premium gratuita para que uses nuestra aplicación.</b><p style="font-size:13px;opacity:.85;margin-top:8px">Después $99 MXN al mes • Cancela cuando quieras</p></div>
+<button class="btn btn-yellow" onclick="irAlPanelDespuesRegistro()">CONTINUAR</button>
+</div>
+
+<!-- MODALES LEGALES -->
+<div id="modalTerminos" class="modal-legal" onclick="if(event.target===this)cerrarLegal()"><div class="box"><h3>Términos y Condiciones</h3><p><b>WMS Check List</b> te da 7 días gratis de prueba Premium. Después de la prueba se cobrarán $99 MXN al mes en automático hasta que canceles.</p><ul><li>Puedes cancelar cuando quieras desde tu panel.</li><li>Usuarios ilimitados dentro de tu empresa.</li><li>Eres responsable de cuidar tu contraseña y tu PIN.</li><li>No compartimos tus datos con terceros.</li></ul><p>Al activar tu suscripción aceptas estos términos.</p><button class="btn btn-blue" onclick="cerrarLegal()">Cerrar</button></div></div>
+<div id="modalPrivacidad" class="modal-legal" onclick="if(event.target===this)cerrarLegal()"><div class="box"><h3>Aviso de Privacidad</h3><p>Recabamos: nombre de empresa, nombre y apellido, celular, correo y contraseña para crear tu cuenta y verificarte por SMS.</p><ul><li>Usamos tus datos solo para darte el servicio y avisarte de tu suscripción.</li><li>No vendemos ni compartimos tus datos con terceros.</li><li>Puedes pedir que eliminemos tus datos escribiéndonos al correo de soporte.</li></ul><button class="btn btn-blue" onclick="cerrarLegal()">Cerrar</button></div></div>
 
 <div class="container hidden" id="p-olvido" style="background:#0A1E3C">
 <div class="top"><span onclick="show('p2-admin')" style="cursor:pointer">←</span><b>Recuperar Contraseña</b><span></span></div>
 <div class="saludo"><h2>¿Olvidaste tu contraseña?</h2><p>Te mandamos un código por SMS</p></div>
 <div id="msgOlvido" class="ok hidden"></div>
-<form onsubmit="event.preventDefault();enviarRecuperacion()"><label>Ingresa el número de teléfono con el que te registraste</label><input id="telefonoOlvido" type="tel" inputmode="numeric" placeholder="Ej. 33 1234 5678" required><button class="btn btn-yellow" type="submit">ENVIAR CÓDIGO POR SMS</button></form>
+<form onsubmit="event.preventDefault();enviarRecuperacion()"><label>Ingresa el número de teléfono con el que te registraste</label><input id="telefonoOlvido" type="tel" inputmode="numeric" required><button class="btn btn-yellow" type="submit">ENVIAR CÓDIGO POR SMS</button></form>
 <div class="card"><b>¿Ya te llegó el código?</b><p style="font-size:13px;opacity:.85;margin:8px 0">Te llega por SMS a tu número registrado.</p><p style="font-size:13px">1. Pon tu código de 6 dígitos<br>2. Crear contraseña nueva y Actualizar</p></div>
 <button class="btn btn-outline" onclick="show('p2-admin')">Regresar a Iniciar Sesión</button>
 </div>
@@ -105,7 +150,7 @@ select option{color:#000;background:#fff}label{font-size:13px;opacity:.85;displa
 <div class="container hidden" id="p-nueva-pass" style="background:#0A1E3C">
 <div class="top"><span onclick="show('p2-admin')" style="cursor:pointer">←</span><b>Nueva Contraseña</b><span></span></div>
 <div class="saludo"><h2>Crea tu contraseña nueva</h2><p>Ya casi terminas</p></div>
-<form onsubmit="event.preventDefault();actualizarPass()"><label>Código de 6 dígitos que te llegó por SMS</label><input id="codigoRecuperacion" type="tel" inputmode="numeric" maxlength="6" placeholder="Ej. 123456" required><label>Tu correo</label><input id="nuevoPassCorreo" type="email" required><label>Contraseña nueva</label><input id="nuevoPass1" type="password" required><label>Confirma contraseña nueva</label><input id="nuevoPass2" type="password" required><button class="btn btn-yellow" type="submit">ACTUALIZAR CONTRASEÑA</button></form>
+<form onsubmit="event.preventDefault();actualizarPass()"><label>Código de 6 dígitos que te llegó por SMS</label><input id="codigoRecuperacion" type="tel" inputmode="numeric" maxlength="6" required><label>Tu correo</label><input id="nuevoPassCorreo" type="email" required><label>Contraseña nueva</label><input id="nuevoPass1" type="password" required><label>Confirma contraseña nueva</label><input id="nuevoPass2" type="password" required><button class="btn btn-yellow" type="submit">ACTUALIZAR CONTRASEÑA</button></form>
 </div>
 
 <div class="container hidden" id="p-suscripcion" style="background:#0A1E3C">
@@ -120,8 +165,8 @@ select option{color:#000;background:#fff}label{font-size:13px;opacity:.85;displa
 <div class="top"><span onclick="show('p1')" style="cursor:pointer">←</span><b>Soy Operador</b><span></span></div>
 <div class="saludo"><h2>Bienvenido Campeón</h2><p>Hora de trabajar</p></div>
 <form onsubmit="event.preventDefault();loginOperador()" autocomplete="on">
-<label>Nombre de la empresa</label><input id="opEmpresa" name="organization" placeholder="Ej. Transportes López" required autocomplete="organization">
-<label>Tu usuario</label><input id="opUsuario" name="username" placeholder="Ej. chofer_juan" required autocomplete="username">
+<label>Nombre de la empresa</label><input id="opEmpresa" name="organization" required autocomplete="organization">
+<label>Tu usuario</label><input id="opUsuario" name="username" required autocomplete="username">
 <label>Tu PIN de 4 dígitos</label><input id="opPass" name="password" type="password" inputmode="numeric" maxlength="4" placeholder="••••" required autocomplete="current-password">
 <button class="btn" type="submit">ENTRAR A CHAMBEAR</button></form>
 <div class="link">¿Olvidaste tu PIN? <b onclick="alert('Pídele a tu Administrador que te ponga un PIN nuevo. Él lo puede cambiar en su panel.')">Pide ayuda a tu Admin</b></div>
@@ -150,12 +195,12 @@ select option{color:#000;background:#fff}label{font-size:13px;opacity:.85;displa
 
 <div class="container hidden" id="p-alta-empleado" style="background:#0A1E3C">
 <div class="top"><span onclick="show('p-admin-menu')" style="cursor:pointer">←</span><b>Dar de Alta Empleado</b><span></span></div>
-<label>Nombre completo</label><input id="empNombre" placeholder="Ej. Alejandro Gonzalez">
-<label>Usuario para entrar</label><input id="empUsuario" placeholder="Ej. chofer_juan">
+<label>Nombre completo</label><input id="empNombre">
+<label>Usuario para entrar</label><input id="empUsuario">
 <label>PIN de 4 dígitos</label><input id="empPass" type="password" inputmode="numeric" maxlength="4" placeholder="••••">
 <p style="font-size:12px;opacity:.75;margin:-4px 0 10px">No uses 1234 ni 0000. Si se le olvida, tú le pones uno nuevo aquí.</p>
-<label>Rol</label><input id="empRol" placeholder="Ej. Chofer, Montacarguista">
-<label>Teléfono</label><input id="empTel" placeholder="Ej. 33 1234 5678">
+<label>Rol</label><input id="empRol">
+<label>Teléfono</label><input id="empTel">
 <button class="btn btn-yellow" onclick="guardarEmpleado()">GUARDAR EMPLEADO</button>
 </div>
 
@@ -248,7 +293,7 @@ function show(id, push){
     if(push===undefined) push=true;
     var protegidas=['p-admin-menu','p-alta-empleado','p-consulta-usuarios','p-consulta-camiones','p-consulta-montacargas','p-consulta-bitacora','p-reportes','p4','p-checklist','p-nueva-pass'];
     if(protegidas.indexOf(id)>=0 && !window.sesionActiva && id!=='p-nueva-pass'){alert('Primero inicia sesión');id='p1';}
-    var todos=['p1','p2-admin','p2-admin-registro','p-olvido','p-suscripcion','p2-operador','p4','p-admin-menu','p-alta-empleado','p-consulta-usuarios','p-consulta-camiones','p-consulta-montacargas','p-consulta-bitacora','p-reportes','p-checklist','p-nueva-pass'];
+    var todos=['p1','p2-admin','p2-admin-registro','p-verificacion','p-felicidades','p-olvido','p-suscripcion','p2-operador','p4','p-admin-menu','p-alta-empleado','p-consulta-usuarios','p-consulta-camiones','p-consulta-montacargas','p-consulta-bitacora','p-reportes','p-checklist','p-nueva-pass'];
     for(var i=0;i<todos.length;i++){var el=document.getElementById(todos[i]);if(el)el.classList.add('hidden');}
     var dest=document.getElementById(id);if(dest)dest.classList.remove('hidden');
     window.scrollTo(0,0);
@@ -300,6 +345,78 @@ function renderItemsChecklist(){
 }
 function hoyISO(){return new Date().toISOString().slice(0,10)}
 function verContrasena(){try{var t=document.getElementById('verPass').checked?'text':'password';document.getElementById('pass1').type=t;document.getElementById('pass2').type=t;}catch(e){}}
+function abrirLegal(tipo){document.getElementById(tipo==='terminos'?'modalTerminos':'modalPrivacidad').style.display='flex';}
+function cerrarLegal(){document.getElementById('modalTerminos').style.display='none';document.getElementById('modalPrivacidad').style.display='none';}
+// --- VALIDACION CONTRASEÑA EN VIVO ---
+function marcarReq(id, ok, texto){
+  var el=document.getElementById(id); if(!el) return;
+  el.classList.toggle('ok', ok);
+  el.textContent = (ok ? '✅ ' : '') + texto;
+}
+function validarPass(){
+  var p1=document.getElementById('pass1').value||'';
+  var p2=document.getElementById('pass2').value||'';
+  marcarReq('req8', p1.length>=8, '8 caracteres');
+  marcarReq('reqMay', /[A-Z]/.test(p1), '1 Mayúscula');
+  marcarReq('reqMin', /[a-z]/.test(p1), '1 Minúscula');
+  marcarReq('reqEsp', /[@$#%&]/.test(p1), '1 Caracter especial @$#%&');
+  var inp1=document.getElementById('pass1'), inp2=document.getElementById('pass2');
+  var passValida = p1.length>=8 && /[A-Z]/.test(p1) && /[a-z]/.test(p1) && /[@$#%&]/.test(p1);
+  inp1.classList.toggle('input-ok', passValida);
+  inp1.classList.toggle('input-mal', p1.length>0 && !passValida);
+  if(p2.length>0){
+    var coincide = p1===p2 && passValida;
+    inp2.classList.toggle('input-ok', coincide);
+    inp2.classList.toggle('input-mal', !coincide);
+    inp1.classList.toggle('input-ok', coincide);
+  } else {
+    inp2.classList.remove('input-ok','input-mal');
+  }
+  return passValida;
+}
+function passEsValida(){
+  var p=document.getElementById('pass1').value||'';
+  return p.length>=8 && /[A-Z]/.test(p) && /[a-z]/.test(p) && /[@$#%&]/.test(p);
+}
+// --- VERIFICACION SMS ---
+var timerInterval=null, tiempoRestante=120, datosPendientes=null;
+function iniciarTimer(){
+  clearInterval(timerInterval);
+  tiempoRestante=120;
+  var el=document.getElementById('timerVerif');
+  timerInterval=setInterval(function(){
+    tiempoRestante--;
+    var m=Math.floor(tiempoRestante/60), s=tiempoRestante%60;
+    el.textContent=m+':'+(s<10?'0'+s:s);
+    if(tiempoRestante<=0){clearInterval(timerInterval); el.textContent='0:00'; alert('Se acabó el tiempo. Pide otro código con REENVIAR CÓDIGO.');}
+  },1000);
+}
+async function reenviarCodigoVerificacion(){
+  if(!datosPendientes){alert('Vuelve a Activar Suscripción'); return;}
+  var codigo=Math.floor(100000+Math.random()*900000).toString();
+  datosPendientes.codigo=codigo; datosPendientes.expira=Date.now()+120000;
+  try{localStorage.setItem('wms_pendiente', JSON.stringify(datosPendientes));}catch(e){}
+  try{await enviarSMS(datosPendientes.telefonoCompleto, 'Tu codigo WMS Check List es: '+codigo+'. Tienes 2 minutos para usarlo.');}catch(e){alert('No se pudo reenviar SMS: '+e.message); return;}
+  iniciarTimer();
+  var m=document.getElementById('msgVerif'); m.classList.remove('hidden'); m.innerHTML='✅ Te reenviamos el código por SMS a <b>'+enmascararTelefono(datosPendientes.telefono)+'</b>';
+}
+async function confirmarCodigoVerificacion(){
+  var codigo=document.getElementById('codigoVerif').value.trim();
+  if(!datosPendientes){ try{datosPendientes=JSON.parse(localStorage.getItem('wms_pendiente')||'null');}catch(e){} }
+  if(!datosPendientes){alert('No hay registro pendiente. Vuelve a Activar Suscripción.'); return;}
+  if(codigo!==datosPendientes.codigo){alert('Código incorrecto. Revisa tu SMS.'); return;}
+  if(Date.now()>datosPendientes.expira){alert('Código vencido. Dale a REENVIAR CÓDIGO.'); return;}
+  if(!supabaseClient){alert('Sin internet'); return;}
+  var res=await supabaseClient.from('empresas').insert([{nombre_empresa:datosPendientes.empresa,correo:datosPendientes.correo,telefono:datosPendientes.telefono,pass:datosPendientes.pass,estado:'prueba'}]).select().single();
+  if(res.error){alert('No se pudo crear: '+res.error.message); return;}
+  clearInterval(timerInterval);
+  try{localStorage.removeItem('wms_pendiente');}catch(e){}
+  empresaActual=res.data; window.sesionActiva=true;
+  document.getElementById('nombreEmpresa2').innerText=datosPendientes.empresa;
+  mostrarPrueba(); aplicarLogo();
+  show('p-felicidades');
+}
+function irAlPanelDespuesRegistro(){ if(empresaActual){ show('p-admin-menu'); } else { show('p2-admin'); } }
 function cerrarSesion(){window.sesionActiva=false;empresaActual=null;operadorActual=null;navStack=['p1'];cerrarMenuAdmin();show('p1')}
 function aplicarLogo(){try{document.getElementById('logoAdmin').src=logoEmpresaURL;document.getElementById('logoOperador').src=logoEmpresaURL;}catch(e){}}
 function subirLogo(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(){logoEmpresaURL=r.result;try{localStorage.setItem('wms_logo',logoEmpresaURL)}catch(err){}aplicarLogo();alert('¡Listo Lulú! Ya quedó tu logo.')};r.readAsDataURL(f);}
@@ -323,17 +440,23 @@ function esPinValido(pin){
 }
 async function registrar(){
   var p1=document.getElementById('pass1').value,p2=document.getElementById('pass2').value;
+  if(!passEsValida()){alert('Tu contraseña debe tener 8 caracteres, 1 mayúscula, 1 minúscula y 1 caracter especial @$#%&');return}
   if(p1!==p2){alert('Las contraseñas no coinciden');return}
-  if(!document.getElementById('aceptoTerminos').checked){alert('Tienes que aceptar Términos y Aviso de Privacidad, Lulú.');return}
-  var emp=document.getElementById('empresa').value||'Industria Suárez',correo=document.getElementById('regCorreo').value,telefono=soloDigitos(document.getElementById('regTelefono').value);
+  if(!document.getElementById('aceptoTerminos').checked || !document.getElementById('aceptoPrivacidad').checked){alert('Tienes que aceptar Términos y Aviso de Privacidad, Lulú.');return}
+  var emp=document.getElementById('empresa').value||'', nombre=document.getElementById('regNombre').value||'', correo=document.getElementById('regCorreo').value, telefono=soloDigitos(document.getElementById('regTelefono').value);
+  if(!emp||!nombre){alert('Pon nombre de empresa y tu nombre');return}
   if(!correo){alert('Pon tu correo');return}
-  if(telefono.length<10){alert('Pon tu teléfono de 10 dígitos para WhatsApp');return}
-  if(!supabaseClient){alert('Sin internet, Lulú.');return}
-  var res=await supabaseClient.from('empresas').insert([{nombre_empresa:emp,correo:correo,telefono:telefono,pass:p1,estado:'prueba'}]).select().single();
-  if(res.error){alert('No se pudo activar: '+res.error.message);return}
-  empresaActual=res.data;window.sesionActiva=true;document.getElementById('nombreEmpresa2').innerText=emp;mostrarPrueba();aplicarLogo();
-  alert('¡Felicidades! Tu suscripción quedó ACTIVADA. Tienes 7 DÍAS GRATIS. Después $99 al mes.\n\nTe vamos a mandar tu código por SMS a '+enmascararTelefono(telefono)+' para verificarte.');
-  show('p-admin-menu')
+  if(telefono.length<10){alert('Pon tu teléfono de 10 dígitos para SMS');return}
+  var telefonoCompleto='+52'+telefono.slice(-10);
+  var codigo=Math.floor(100000+Math.random()*900000).toString();
+  datosPendientes={empresa:emp,nombre:nombre,correo:correo,telefono:telefono,telefonoCompleto:telefonoCompleto,pass:p1,codigo:codigo,expira:Date.now()+120000};
+  try{localStorage.setItem('wms_pendiente', JSON.stringify(datosPendientes));}catch(e){}
+  try{await enviarSMS(telefonoCompleto, 'Tu codigo WMS Check List es: '+codigo+'. Tienes 2 minutos para usarlo.');}catch(e){alert('No se pudo mandar el SMS: '+e.message);return;}
+  document.getElementById('textoVerificacion').innerText='Te enviamos un código por SMS a '+enmascararTelefono(telefono);
+  document.getElementById('codigoVerif').value='';
+  var m=document.getElementById('msgVerif'); m.classList.remove('hidden'); m.innerHTML='✅ Te mandamos tu código por SMS a <b>'+enmascararTelefono(telefono)+'</b>';
+  iniciarTimer();
+  show('p-verificacion');
 }
 async function iniciarSesion(){var correo=document.getElementById('loginCorreo').value,pass=document.getElementById('loginPass').value;if(!correo||!pass){alert('Pon tu correo y tu contraseña');return}if(!supabaseClient){alert('Sin internet, Lulú.');return}var res=await supabaseClient.from('empresas').select('*').eq('correo',correo).eq('pass',pass).single();if(res.error||!res.data){alert('Correo o contraseña incorrectos.');return}var fin=new Date(res.data.fin_prueba);if(res.data.estado==='bloqueado'||(res.data.estado==='prueba'&&fin<new Date())){empresaActual=res.data;alert('Se acabaron tus 7 días gratis. Activa tu suscripción de $99 / mes.');show('p-suscripcion');return}try{localStorage.setItem('wms_admin_login',JSON.stringify({correo:correo,pass:pass}))}catch(e){}empresaActual=res.data;window.sesionActiva=true;document.getElementById('nombreEmpresa2').innerText=res.data.nombre_empresa;mostrarPrueba();aplicarLogo();await cargarUsuarios();show('p-admin-menu')}
 function activarSuscripcionGoogle(){alert('Aquí Google Play va a abrir su ventana de pago. Suscripción: $99 / mes. Escríbenos a '+CORREO_SOPORTE)}
@@ -427,6 +550,10 @@ function exportarCSV(){var mes=document.getElementById('mesReporte').value||'202
 try{if(window.location.hash==='#nueva-pass'){show('p-nueva-pass')}}catch(e){}
 try{cargarDatosGuardados();aplicarLogo();}catch(e){}
 try{document.getElementById('btnAdmin').addEventListener('click',function(){show('p2-admin')});}catch(e){}
+try{
+  document.getElementById('pass1').addEventListener('input', validarPass);
+  document.getElementById('pass2').addEventListener('input', validarPass);
+}catch(e){}
 </script>
 </body>
 </html>
