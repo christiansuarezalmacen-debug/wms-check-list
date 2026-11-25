@@ -257,6 +257,10 @@ select option{color:#000;background:#fff}label{font-size:13px;opacity:.85;displa
 </div>
 </div>
 <script>
+// ===== INTERRUPTOR SMS =====
+// false = PAUSADO, te deja crear cuenta sin SMS para desarrollar
+// Cuando recargues los $20 en Twilio, cambialo a true y ya vuelve a pedir codigo
+var SMS_ACTIVO = false;
 var navStack=['p1'];
 function show(id, push){
   try{
@@ -306,13 +310,15 @@ function passEsValida(){var p=document.getElementById('pass1').value||'';return 
 var timerInterval=null, tiempoRestante=120, datosPendientes=null;
 function iniciarTimer(){clearInterval(timerInterval);tiempoRestante=120;var el=document.getElementById('timerVerif');el.textContent='2:00';timerInterval=setInterval(function(){tiempoRestante--;var m=Math.floor(tiempoRestante/60), s=tiempoRestante%60;el.textContent=m+':'+(s<10?'0'+s:s);if(tiempoRestante<=0){clearInterval(timerInterval); el.textContent='0:00'; alert('Se acabó el tiempo. Pide otro código con REENVIAR CÓDIGO.');}},1000);}
 async function enviarSMS(to, message){var res = await fetch('/api/send-sms', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ to: to, message: message }) });var data = await res.json().catch(function(){return {}});console.log('SMS RESPUESTA:', res.status, data);if(!res.ok) throw new Error((data.error || 'No se pudo enviar SMS') + ' | ' + (data.details || data.message || 'sin detalle') + ' | status:' + res.status);return data;}
-async function reenviarCodigoVerificacion(){if(!datosPendientes){alert('Vuelve a Activar Suscripción'); return;}var codigo=Math.floor(100000+Math.random()*900000).toString();datosPendientes.codigo=codigo; datosPendientes.expira=Date.now()+120000;try{localStorage.setItem('wms_pendiente', JSON.stringify(datosPendientes));}catch(e){}try{await enviarSMS(datosPendientes.telefonoCompleto, 'Tu codigo WMS Check List es: '+codigo+'. Tienes 2 minutos para usarlo.');}catch(e){alert('No se pudo reenviar SMS: '+e.message); return;}iniciarTimer();var m=document.getElementById('msgVerif'); m.classList.remove('hidden'); m.innerHTML='✅ Te reenviamos el código por SMS a <b>'+enmascararTelefono(datosPendientes.telefono)+'</b>';}
+async function reenviarCodigoVerificacion(){if(!SMS_ACTIVO){alert('Verificación pausada por ahora. Ya puedes entrar directo.'); return;}if(!datosPendientes){alert('Vuelve a Activar Suscripción'); return;}var codigo=Math.floor(100000+Math.random()*900000).toString();datosPendientes.codigo=codigo; datosPendientes.expira=Date.now()+120000;try{localStorage.setItem('wms_pendiente', JSON.stringify(datosPendientes));}catch(e){}try{await enviarSMS(datosPendientes.telefonoCompleto, 'Tu codigo WMS Check List es: '+codigo+'. Tienes 2 minutos para usarlo.');}catch(e){alert('No se pudo reenviar SMS: '+e.message); return;}iniciarTimer();var m=document.getElementById('msgVerif'); m.classList.remove('hidden'); m.innerHTML='✅ Te reenviamos el código por SMS a <b>'+enmascararTelefono(datosPendientes.telefono)+'</b>';}
 async function confirmarCodigoVerificacion(){
   var codigo=document.getElementById('codigoVerif').value.trim();
   if(!datosPendientes){ try{datosPendientes=JSON.parse(localStorage.getItem('wms_pendiente')||'null');}catch(e){} }
   if(!datosPendientes){alert('No hay registro pendiente. Vuelve a Activar Suscripción.'); return;}
-  if(codigo!==datosPendientes.codigo){alert('Código incorrecto. Revisa tu SMS.'); return;}
-  if(Date.now()>datosPendientes.expira){alert('Código vencido. Dale a REENVIAR CÓDIGO.'); return;}
+  if(SMS_ACTIVO){
+    if(codigo!==datosPendientes.codigo){alert('Código incorrecto. Revisa tu SMS.'); return;}
+    if(Date.now()>datosPendientes.expira){alert('Código vencido. Dale a REENVIAR CÓDIGO.'); return;}
+  }
   if(!supabaseClient){alert('Sin internet'); return;}
   var res=await supabaseClient.from('empresas').insert([{nombre_empresa:datosPendientes.empresa,correo:datosPendientes.correo,telefono:datosPendientes.telefono,pass:datosPendientes.pass,estado:'prueba'}]).select().single();
   if(res.error){alert('No se pudo crear: '+res.error.message); return;}
@@ -349,6 +355,18 @@ async function registrar(){
   var codigo=Math.floor(100000+Math.random()*900000).toString();
   datosPendientes={empresa:emp,nombre:nombre,correo:correo,telefono:telefono,telefonoCompleto:telefonoCompleto,pass:p1,codigo:codigo,expira:Date.now()+120000};
   try{localStorage.setItem('wms_pendiente', JSON.stringify(datosPendientes));}catch(e){}
+  // SI SMS ESTA PAUSADO, CREA LA CUENTA DIRECTO SIN PEDIR CODIGO
+  if(!SMS_ACTIVO){
+    if(!supabaseClient){alert('Sin internet'); return;}
+    var resDirecto=await supabaseClient.from('empresas').insert([{nombre_empresa:emp,correo:correo,telefono:telefono,pass:p1,estado:'prueba'}]).select().single();
+    if(resDirecto.error){alert('No se pudo crear: '+resDirecto.error.message); return;}
+    try{localStorage.removeItem('wms_pendiente');}catch(e){}
+    empresaActual=resDirecto.data; window.sesionActiva=true;
+    document.getElementById('nombreEmpresa2').innerText=emp;
+    mostrarPrueba(); aplicarLogo();
+    show('p-felicidades');
+    return;
+  }
   try{await enviarSMS(telefonoCompleto, 'Tu codigo WMS Check List es: '+codigo+'. Tienes 2 minutos para usarlo.');}catch(e){alert('No se pudo mandar el SMS: '+e.message);return;}
   document.getElementById('textoVerificacion').innerText='Te enviamos un código por SMS a '+enmascararTelefono(telefono);
   document.getElementById('codigoVerif').value='';
@@ -370,6 +388,11 @@ async function enviarRecuperacion(){
     document.getElementById('nuevoPassCorreo').value=res.data.correo||'';
     var codigo=Math.floor(100000+Math.random()*900000).toString();
     try{localStorage.setItem('wms_codigo_recuperacion', JSON.stringify({codigo:codigo, correo:res.data.correo, expira:Date.now()+10*60*1000}));}catch(e){}
+    if(!SMS_ACTIVO){
+      m.innerHTML='✅ Verificación pausada. Ya puedes poner tu contraseña nueva.';
+      setTimeout(function(){show('p-nueva-pass')}, 800);
+      return;
+    }
     try{
       await enviarSMS(telefonoCompleto, 'Tu codigo WMS Check List es: '+codigo+'. Tienes 10 minutos para usarlo.');
       m.innerHTML='✅ ¡Listo! Te mandamos tu código por SMS a <b>'+enmascararTelefono(telefono)+'</b>.<br>1. Pon tu código de 6 dígitos<br>2. Crear contraseña nueva y Actualizar';
@@ -384,7 +407,9 @@ async function actualizarPass(){
   if(n1!==n2){alert('Las contraseñas no coinciden');return}
   if(n1.length<4){alert('Mínimo 4 caracteres');return}
   var guardado=null; try{guardado=JSON.parse(localStorage.getItem('wms_codigo_recuperacion')||'null');}catch(e){}
-  if(!guardado || guardado.codigo!==codigoIngresado || Date.now()>guardado.expira || guardado.correo!==correo){alert('Código incorrecto o vencido. Pide otro código.');return}
+  if(SMS_ACTIVO){
+    if(!guardado || guardado.codigo!==codigoIngresado || Date.now()>guardado.expira || guardado.correo!==correo){alert('Código incorrecto o vencido. Pide otro código.');return}
+  }
   if(!supabaseClient){alert('Sin internet');return}
   var res=await supabaseClient.from('empresas').update({pass:n1}).eq('correo',correo);
   if(res.error){alert('No se pudo: '+res.error.message);return}
