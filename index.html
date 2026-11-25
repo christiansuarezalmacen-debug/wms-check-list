@@ -89,15 +89,15 @@ select option{color:#000;background:#fff}label{font-size:13px;opacity:.85;displa
 <div class="top"><span onclick="show('p2-admin')" style="cursor:pointer">←</span><b>Activar Suscripción</b><span></span></div>
 <div class="precio"><b>7 DÍAS GRATIS</b><span>Después $99 / mes • Cancela cuando quieras</span><span>Usuarios ilimitados</span></div>
 <form onsubmit="event.preventDefault();registrar()">
-<label>*Nombre de la empresa</label><input id="empresa" required autocomplete="organization">
+<label>*Nombre de la Empresa</label><input id="empresa" required autocomplete="organization">
 <label>*Nombre y Apellido</label><input id="regNombre" required autocomplete="name">
-<label>*Numero celular para SMS</label><input id="regTelefono" type="tel" inputmode="numeric" required maxlength="14">
-<label>*Correo electrónico</label><input id="regCorreo" type="email" required autocomplete="email">
+<label>*Numero Celular para SMS</label><input id="regTelefono" type="tel" inputmode="numeric" required maxlength="14">
+<label>*Correo Electrónico</label><input id="regCorreo" type="email" required autocomplete="email">
 <label>*Contraseña</label><input id="pass1" type="password" required autocomplete="new-password">
 <ul class="req-list" id="reqList"><li id="req8">8 caracteres</li><li id="reqMay">1 Mayúscula</li><li id="reqMin">1 Minúscula</li><li id="reqEsp">1 Caracter especial @$#%&</li></ul>
 <label>*Confirma tu contraseña</label><input id="pass2" type="password" required autocomplete="new-password">
 <label style="display:flex;align-items:center;gap:8px"><input type="checkbox" id="verPass" onclick="verContrasena()" style="width:18px;margin:0"> Ver contraseña</label>
-<p style="font-size:12px;opacity:.8;margin:10px 0 4px">Los campos marcados con * son obligatorios</p>
+<p style="font-size:12px;opacity:.8;margin:10px 0 4px">* Los campos marcados con * son obligatorios</p>
 <label class="check-terminos"><input type="checkbox" id="aceptoTerminos" required><span>Acepto términos y condiciones <b class="ver-link" onclick="abrirLegal('terminos')">Ver</b></span></label>
 <label class="check-terminos"><input type="checkbox" id="aceptoPrivacidad" required><span>He leído aviso de privacidad <b class="ver-link" onclick="abrirLegal('privacidad')">Ver</b></span></label>
 <p style="font-size:12px;opacity:.8;text-align:center;margin:6px 0 12px">No compartiremos tus datos con terceros.</p>
@@ -305,15 +305,14 @@ function validarPass(){var p1=document.getElementById('pass1').value||'';var p2=
 function passEsValida(){var p=document.getElementById('pass1').value||'';return p.length>=8 && /[A-Z]/.test(p) && /[a-z]/.test(p) && /[@$#%&]/.test(p);}
 var timerInterval=null, tiempoRestante=120, datosPendientes=null;
 function iniciarTimer(){clearInterval(timerInterval);tiempoRestante=120;var el=document.getElementById('timerVerif');el.textContent='2:00';timerInterval=setInterval(function(){tiempoRestante--;var m=Math.floor(tiempoRestante/60), s=tiempoRestante%60;el.textContent=m+':'+(s<10?'0'+s:s);if(tiempoRestante<=0){clearInterval(timerInterval); el.textContent='0:00'; alert('Se acabó el tiempo. Pide otro código con REENVIAR CÓDIGO.');}},1000);}
-async function enviarSMS(to, message){var res = await fetch('/api/send-sms', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ to: to, message: message }) });var data = await res.json().catch(function(){return {}});if(!res.ok) throw new Error((data.error || 'No se pudo enviar SMS') + ' | ' + (data.details || data.message || 'sin detalle') + ' | status:' + res.status);return data;}
-async function verificarCodigoSMS(to, code){var res = await fetch('/api/verify-code', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ to: to, code: code }) });var data = await res.json().catch(function(){return {}});if(!res.ok || !data.ok) throw new Error(data.error || data.details || 'Código incorrecto');return data;}
-async function reenviarCodigoVerificacion(){if(!datosPendientes){alert('Vuelve a Activar Suscripción'); return;}try{await enviarSMS(datosPendientes.telefonoCompleto, 'REENVIAR');}catch(e){alert('No se pudo reenviar SMS: '+e.message); return;}iniciarTimer();var m=document.getElementById('msgVerif'); m.classList.remove('hidden'); m.innerHTML='✅ Te reenviamos el código por SMS a <b>'+enmascararTelefono(datosPendientes.telefono)+'</b>';}
+async function enviarSMS(to, message){var res = await fetch('/api/send-sms', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ to: to, message: message }) });var data = await res.json().catch(function(){return {}});console.log('SMS RESPUESTA:', res.status, data);if(!res.ok) throw new Error((data.error || 'No se pudo enviar SMS') + ' | ' + (data.details || data.message || 'sin detalle') + ' | status:' + res.status);return data;}
+async function reenviarCodigoVerificacion(){if(!datosPendientes){alert('Vuelve a Activar Suscripción'); return;}var codigo=Math.floor(100000+Math.random()*900000).toString();datosPendientes.codigo=codigo; datosPendientes.expira=Date.now()+120000;try{localStorage.setItem('wms_pendiente', JSON.stringify(datosPendientes));}catch(e){}try{await enviarSMS(datosPendientes.telefonoCompleto, 'Tu codigo WMS Check List es: '+codigo+'. Tienes 2 minutos para usarlo.');}catch(e){alert('No se pudo reenviar SMS: '+e.message); return;}iniciarTimer();var m=document.getElementById('msgVerif'); m.classList.remove('hidden'); m.innerHTML='✅ Te reenviamos el código por SMS a <b>'+enmascararTelefono(datosPendientes.telefono)+'</b>';}
 async function confirmarCodigoVerificacion(){
   var codigo=document.getElementById('codigoVerif').value.trim();
   if(!datosPendientes){ try{datosPendientes=JSON.parse(localStorage.getItem('wms_pendiente')||'null');}catch(e){} }
   if(!datosPendientes){alert('No hay registro pendiente. Vuelve a Activar Suscripción.'); return;}
-  if(!/^\d{4,8}$/.test(codigo)){alert('Pon tu código que te llegó por SMS'); return;}
-  try{ await verificarCodigoSMS(datosPendientes.telefonoCompleto, codigo); }catch(e){ alert('Código incorrecto o vencido. Revisa tu SMS. ' + e.message); return; }
+  if(codigo!==datosPendientes.codigo){alert('Código incorrecto. Revisa tu SMS.'); return;}
+  if(Date.now()>datosPendientes.expira){alert('Código vencido. Dale a REENVIAR CÓDIGO.'); return;}
   if(!supabaseClient){alert('Sin internet'); return;}
   var res=await supabaseClient.from('empresas').insert([{nombre_empresa:datosPendientes.empresa,correo:datosPendientes.correo,telefono:datosPendientes.telefono,pass:datosPendientes.pass,estado:'prueba'}]).select().single();
   if(res.error){alert('No se pudo crear: '+res.error.message); return;}
@@ -347,9 +346,10 @@ async function registrar(){
   if(!correo){alert('Pon tu correo');return}
   if(telefono.length<10){alert('Pon tu teléfono de 10 dígitos para SMS');return}
   var telefonoCompleto='+52'+telefono.slice(-10);
-  datosPendientes={empresa:emp,nombre:nombre,correo:correo,telefono:telefono,telefonoCompleto:telefonoCompleto,pass:p1};
+  var codigo=Math.floor(100000+Math.random()*900000).toString();
+  datosPendientes={empresa:emp,nombre:nombre,correo:correo,telefono:telefono,telefonoCompleto:telefonoCompleto,pass:p1,codigo:codigo,expira:Date.now()+120000};
   try{localStorage.setItem('wms_pendiente', JSON.stringify(datosPendientes));}catch(e){}
-  try{await enviarSMS(telefonoCompleto, 'VERIFICACION');}catch(e){alert('No se pudo mandar el SMS: '+e.message);return;}
+  try{await enviarSMS(telefonoCompleto, 'Tu codigo WMS Check List es: '+codigo+'. Tienes 2 minutos para usarlo.');}catch(e){alert('No se pudo mandar el SMS: '+e.message);return;}
   document.getElementById('textoVerificacion').innerText='Te enviamos un código por SMS a '+enmascararTelefono(telefono);
   document.getElementById('codigoVerif').value='';
   var m=document.getElementById('msgVerif'); m.classList.remove('hidden'); m.innerHTML='✅ Te mandamos tu código por SMS a <b>'+enmascararTelefono(telefono)+'</b>';
@@ -368,11 +368,12 @@ async function enviarRecuperacion(){
   m.innerHTML='⏳ Mandando tu código por SMS...';
   if(res.data){
     document.getElementById('nuevoPassCorreo').value=res.data.correo||'';
-    try{localStorage.setItem('wms_codigo_recuperacion', JSON.stringify({correo:res.data.correo, telefono:telefonoCompleto, expira:Date.now()+10*60*1000}));}catch(e){}
+    var codigo=Math.floor(100000+Math.random()*900000).toString();
+    try{localStorage.setItem('wms_codigo_recuperacion', JSON.stringify({codigo:codigo, correo:res.data.correo, expira:Date.now()+10*60*1000}));}catch(e){}
     try{
-      await enviarSMS(telefonoCompleto, 'VERIFICACION');
+      await enviarSMS(telefonoCompleto, 'Tu codigo WMS Check List es: '+codigo+'. Tienes 10 minutos para usarlo.');
       m.innerHTML='✅ ¡Listo! Te mandamos tu código por SMS a <b>'+enmascararTelefono(telefono)+'</b>.<br>1. Pon tu código de 6 dígitos<br>2. Crear contraseña nueva y Actualizar';
-    }catch(e){ m.innerHTML='❌ No se pudo mandar el SMS: '+e.message; return; }
+    }catch(e){ m.innerHTML='❌ No se pudo mandar el SMS: '+e.message+'<br>¿Tu número está verificado en Twilio? En cuenta de prueba solo deja mandar a números verificados.'; return; }
     setTimeout(function(){show('p-nueva-pass')}, 1200);
   } else {
     m.innerHTML='✅ ¡Listo! Si ese número está registrado, te mandamos tu código por SMS a <b>'+enmascararTelefono(telefono)+'</b>.';
@@ -383,9 +384,7 @@ async function actualizarPass(){
   if(n1!==n2){alert('Las contraseñas no coinciden');return}
   if(n1.length<4){alert('Mínimo 4 caracteres');return}
   var guardado=null; try{guardado=JSON.parse(localStorage.getItem('wms_codigo_recuperacion')||'null');}catch(e){}
-  if(!guardado){alert('Pide otro código.');return}
-  try{ await verificarCodigoSMS(guardado.telefono, codigoIngresado); }catch(e){ alert('Código incorrecto o vencido. Pide otro código.'); return; }
-  if(guardado.correo!==correo){alert('Ese código no es de ese correo.'); return;}
+  if(!guardado || guardado.codigo!==codigoIngresado || Date.now()>guardado.expira || guardado.correo!==correo){alert('Código incorrecto o vencido. Pide otro código.');return}
   if(!supabaseClient){alert('Sin internet');return}
   var res=await supabaseClient.from('empresas').update({pass:n1}).eq('correo',correo);
   if(res.error){alert('No se pudo: '+res.error.message);return}
