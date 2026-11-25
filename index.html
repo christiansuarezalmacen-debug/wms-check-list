@@ -89,15 +89,15 @@ select option{color:#000;background:#fff}label{font-size:13px;opacity:.85;displa
 <div class="top"><span onclick="show('p2-admin')" style="cursor:pointer">←</span><b>Activar Suscripción</b><span></span></div>
 <div class="precio"><b>7 DÍAS GRATIS</b><span>Después $99 / mes • Cancela cuando quieras</span><span>Usuarios ilimitados</span></div>
 <form onsubmit="event.preventDefault();registrar()">
-<label>*Nombre de la Empresa</label><input id="empresa" required autocomplete="organization">
+<label>*Nombre de la empresa</label><input id="empresa" required autocomplete="organization">
 <label>*Nombre y Apellido</label><input id="regNombre" required autocomplete="name">
-<label>*Numero Celular para SMS</label><input id="regTelefono" type="tel" inputmode="numeric" required maxlength="14">
-<label>*Correo Electrónico</label><input id="regCorreo" type="email" required autocomplete="email">
+<label>*Numero celular para SMS</label><input id="regTelefono" type="tel" inputmode="numeric" required maxlength="14">
+<label>*Correo electrónico</label><input id="regCorreo" type="email" required autocomplete="email">
 <label>*Contraseña</label><input id="pass1" type="password" required autocomplete="new-password">
 <ul class="req-list" id="reqList"><li id="req8">8 caracteres</li><li id="reqMay">1 Mayúscula</li><li id="reqMin">1 Minúscula</li><li id="reqEsp">1 Caracter especial @$#%&</li></ul>
 <label>*Confirma tu contraseña</label><input id="pass2" type="password" required autocomplete="new-password">
 <label style="display:flex;align-items:center;gap:8px"><input type="checkbox" id="verPass" onclick="verContrasena()" style="width:18px;margin:0"> Ver contraseña</label>
-<p style="font-size:12px;opacity:.8;margin:10px 0 4px">* Los campos marcados con * son obligatorios</p>
+<p style="font-size:12px;opacity:.8;margin:10px 0 4px">Los campos marcados con * son obligatorios</p>
 <label class="check-terminos"><input type="checkbox" id="aceptoTerminos" required><span>Acepto términos y condiciones <b class="ver-link" onclick="abrirLegal('terminos')">Ver</b></span></label>
 <label class="check-terminos"><input type="checkbox" id="aceptoPrivacidad" required><span>He leído aviso de privacidad <b class="ver-link" onclick="abrirLegal('privacidad')">Ver</b></span></label>
 <p style="font-size:12px;opacity:.8;text-align:center;margin:6px 0 12px">No compartiremos tus datos con terceros.</p>
