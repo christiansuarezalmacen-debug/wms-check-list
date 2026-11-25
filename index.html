@@ -56,9 +56,10 @@ select option{color:#000;background:#fff}label{font-size:13px;opacity:.85;displa
 .check-terminos{display:flex;gap:10px;align-items:flex-start;background:#132A4D;border:1px solid #1E3A5F;border-radius:12px;padding:12px;margin:10px 0}
 .check-terminos input{width:20px;height:20px;margin:0;flex-shrink:0;accent-color:#FBBF24}
 .check-terminos span{font-size:12px;line-height:1.5;opacity:.9}
-.req-list{margin:2px 0 12px;padding:0;list-style:none}
-.req-list li{font-size:13px;color:#94A3B8;margin-bottom:4px;transition:color .2s}
-.req-list li.ok{color:#22C55E;font-weight:700}
+/* CORREGIDO - SOLO LETRITA VERDE, SIN CUADRO, SIN PALOMITA */
+.req-list{margin:2px 0 10px!important;padding:0!important;list-style:none!important;background:none!important;background-color:transparent!important}
+.req-list li{background:transparent!important;background-color:transparent!important;border:none!important;border-radius:0!important;padding:0!important;margin:0 0 3px 0!important;font-size:13px!important;color:#94A3B8!important;line-height:1.4!important;box-shadow:none!important}
+.req-list li.ok{background:transparent!important;background-color:transparent!important;border:none!important;color:#22C55E!important;font-weight:600!important}
 .input-ok{border:2px solid #22C55E!important}
 .input-mal{border:2px solid #EF4444!important}
 .ver-link{color:#FBBF24;cursor:pointer;font-weight:800}
@@ -88,7 +89,6 @@ select option{color:#000;background:#fff}label{font-size:13px;opacity:.85;displa
 <div class="link">¿Olvidaste tu contraseña? <b onclick="show('p-olvido')">Recuperarla</b></div>
 </div>
 
-<!-- REGISTRO NUEVO -->
 <div class="container hidden" id="p2-admin-registro" style="background:#0A1E3C">
 <div class="top"><span onclick="show('p2-admin')" style="cursor:pointer">←</span><b>Activar Suscripción</b><span></span></div>
 <div class="precio"><b>7 DÍAS GRATIS</b><span>Después $99 / mes • Cancela cuando quieras</span><span>Usuarios ilimitados</span></div>
@@ -115,7 +115,6 @@ select option{color:#000;background:#fff}label{font-size:13px;opacity:.85;displa
 <div class="link">¿Ya tienes cuenta? <b onclick="show('p2-admin')">Inicia Sesión</b></div>
 </div>
 
-<!-- VERIFICACION SMS -->
 <div class="container hidden" id="p-verificacion" style="background:#0A1E3C">
 <div class="top"><span onclick="show('p2-admin-registro')" style="cursor:pointer">←</span><b>Verificación SMS</b><span></span></div>
 <div class="saludo"><h2>Revisa tu SMS 📱</h2><p id="textoVerificacion">Te enviamos un código por SMS a tu número</p></div>
@@ -127,14 +126,12 @@ select option{color:#000;background:#fff}label{font-size:13px;opacity:.85;displa
 <div class="link">¿No te llegó el código? <b id="btnReenviar" onclick="reenviarCodigoVerificacion()">REENVIAR CÓDIGO</b></div>
 </div>
 
-<!-- FELICIDADES -->
 <div class="container hidden" id="p-felicidades" style="background:#0A1E3C">
 <div class="saludo"><h2>✅ ¡Felicidades!</h2><p>Has creado tu cuenta WMS Check List</p></div>
 <div class="card" style="text-align:center"><b>Ahora cuentas con 7 días de prueba Premium gratuita para que uses nuestra aplicación.</b><p style="font-size:13px;opacity:.85;margin-top:8px">Después $99 MXN al mes • Cancela cuando quieras</p></div>
 <button class="btn btn-yellow" onclick="irAlPanelDespuesRegistro()">CONTINUAR</button>
 </div>
 
-<!-- MODALES LEGALES -->
 <div id="modalTerminos" class="modal-legal" onclick="if(event.target===this)cerrarLegal()"><div class="box"><h3>Términos y Condiciones</h3><p><b>WMS Check List</b> te da 7 días gratis de prueba Premium. Después de la prueba se cobrarán $99 MXN al mes en automático hasta que canceles.</p><ul><li>Puedes cancelar cuando quieras desde tu panel.</li><li>Usuarios ilimitados dentro de tu empresa.</li><li>Eres responsable de cuidar tu contraseña y tu PIN.</li><li>No compartimos tus datos con terceros.</li></ul><p>Al activar tu suscripción aceptas estos términos.</p><button class="btn btn-blue" onclick="cerrarLegal()">Cerrar</button></div></div>
 <div id="modalPrivacidad" class="modal-legal" onclick="if(event.target===this)cerrarLegal()"><div class="box"><h3>Aviso de Privacidad</h3><p>Recabamos: nombre de empresa, nombre y apellido, celular, correo y contraseña para crear tu cuenta y verificarte por SMS.</p><ul><li>Usamos tus datos solo para darte el servicio y avisarte de tu suscripción.</li><li>No vendemos ni compartimos tus datos con terceros.</li><li>Puedes pedir que eliminemos tus datos escribiéndonos al correo de soporte.</li></ul><button class="btn btn-blue" onclick="cerrarLegal()">Cerrar</button></div></div>
 
@@ -347,11 +344,11 @@ function hoyISO(){return new Date().toISOString().slice(0,10)}
 function verContrasena(){try{var t=document.getElementById('verPass').checked?'text':'password';document.getElementById('pass1').type=t;document.getElementById('pass2').type=t;}catch(e){}}
 function abrirLegal(tipo){document.getElementById(tipo==='terminos'?'modalTerminos':'modalPrivacidad').style.display='flex';}
 function cerrarLegal(){document.getElementById('modalTerminos').style.display='none';document.getElementById('modalPrivacidad').style.display='none';}
-// --- VALIDACION CONTRASEÑA EN VIVO ---
+// --- VALIDACION CONTRASEÑA EN VIVO - SOLO LETRA VERDE ---
 function marcarReq(id, ok, texto){
   var el=document.getElementById(id); if(!el) return;
   el.classList.toggle('ok', ok);
-  el.textContent = (ok ? '✅ ' : '') + texto;
+  el.textContent = texto;
 }
 function validarPass(){
   var p1=document.getElementById('pass1').value||'';
@@ -378,7 +375,6 @@ function passEsValida(){
   var p=document.getElementById('pass1').value||'';
   return p.length>=8 && /[A-Z]/.test(p) && /[a-z]/.test(p) && /[@$#%&]/.test(p);
 }
-// --- VERIFICACION SMS ---
 var timerInterval=null, tiempoRestante=120, datosPendientes=null;
 function iniciarTimer(){
   clearInterval(timerInterval);
@@ -463,7 +459,8 @@ function activarSuscripcionGoogle(){alert('Aquí Google Play va a abrir su venta
 async function enviarSMS(to, message){
   var res = await fetch('/api/send-sms', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ to: to, message: message }) });
   var data = await res.json().catch(function(){return {}});
-  if(!res.ok) throw new Error(data.error || 'No se pudo enviar SMS');
+  console.log('SMS RESPUESTA:', res.status, data);
+  if(!res.ok) throw new Error((data.error || 'No se pudo enviar SMS') + ' | ' + (data.details || data.message || 'sin detalle') + ' | status:' + res.status);
   return data;
 }
 async function enviarRecuperacion(){
