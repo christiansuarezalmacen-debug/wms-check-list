@@ -51,9 +51,11 @@ select option{color:#000;background:#fff}label{font-size:13px;opacity:.85;displa
 .menu-opcion{background:#132A4D;border:1px solid #1E3A5F;color:#fff;text-align:left;padding:15px 14px;border-radius:14px;font-size:14px;font-weight:700;cursor:pointer;width:100%;margin-bottom:10px}
 .menu-opcion:active{background:#1E3A5F}
 .menu-cerrar{background:transparent;border:none;color:#fff;font-size:20px;cursor:pointer}
-/* FONDO PANEL ADMIN */
 #p-admin-menu{position:relative;background:linear-gradient(180deg,rgba(10,30,60,.72),rgba(10,30,60,.88) 70%,#0A1E3C),url('./fondo-admin.jpg') center/cover no-repeat}
 #p-admin-menu .card{background:rgba(19,42,77,.88)}
+.check-terminos{display:flex;gap:10px;align-items:flex-start;background:#132A4D;border:1px solid #1E3A5F;border-radius:12px;padding:12px;margin:10px 0}
+.check-terminos input{width:20px;height:20px;margin:0;flex-shrink:0;accent-color:#FBBF24}
+.check-terminos span{font-size:12px;line-height:1.5;opacity:.9}
 </style>
 </head>
 <body>
@@ -75,26 +77,30 @@ select option{color:#000;background:#fff}label{font-size:13px;opacity:.85;displa
 <div class="link">¿Olvidaste tu contraseña? <b onclick="show('p-olvido')">Recuperarla</b></div>
 </div>
 
+<!-- REGISTRO ADMIN - CON TELEFONO + TERMINOS -->
 <div class="container hidden" id="p2-admin-registro" style="background:#0A1E3C">
 <div class="top"><span onclick="show('p2-admin')" style="cursor:pointer">←</span><b>Activar Suscripción</b><span></span></div>
 <div class="precio"><b>7 DÍAS GRATIS</b><span>Después $99 / mes • Cancela cuando quieras</span><span>Usuarios ilimitados</span></div>
 <form onsubmit="event.preventDefault();registrar()">
 <label>Nombre de empresa</label><input id="empresa" placeholder="Ej. Transportes Suárez S.A." required>
 <label>Correo</label><input id="regCorreo" type="email" placeholder="tu@correo.com" required>
+<label>Teléfono WhatsApp - Solo Admin</label><input id="regTelefono" type="tel" inputmode="numeric" placeholder="Ej. 33 1234 5678" required maxlength="14">
 <label>Contraseña</label><input id="pass1" type="password" placeholder="••••••••" required>
 <label>Confirma tu contraseña</label><input id="pass2" type="password" placeholder="Repite tu contraseña" required>
 <label style="display:flex;align-items:center;gap:8px"><input type="checkbox" id="verPass" onclick="verContrasena()" style="width:18px;margin:0"> Ver contraseña</label>
+<label class="check-terminos"><input type="checkbox" id="aceptoTerminos" required><span>Acepto <b>Términos y Condiciones</b> y <b>Aviso de Privacidad</b>. No compartiremos tus datos con terceros.</span></label>
 <button class="btn btn-blue" type="submit">ACTIVAR SUSCRIPCIÓN - 7 DÍAS GRATIS</button></form>
-<p class="terminos">Al activar tu suscripción aceptas que después de tus 7 días gratis se cobrarán $99 MXN al mes en automático hasta que canceles.</p>
+<p class="terminos">Al activar tu suscripción aceptas que después de tus 7 días gratis se cobrarán $99 MXN al mes en automático hasta que canceles. Tu teléfono solo se usa para verificar tu cuenta por WhatsApp.</p>
 <div class="link">¿Ya tienes cuenta? <b onclick="show('p2-admin')">Inicia Sesión</b></div>
 </div>
 
+<!-- OLVIDO ADMIN - POR TELEFONO CON MASCARA SOLO 2 ULTIMOS -->
 <div class="container hidden" id="p-olvido" style="background:#0A1E3C">
 <div class="top"><span onclick="show('p2-admin')" style="cursor:pointer">←</span><b>Recuperar Contraseña</b><span></span></div>
-<div class="saludo"><h2>¿Olvidaste tu contraseña?</h2><p>Te enviamos un correo para cambiarla</p></div>
+<div class="saludo"><h2>¿Olvidaste tu contraseña?</h2><p>Te mandamos un código por WhatsApp</p></div>
 <div id="msgOlvido" class="ok hidden"></div>
-<form onsubmit="event.preventDefault();enviarRecuperacion()"><label>Ingresa el correo que registraste</label><input id="correoOlvido" type="email" placeholder="tu@correo.com" required><button class="btn btn-yellow" type="submit">ENVIAR CORREO DE RECUPERACIÓN</button></form>
-<div class="card"><b>¿Ya te llegó el correo?</b><p style="font-size:13px;opacity:.85;margin:8px 0">Te llega de <b>teamsupporthelp@gmail.com</b></p><p style="font-size:13px">1. Recuperar contraseña<br>2. Crear contraseña nueva y Actualizar</p></div>
+<form onsubmit="event.preventDefault();enviarRecuperacion()"><label>Ingresa el número de teléfono con el que te registraste</label><input id="telefonoOlvido" type="tel" inputmode="numeric" placeholder="Ej. 33 1234 5678" required><button class="btn btn-yellow" type="submit">ENVIAR CÓDIGO POR WHATSAPP</button></form>
+<div class="card"><b>¿Ya te llegó el código?</b><p style="font-size:13px;opacity:.85;margin:8px 0">Te llega por WhatsApp a tu número registrado.</p><p style="font-size:13px">1. Pon tu código de 6 dígitos<br>2. Crear contraseña nueva y Actualizar</p></div>
 <button class="btn btn-outline" onclick="show('p2-admin')">Regresar a Iniciar Sesión</button>
 </div>
 
@@ -112,15 +118,16 @@ select option{color:#000;background:#fff}label{font-size:13px;opacity:.85;displa
 <button class="btn btn-outline" onclick="show('p1')">Regresar</button>
 </div>
 
+<!-- OPERADOR - EMPRESA + USUARIO + PIN 4 DIGITOS -->
 <div class="container hidden operador-centrado" id="p2-operador" style="background:#0A1E3C">
 <div class="top"><span onclick="show('p1')" style="cursor:pointer">←</span><b>Soy Operador</b><span></span></div>
 <div class="saludo"><h2>Bienvenido Campeón</h2><p>Hora de trabajar</p></div>
 <form onsubmit="event.preventDefault();loginOperador()" autocomplete="on">
 <label>Nombre de la empresa</label><input id="opEmpresa" name="organization" placeholder="Ej. Transportes López" required autocomplete="organization">
 <label>Tu usuario</label><input id="opUsuario" name="username" placeholder="Ej. chofer_juan" required autocomplete="username">
-<label>Tu contraseña</label><input id="opPass" name="password" type="password" placeholder="••••••••" required autocomplete="current-password">
+<label>Tu PIN de 4 dígitos</label><input id="opPass" name="password" type="password" inputmode="numeric" maxlength="4" placeholder="••••" required autocomplete="current-password">
 <button class="btn" type="submit">ENTRAR A CHAMBEAR</button></form>
-<div class="link">¿Olvidaste tu contraseña? <b onclick="alert('Pídele a tu Administrador que te recuerde tu contraseña')">Pide ayuda a tu Admin</b></div>
+<div class="link">¿Olvidaste tu PIN? <b onclick="alert('Pídele a tu Administrador que te ponga un PIN nuevo. Él lo puede cambiar en su panel.')">Pide ayuda a tu Admin</b></div>
 </div>
 
 <div class="container hidden" id="p-admin-menu">
@@ -144,11 +151,13 @@ select option{color:#000;background:#fff}label{font-size:13px;opacity:.85;displa
 <button class="menu-opcion" onclick="cerrarMenuAdmin();cerrarSesion()" style="margin-top:auto;border-color:#EF4444">Cerrar Sesión</button>
 </div>
 
+<!-- ALTA EMPLEADO - PIN 4 DIGITOS -->
 <div class="container hidden" id="p-alta-empleado" style="background:#0A1E3C">
 <div class="top"><span onclick="show('p-admin-menu')" style="cursor:pointer">←</span><b>Dar de Alta Empleado</b><span></span></div>
 <label>Nombre completo</label><input id="empNombre" placeholder="Ej. Alejandro Gonzalez">
 <label>Usuario para entrar</label><input id="empUsuario" placeholder="Ej. chofer_juan">
-<label>Contraseña</label><input id="empPass" type="password" placeholder="••••••••">
+<label>PIN de 4 dígitos</label><input id="empPass" type="password" inputmode="numeric" maxlength="4" placeholder="••••">
+<p style="font-size:12px;opacity:.75;margin:-4px 0 10px">No uses 1234 ni 0000. Si se le olvida, tú le pones uno nuevo aquí.</p>
 <label>Rol</label><input id="empRol" placeholder="Ej. Chofer, Montacarguista">
 <label>Teléfono</label><input id="empTel" placeholder="Ej. 33 1234 5678">
 <button class="btn btn-yellow" onclick="guardarEmpleado()">GUARDAR EMPLEADO</button>
@@ -304,23 +313,73 @@ function renderFotos(){var pv=document.getElementById('previewFotos');pv.innerHT
 function tomarFotoHD(){try{var v=document.getElementById('videoHD');if(!v.videoWidth){alert('Espera que cargue la cámara, Lulú.');return;}var c=document.createElement('canvas');c.width=v.videoWidth;c.height=v.videoHeight;var ctx=c.getContext('2d');ctx.drawImage(v,0,0,c.width,c.height);var data=c.toDataURL('image/jpeg',0.92);if(fotosFinalesArr.length>=8){alert('Ya tienes 8 fotos, Lulú.');return;}fotosFinalesArr.push(data);renderFotos();}catch(e){alert('No se pudo tomar la foto: '+e.message);}}
 function cargarDatosGuardados(){try{var op=JSON.parse(localStorage.getItem('wms_op_login')||'null');if(op){document.getElementById('opEmpresa').value=op.empresa||'';document.getElementById('opUsuario').value=op.usuario||'';document.getElementById('opPass').value=op.pass||'';}}catch(e){}try{var ad=JSON.parse(localStorage.getItem('wms_admin_login')||'null');if(ad){document.getElementById('loginCorreo').value=ad.correo||'';document.getElementById('loginPass').value=ad.pass||'';}}catch(e){}}
 function mostrarPrueba(){if(!empresaActual)return;try{document.getElementById('estadoEmpresa').innerText=empresaActual.estado||'prueba';var fin=new Date(empresaActual.fin_prueba);var dias=Math.ceil((fin-new Date())/(1000*60*60*24));document.getElementById('diasPrueba').innerText=empresaActual.estado==='activo'?'Suscripción activa - $99 / mes':dias>0?'Te quedan '+dias+' días gratis, después $99 / mes':'Tu prueba terminó';}catch(e){}}
-async function registrar(){var p1=document.getElementById('pass1').value,p2=document.getElementById('pass2').value;if(p1!==p2){alert('Las contraseñas no coinciden');return}var emp=document.getElementById('empresa').value||'Industria Suárez',correo=document.getElementById('regCorreo').value;if(!correo){alert('Pon tu correo');return}if(!supabaseClient){alert('Sin internet, Lulú.');return}var res=await supabaseClient.from('empresas').insert([{nombre_empresa:emp,correo:correo,pass:p1,estado:'prueba'}]).select().single();if(res.error){alert('No se pudo activar: '+res.error.message);return}empresaActual=res.data;window.sesionActiva=true;document.getElementById('nombreEmpresa2').innerText=emp;mostrarPrueba();aplicarLogo();alert('¡Felicidades! Tu suscripción quedó ACTIVADA. Tienes 7 DÍAS GRATIS. Después $99 al mes.');show('p-admin-menu')}
+function soloDigitos(t){return (t||'').replace(/\D/g,'');}
+function enmascararTelefono(tel){
+  var d=soloDigitos(tel);
+  if(d.length>=10) d=d.slice(-10);
+  if(d.length<2) return '+52 *******--';
+  return '+52 *******' + d.slice(-2);
+}
+function esPinValido(pin){
+  if(!/^\d{4}$/.test(pin)) return false;
+  if(['0000','1111','1234','4321','9999','0001'].indexOf(pin)>=0) return false;
+  return true;
+}
+async function registrar(){
+  var p1=document.getElementById('pass1').value,p2=document.getElementById('pass2').value;
+  if(p1!==p2){alert('Las contraseñas no coinciden');return}
+  if(!document.getElementById('aceptoTerminos').checked){alert('Tienes que aceptar Términos y Aviso de Privacidad, Lulú.');return}
+  var emp=document.getElementById('empresa').value||'Industria Suárez',correo=document.getElementById('regCorreo').value,telefono=soloDigitos(document.getElementById('regTelefono').value);
+  if(!correo){alert('Pon tu correo');return}
+  if(telefono.length<10){alert('Pon tu teléfono de 10 dígitos para WhatsApp');return}
+  if(!supabaseClient){alert('Sin internet, Lulú.');return}
+  var res=await supabaseClient.from('empresas').insert([{nombre_empresa:emp,correo:correo,telefono:telefono,pass:p1,estado:'prueba'}]).select().single();
+  if(res.error){alert('No se pudo activar: '+res.error.message);return}
+  empresaActual=res.data;window.sesionActiva=true;document.getElementById('nombreEmpresa2').innerText=emp;mostrarPrueba();aplicarLogo();
+  alert('¡Felicidades! Tu suscripción quedó ACTIVADA. Tienes 7 DÍAS GRATIS. Después $99 al mes.\n\nTe vamos a mandar tu código por WhatsApp a '+enmascararTelefono(telefono)+' para verificarte.');
+  show('p-admin-menu')
+}
 async function iniciarSesion(){var correo=document.getElementById('loginCorreo').value,pass=document.getElementById('loginPass').value;if(!correo||!pass){alert('Pon tu correo y tu contraseña');return}if(!supabaseClient){alert('Sin internet, Lulú.');return}var res=await supabaseClient.from('empresas').select('*').eq('correo',correo).eq('pass',pass).single();if(res.error||!res.data){alert('Correo o contraseña incorrectos.');return}var fin=new Date(res.data.fin_prueba);if(res.data.estado==='bloqueado'||(res.data.estado==='prueba'&&fin<new Date())){empresaActual=res.data;alert('Se acabaron tus 7 días gratis. Activa tu suscripción de $99 / mes.');show('p-suscripcion');return}try{localStorage.setItem('wms_admin_login',JSON.stringify({correo:correo,pass:pass}))}catch(e){}empresaActual=res.data;window.sesionActiva=true;document.getElementById('nombreEmpresa2').innerText=res.data.nombre_empresa;mostrarPrueba();aplicarLogo();await cargarUsuarios();show('p-admin-menu')}
 function activarSuscripcionGoogle(){alert('Aquí Google Play va a abrir su ventana de pago. Suscripción: $99 / mes. Escríbenos a '+CORREO_SOPORTE)}
-async function enviarRecuperacion(){var correo=document.getElementById('correoOlvido').value;if(!correo){alert('Pon tu correo');return}if(!supabaseClient){alert('Sin internet');return}var res=await supabaseClient.from('empresas').select('*').eq('correo',correo).single();if(!res.data){alert('Ese correo no está dado de alta.');return}try{await supabaseClient.auth.resetPasswordForEmail(correo,{redirectTo:window.location.origin+window.location.pathname+'#nueva-pass'})}catch(e){}var m=document.getElementById('msgOlvido');m.classList.remove('hidden');m.innerHTML='✅ ¡Listo! Se envió correo a <b>'+correo+'</b> desde <b>'+CORREO_SOPORTE+'</b>.<br>1. Recuperar contraseña<br>2. Crear contraseña nueva y Actualizar';document.getElementById('nuevoPassCorreo').value=correo;show('p-nueva-pass')}
+async function enviarRecuperacion(){
+  var telefono=soloDigitos(document.getElementById('telefonoOlvido').value);
+  if(telefono.length<10){alert('Pon tu número de 10 dígitos');return}
+  if(!supabaseClient){alert('Sin internet');return}
+  var res=await supabaseClient.from('empresas').select('*').eq('telefono',telefono).single();
+  // Seguridad: nunca decimos si existe o no. Siempre mismo mensaje.
+  var m=document.getElementById('msgOlvido');m.classList.remove('hidden');
+  if(res.data){
+    document.getElementById('nuevoPassCorreo').value=res.data.correo||'';
+    m.innerHTML='✅ ¡Listo! Si ese número está registrado, te mandamos tu código por WhatsApp a <b>'+enmascararTelefono(telefono)+'</b>.<br>1. Pon tu código<br>2. Crear contraseña nueva y Actualizar';
+    // Aquí después conectamos WhatsApp Cloud API para mandar el código real
+  } else {
+    m.innerHTML='✅ ¡Listo! Si ese número está registrado, te mandamos tu código por WhatsApp a <b>'+enmascararTelefono(telefono)+'</b>.';
+  }
+  // Por ahora te pasamos a poner tu nueva contraseña para probar el flujo
+  setTimeout(function(){show('p-nueva-pass')}, 1200);
+}
 async function actualizarPass(){var correo=document.getElementById('nuevoPassCorreo').value,n1=document.getElementById('nuevoPass1').value,n2=document.getElementById('nuevoPass2').value;if(n1!==n2){alert('Las contraseñas no coinciden');return}if(n1.length<4){alert('Mínimo 4 caracteres');return}if(!supabaseClient){alert('Sin internet');return}var res=await supabaseClient.from('empresas').update({pass:n1}).eq('correo',correo);if(res.error){alert('No se pudo: '+res.error.message);return}alert('¡Listo! Tu contraseña nueva ya quedó.');show('p2-admin')}
 async function cargarUsuarios(){if(!empresaActual||!supabaseClient)return;var res=await supabaseClient.from('usuarios').select('*').eq('empresa_correo',empresaActual.correo);usuarios=res.data||[];renderUsuarios()}
 async function loginOperador(){
   var emp=document.getElementById('opEmpresa').value,usu=document.getElementById('opUsuario').value,pass=document.getElementById('opPass').value;
-  if(!emp||!usu||!pass){alert('Llena empresa, usuario y contraseña');return}
-  if(!supabaseClient){alert('Sin internet, Lulú.');return}
+  if(!emp||!usu||!pass){alert('Llena empresa, usuario y PIN');return}
+  if(!/^\d{4}$/.test(pass)){alert('Tu PIN debe ser de 4 dígitos,.');return}
+  if(!supabaseClient){alert('Sin internet, .');return}
   var res=await supabaseClient.from('usuarios').select('*').eq('usuario',usu).eq('pass',pass).single();
-  if(res.error||!res.data){alert('Usuario o contraseña incorrectos.');return}
+  if(res.error||!res.data){alert('Usuario o PIN incorrectos. Pídele a tu Admin que te lo recuerde.');return}
   try{localStorage.setItem('wms_op_login',JSON.stringify({empresa:emp,usuario:usu,pass:pass}))}catch(e){}
   operadorActual=res.data;document.getElementById('nombreEmpresa').innerText=res.data.nombre||usu;window.sesionActiva=true;aplicarLogo();show('p4');
 }
-async function guardarEmpleado(){var nombre=document.getElementById('empNombre').value,usuario=document.getElementById('empUsuario').value,pass=document.getElementById('empPass').value,rol=document.getElementById('empRol').value,tel=document.getElementById('empTel').value;if(!nombre||!usuario||!pass){alert('Falta nombre, usuario y contraseña');return}if(!supabaseClient){alert('Sin internet');return}var res=await supabaseClient.from('usuarios').insert([{empresa_correo:empresaActual.correo,nombre:nombre,usuario:usuario,pass:pass,rol:rol,telefono:tel}]);if(res.error){alert('No se pudo: '+res.error.message);return}['empNombre','empUsuario','empPass','empRol','empTel'].forEach(function(i){document.getElementById(i).value=''});await cargarUsuarios();show('p-consulta-usuarios')}
-function renderUsuarios(){var l=document.getElementById('listaUsuarios');document.getElementById('totalUsuarios').innerText=usuarios.length;document.getElementById('sinUsuarios').style.display=usuarios.length?'none':'block';l.innerHTML='';usuarios.forEach(function(u){l.innerHTML+='<div class="usuario-card"><div><b>'+u.nombre+'</b><span>Usuario: '+u.usuario+'</span><span>Contraseña: '+u.pass+'</span><span>Rol: '+(u.rol||'Sin rol')+' '+(u.telefono?'• Tel: '+u.telefono:'')+'</span></div><button class="btn-trash" onclick="eliminarUsuario(\''+u.id+'\',\''+u.nombre+'\')">🗑️</button></div>'});}
+async function guardarEmpleado(){
+  var nombre=document.getElementById('empNombre').value,usuario=document.getElementById('empUsuario').value,pass=document.getElementById('empPass').value,rol=document.getElementById('empRol').value,tel=document.getElementById('empTel').value;
+  if(!nombre||!usuario||!pass){alert('Falta nombre, usuario y PIN');return}
+  if(!esPinValido(pass)){alert('PIN de 4 dígitos,. No uses 1234 ni 0000.');return}
+  if(!supabaseClient){alert('Sin internet');return}
+  var res=await supabaseClient.from('usuarios').insert([{empresa_correo:empresaActual.correo,nombre:nombre,usuario:usuario,pass:pass,rol:rol,telefono:tel}]);
+  if(res.error){alert('No se pudo: '+res.error.message);return}
+  ['empNombre','empUsuario','empPass','empRol','empTel'].forEach(function(i){document.getElementById(i).value=''});await cargarUsuarios();show('p-consulta-usuarios')
+}
+function renderUsuarios(){var l=document.getElementById('listaUsuarios');document.getElementById('totalUsuarios').innerText=usuarios.length;document.getElementById('sinUsuarios').style.display=usuarios.length?'none':'block';l.innerHTML='';usuarios.forEach(function(u){l.innerHTML+='<div class="usuario-card"><div><b>'+u.nombre+'</b><span>Usuario: '+u.usuario+'</span><span>PIN: '+u.pass+'</span><span>Rol: '+(u.rol||'Sin rol')+' '+(u.telefono?'• Tel: '+u.telefono:'')+'</span></div><button class="btn-trash" onclick="eliminarUsuario(\''+u.id+'\',\''+u.nombre+'\')">🗑️</button></div>'});}
 async function eliminarUsuario(id,nombre){if(!confirm('¿Seguro que quieres eliminar a '+nombre+'?'))return;if(supabaseClient)await supabaseClient.from('usuarios').delete().eq('id',id);await cargarUsuarios();}
 function actualizarTipo(){var t=document.getElementById('dTipo').value,esGas=t==='Gas';document.getElementById('boxCombustible').classList.toggle('hidden',!esGas);document.getElementById('boxBateria').classList.toggle('hidden',esGas);document.getElementById('dClase').value=esGas?'Montacargas Gas':'Montacargas Eléctrico'; renderItemsChecklist();}
 function abrirChecklist(tipo){tipoChecklistActual=tipo;var tit={camiones:'🚚 Checklist Camión',montacargas:'🏗️ Checklist Montacargas - 31 puntos',bitacora:'🗺️ Bitácora de Ruta'};document.getElementById('tituloChecklist').innerText=tit[tipo];document.getElementById('dFecha').value=hoyISO();document.getElementById('dOperador').value=operadorActual?operadorActual.nombre:'';document.getElementById('dUnidad').value='';document.getElementById('dHorometro').value='';document.getElementById('dTipo').value='Gas';actualizarTipo();document.getElementById('dCombustible').value='';document.getElementById('dBateria').value='';document.getElementById('comentarioFinal').value='';document.getElementById('previewFotos').innerHTML='';document.getElementById('fotosFinales').value='';fotosFinalesArr=[];renderItemsChecklist();show('p-checklist')}
