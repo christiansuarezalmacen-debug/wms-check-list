@@ -77,7 +77,6 @@ select option{color:#000;background:#fff}label{font-size:13px;opacity:.85;displa
 <div class="link">¿Olvidaste tu contraseña? <b onclick="show('p-olvido')">Recuperarla</b></div>
 </div>
 
-<!-- REGISTRO ADMIN - CON TELEFONO + TERMINOS -->
 <div class="container hidden" id="p2-admin-registro" style="background:#0A1E3C">
 <div class="top"><span onclick="show('p2-admin')" style="cursor:pointer">←</span><b>Activar Suscripción</b><span></span></div>
 <div class="precio"><b>7 DÍAS GRATIS</b><span>Después $99 / mes • Cancela cuando quieras</span><span>Usuarios ilimitados</span></div>
@@ -94,20 +93,19 @@ select option{color:#000;background:#fff}label{font-size:13px;opacity:.85;displa
 <div class="link">¿Ya tienes cuenta? <b onclick="show('p2-admin')">Inicia Sesión</b></div>
 </div>
 
-<!-- OLVIDO ADMIN - POR TELEFONO CON MASCARA SOLO 2 ULTIMOS -->
 <div class="container hidden" id="p-olvido" style="background:#0A1E3C">
 <div class="top"><span onclick="show('p2-admin')" style="cursor:pointer">←</span><b>Recuperar Contraseña</b><span></span></div>
-<div class="saludo"><h2>¿Olvidaste tu contraseña?</h2><p>Te mandamos un código por WhatsApp</p></div>
+<div class="saludo"><h2>¿Olvidaste tu contraseña?</h2><p>Te mandamos un código por SMS</p></div>
 <div id="msgOlvido" class="ok hidden"></div>
-<form onsubmit="event.preventDefault();enviarRecuperacion()"><label>Ingresa el número de teléfono con el que te registraste</label><input id="telefonoOlvido" type="tel" inputmode="numeric" placeholder="Ej. 33 1234 5678" required><button class="btn btn-yellow" type="submit">ENVIAR CÓDIGO POR WHATSAPP</button></form>
-<div class="card"><b>¿Ya te llegó el código?</b><p style="font-size:13px;opacity:.85;margin:8px 0">Te llega por WhatsApp a tu número registrado.</p><p style="font-size:13px">1. Pon tu código de 6 dígitos<br>2. Crear contraseña nueva y Actualizar</p></div>
+<form onsubmit="event.preventDefault();enviarRecuperacion()"><label>Ingresa el número de teléfono con el que te registraste</label><input id="telefonoOlvido" type="tel" inputmode="numeric" placeholder="Ej. 33 1234 5678" required><button class="btn btn-yellow" type="submit">ENVIAR CÓDIGO POR SMS</button></form>
+<div class="card"><b>¿Ya te llegó el código?</b><p style="font-size:13px;opacity:.85;margin:8px 0">Te llega por SMS a tu número registrado.</p><p style="font-size:13px">1. Pon tu código de 6 dígitos<br>2. Crear contraseña nueva y Actualizar</p></div>
 <button class="btn btn-outline" onclick="show('p2-admin')">Regresar a Iniciar Sesión</button>
 </div>
 
 <div class="container hidden" id="p-nueva-pass" style="background:#0A1E3C">
 <div class="top"><span onclick="show('p2-admin')" style="cursor:pointer">←</span><b>Nueva Contraseña</b><span></span></div>
 <div class="saludo"><h2>Crea tu contraseña nueva</h2><p>Ya casi terminas</p></div>
-<form onsubmit="event.preventDefault();actualizarPass()"><label>Tu correo</label><input id="nuevoPassCorreo" type="email" required><label>Contraseña nueva</label><input id="nuevoPass1" type="password" required><label>Confirma contraseña nueva</label><input id="nuevoPass2" type="password" required><button class="btn btn-yellow" type="submit">ACTUALIZAR CONTRASEÑA</button></form>
+<form onsubmit="event.preventDefault();actualizarPass()"><label>Código de 6 dígitos que te llegó por SMS</label><input id="codigoRecuperacion" type="tel" inputmode="numeric" maxlength="6" placeholder="Ej. 123456" required><label>Tu correo</label><input id="nuevoPassCorreo" type="email" required><label>Contraseña nueva</label><input id="nuevoPass1" type="password" required><label>Confirma contraseña nueva</label><input id="nuevoPass2" type="password" required><button class="btn btn-yellow" type="submit">ACTUALIZAR CONTRASEÑA</button></form>
 </div>
 
 <div class="container hidden" id="p-suscripcion" style="background:#0A1E3C">
@@ -118,7 +116,6 @@ select option{color:#000;background:#fff}label{font-size:13px;opacity:.85;displa
 <button class="btn btn-outline" onclick="show('p1')">Regresar</button>
 </div>
 
-<!-- OPERADOR - EMPRESA + USUARIO + PIN 4 DIGITOS -->
 <div class="container hidden operador-centrado" id="p2-operador" style="background:#0A1E3C">
 <div class="top"><span onclick="show('p1')" style="cursor:pointer">←</span><b>Soy Operador</b><span></span></div>
 <div class="saludo"><h2>Bienvenido Campeón</h2><p>Hora de trabajar</p></div>
@@ -151,7 +148,6 @@ select option{color:#000;background:#fff}label{font-size:13px;opacity:.85;displa
 <button class="menu-opcion" onclick="cerrarMenuAdmin();cerrarSesion()" style="margin-top:auto;border-color:#EF4444">Cerrar Sesión</button>
 </div>
 
-<!-- ALTA EMPLEADO - PIN 4 DIGITOS -->
 <div class="container hidden" id="p-alta-empleado" style="background:#0A1E3C">
 <div class="top"><span onclick="show('p-admin-menu')" style="cursor:pointer">←</span><b>Dar de Alta Empleado</b><span></span></div>
 <label>Nombre completo</label><input id="empNombre" placeholder="Ej. Alejandro Gonzalez">
@@ -336,29 +332,53 @@ async function registrar(){
   var res=await supabaseClient.from('empresas').insert([{nombre_empresa:emp,correo:correo,telefono:telefono,pass:p1,estado:'prueba'}]).select().single();
   if(res.error){alert('No se pudo activar: '+res.error.message);return}
   empresaActual=res.data;window.sesionActiva=true;document.getElementById('nombreEmpresa2').innerText=emp;mostrarPrueba();aplicarLogo();
-  alert('¡Felicidades! Tu suscripción quedó ACTIVADA. Tienes 7 DÍAS GRATIS. Después $99 al mes.\n\nTe vamos a mandar tu código por WhatsApp a '+enmascararTelefono(telefono)+' para verificarte.');
+  alert('¡Felicidades! Tu suscripción quedó ACTIVADA. Tienes 7 DÍAS GRATIS. Después $99 al mes.\n\nTe vamos a mandar tu código por SMS a '+enmascararTelefono(telefono)+' para verificarte.');
   show('p-admin-menu')
 }
 async function iniciarSesion(){var correo=document.getElementById('loginCorreo').value,pass=document.getElementById('loginPass').value;if(!correo||!pass){alert('Pon tu correo y tu contraseña');return}if(!supabaseClient){alert('Sin internet, Lulú.');return}var res=await supabaseClient.from('empresas').select('*').eq('correo',correo).eq('pass',pass).single();if(res.error||!res.data){alert('Correo o contraseña incorrectos.');return}var fin=new Date(res.data.fin_prueba);if(res.data.estado==='bloqueado'||(res.data.estado==='prueba'&&fin<new Date())){empresaActual=res.data;alert('Se acabaron tus 7 días gratis. Activa tu suscripción de $99 / mes.');show('p-suscripcion');return}try{localStorage.setItem('wms_admin_login',JSON.stringify({correo:correo,pass:pass}))}catch(e){}empresaActual=res.data;window.sesionActiva=true;document.getElementById('nombreEmpresa2').innerText=res.data.nombre_empresa;mostrarPrueba();aplicarLogo();await cargarUsuarios();show('p-admin-menu')}
 function activarSuscripcionGoogle(){alert('Aquí Google Play va a abrir su ventana de pago. Suscripción: $99 / mes. Escríbenos a '+CORREO_SOPORTE)}
+async function enviarSMS(to, message){
+  var res = await fetch('/api/send-sms', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ to: to, message: message }) });
+  var data = await res.json().catch(function(){return {}});
+  if(!res.ok) throw new Error(data.error || 'No se pudo enviar SMS');
+  return data;
+}
 async function enviarRecuperacion(){
   var telefono=soloDigitos(document.getElementById('telefonoOlvido').value);
   if(telefono.length<10){alert('Pon tu número de 10 dígitos');return}
   if(!supabaseClient){alert('Sin internet');return}
+  var telefonoCompleto='+52'+telefono.slice(-10);
   var res=await supabaseClient.from('empresas').select('*').eq('telefono',telefono).single();
-  // Seguridad: nunca decimos si existe o no. Siempre mismo mensaje.
   var m=document.getElementById('msgOlvido');m.classList.remove('hidden');
+  m.innerHTML='⏳ Mandando tu código por SMS...';
   if(res.data){
     document.getElementById('nuevoPassCorreo').value=res.data.correo||'';
-    m.innerHTML='✅ ¡Listo! Si ese número está registrado, te mandamos tu código por WhatsApp a <b>'+enmascararTelefono(telefono)+'</b>.<br>1. Pon tu código<br>2. Crear contraseña nueva y Actualizar';
-    // Aquí después conectamos WhatsApp Cloud API para mandar el código real
+    var codigo=Math.floor(100000+Math.random()*900000).toString();
+    try{localStorage.setItem('wms_codigo_recuperacion', JSON.stringify({codigo:codigo, correo:res.data.correo, expira:Date.now()+10*60*1000}));}catch(e){}
+    try{
+      await enviarSMS(telefonoCompleto, 'Tu codigo WMS Check List es: '+codigo+'. Tienes 10 minutos para usarlo.');
+      m.innerHTML='✅ ¡Listo! Te mandamos tu código por SMS a <b>'+enmascararTelefono(telefono)+'</b>.<br>1. Pon tu código de 6 dígitos<br>2. Crear contraseña nueva y Actualizar';
+    }catch(e){
+      m.innerHTML='❌ No se pudo mandar el SMS: '+e.message+'<br>¿Tu número está verificado en Twilio? En cuenta de prueba solo deja mandar a números verificados.';
+      return;
+    }
+    setTimeout(function(){show('p-nueva-pass')}, 1200);
   } else {
-    m.innerHTML='✅ ¡Listo! Si ese número está registrado, te mandamos tu código por WhatsApp a <b>'+enmascararTelefono(telefono)+'</b>.';
+    m.innerHTML='✅ ¡Listo! Si ese número está registrado, te mandamos tu código por SMS a <b>'+enmascararTelefono(telefono)+'</b>.';
   }
-  // Por ahora te pasamos a poner tu nueva contraseña para probar el flujo
-  setTimeout(function(){show('p-nueva-pass')}, 1200);
 }
-async function actualizarPass(){var correo=document.getElementById('nuevoPassCorreo').value,n1=document.getElementById('nuevoPass1').value,n2=document.getElementById('nuevoPass2').value;if(n1!==n2){alert('Las contraseñas no coinciden');return}if(n1.length<4){alert('Mínimo 4 caracteres');return}if(!supabaseClient){alert('Sin internet');return}var res=await supabaseClient.from('empresas').update({pass:n1}).eq('correo',correo);if(res.error){alert('No se pudo: '+res.error.message);return}alert('¡Listo! Tu contraseña nueva ya quedó.');show('p2-admin')}
+async function actualizarPass(){
+  var correo=document.getElementById('nuevoPassCorreo').value, codigoIngresado=document.getElementById('codigoRecuperacion').value, n1=document.getElementById('nuevoPass1').value, n2=document.getElementById('nuevoPass2').value;
+  if(n1!==n2){alert('Las contraseñas no coinciden');return}
+  if(n1.length<4){alert('Mínimo 4 caracteres');return}
+  var guardado=null; try{guardado=JSON.parse(localStorage.getItem('wms_codigo_recuperacion')||'null');}catch(e){}
+  if(!guardado || guardado.codigo!==codigoIngresado || Date.now()>guardado.expira || guardado.correo!==correo){alert('Código incorrecto o vencido. Pide otro código.');return}
+  if(!supabaseClient){alert('Sin internet');return}
+  var res=await supabaseClient.from('empresas').update({pass:n1}).eq('correo',correo);
+  if(res.error){alert('No se pudo: '+res.error.message);return}
+  try{localStorage.removeItem('wms_codigo_recuperacion');}catch(e){}
+  alert('¡Listo! Tu contraseña nueva ya quedó.');show('p2-admin')
+}
 async function cargarUsuarios(){if(!empresaActual||!supabaseClient)return;var res=await supabaseClient.from('usuarios').select('*').eq('empresa_correo',empresaActual.correo);usuarios=res.data||[];renderUsuarios()}
 async function loginOperador(){
   var emp=document.getElementById('opEmpresa').value,usu=document.getElementById('opUsuario').value,pass=document.getElementById('opPass').value;
