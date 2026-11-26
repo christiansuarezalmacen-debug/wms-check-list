@@ -96,7 +96,18 @@
 <img id="logoAdmin" class="logo-cliente" src="./icon-512.png" style="margin-bottom:12px">
 <div class="saludo"><h2>Hola, <span id="nombreEmpresa2">Administrador</span></h2><p>¿Qué vas a revisar hoy?</p></div>
 <div class="card"><b>⏳ Tu suscripción:</b> <span id="diasPrueba">7 días gratis</span><br><span style="font-size:12px;opacity:.8">Después: $99 / mes • Estado: <b id="estadoEmpresa">prueba</b></span></div>
-<div class="card"><b>🖼️ TU LOGO AQUÍ</b><p style="font-size:12px;opacity:.8;margin:6px 0 10px">Sube el logo de tu empresa.</p><input type="file" id="inputLogo" accept="image/*" onchange="subirLogo(event)" style="padding:10px"><button class="btn btn-outline" style="padding:12px;margin:0" onclick="document.getElementById('inputLogo').click()">SUBIR MI LOGO</button></div>
+<div class="card" style="padding:16px">
+<div style="text-align:center;background:#f8fafc;border:2px dashed #e2e8f0;border-radius:16px;padding:18px 12px">
+<div style="font-size:12px;color:#64748b;margin-bottom:10px">Logo de tu empresa</div>
+<img id="prevLogo" src="" style="max-width:160px;max-height:90px;object-fit:contain;border-radius:10px;display:none;margin:0 auto 8px;background:#fff;padding:6px;box-shadow:0 2px 8px rgba(0,0,0,.06)">
+<div id="sinLogoTxt" style="font-size:12px;color:#94a3b8;margin-bottom:8px">Sin logo aún</div>
+<input type="file" id="logoFile" accept="image/*" onchange="subirLogo(event)" style="display:none">
+<input type="file" id="inputLogo" accept="image/*" onchange="subirLogo(event)" style="display:none">
+<button type="button" onclick="document.getElementById('logoFile').click()" style="background:#111827;color:#fff;border:none;padding:9px 16px;border-radius:999px;font-weight:700;font-size:13px;cursor:pointer">📤 Subir mi logo</button>
+<div><span onclick="eliminarLogo()" id="btnEliminarLogo" style="font-size:12px;color:#ef4444;text-decoration:underline;cursor:pointer;display:none;margin-top:10px">Eliminar logo</span></div>
+<div style="font-size:11px;color:#94a3b8;margin-top:6px">PNG o JPG • Se ve mejor en fondo blanco</div>
+</div>
+</div>
 <p style="font-size:12px;opacity:.75;text-align:center;margin-top:8px">Usa el botón Menú en la esquina para ver todas las opciones.</p>
 </div>
 <div id="menuOverlayAdmin" class="menu-overlay" onclick="cerrarMenuAdmin()"></div>
