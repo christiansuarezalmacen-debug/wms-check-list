@@ -92,9 +92,9 @@
 <div class="link">¿Olvidaste tu PIN? <b onclick="alert('Pídele a tu Administrador que te ponga un PIN nuevo. Él lo puede cambiar en su panel.')">Pide ayuda a tu Admin</b></div>
 </div>
 <div class="container hidden" id="p-admin-menu">
-<div class="top"><span onclick="show('p1')" style="cursor:pointer">←</span><b>Panel Administrador</b><button class="btn-menu-admin" onclick="abrirMenuAdmin()">☰ Menú</button></div>
+<div class="top" style="align-items:flex-start"><span onclick="show('p1')" style="cursor:pointer;margin-top:4px">←</span><div style="text-align:center;flex:1;line-height:1.2;min-width:0"><div style="font-size:13px;opacity:.8;font-weight:600">Bienvenido</div><b id="nombreEmpresaTop" style="font-size:16px;line-height:1.2;display:block;white-space:normal;word-break:break-word">Industrias Suarez</b></div><button class="btn-menu-admin" onclick="abrirMenuAdmin()">☰ Menú</button></div>
 <img id="logoAdmin" class="logo-cliente" src="./icon-512.png" style="margin-bottom:12px">
-<div class="saludo"><h2>Hola, <span id="nombreEmpresa2">Administrador</span></h2><p>¿Qué vas a revisar hoy?</p></div>
+<div class="saludo"><h2>Hola, <span id="nombreEmpresa2">Administrador</span></h2><p>¿Qué gestionamos hoy?</p></div>
 <div class="card"><b>⏳ Tu suscripción:</b> <span id="diasPrueba">7 días gratis</span><br><span style="font-size:12px;opacity:.8">Después: $99 / mes • Estado: <b id="estadoEmpresa">prueba</b></span></div>
 <div class="card" style="padding:16px">
 <div style="text-align:center;background:#f8fafc;border:2px dashed #e2e8f0;border-radius:16px;padding:18px 12px">
@@ -105,16 +105,16 @@
 <input type="file" id="inputLogo" accept="image/*" onchange="subirLogo(event)" style="display:none">
 <button type="button" onclick="document.getElementById('logoFile').click()" style="background:#111827;color:#fff;border:none;padding:9px 16px;border-radius:999px;font-weight:700;font-size:13px;cursor:pointer">📤 Subir mi logo</button>
 <div><span onclick="eliminarLogo()" id="btnEliminarLogo" style="font-size:12px;color:#ef4444;text-decoration:underline;cursor:pointer;display:none;margin-top:10px">Eliminar logo</span></div>
-<div style="font-size:11px;color:#94a3b8;margin-top:6px">PNG o JPG • Se ve mejor en fondo blanco</div>
+<div style="font-size:11px;color:#94a3b8;margin-top:6px">PNG o JPG</div>
 </div>
 </div>
-<p style="font-size:12px;opacity:.75;text-align:center;margin-top:8px">Usa el botón Menú en la esquina para ver todas las opciones.</p>
+<p style="font-size:12px;opacity:.75;text-align:center;margin-top:8px">Usa el botón Menú para ver todas las opciones.</p>
 </div>
 <div id="menuOverlayAdmin" class="menu-overlay" onclick="cerrarMenuAdmin()"></div>
 <div id="menuPanelAdmin" class="menu-panel">
 <div class="menu-panel-titulo"><b>Menú</b><button class="menu-cerrar" onclick="cerrarMenuAdmin()">✖</button></div>
 <button class="menu-opcion" onclick="irMenuAdmin('p-alta-empleado')">+ Dar de Alta Empleado</button>
-<button class="menu-opcion" onclick="irMenuAdmin('p-consulta-usuarios')">Dar de Baja Empleado</button>
+<button class="menu-opcion" onclick="irMenuAdmin('p-consulta-usuarios')">Consulta de Usuarios</button>
 <button class="menu-opcion" onclick="irMenuAdmin('p-consulta-montacargas')">Check List de Montacargas</button>
 <button class="menu-opcion" onclick="irMenuAdmin('p-consulta-camiones')">Check List de Vehiculos</button>
 <button class="menu-opcion" onclick="irMenuAdmin('p-consulta-bitacora')">Bitácora de Ruta</button>
