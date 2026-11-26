@@ -68,7 +68,10 @@ async function confirmarCodigoVerificacion(){
   clearInterval(timerInterval);
   try{localStorage.removeItem('wms_pendiente');}catch(e){}
   empresaActual=res.data; window.sesionActiva=true;
-  document.getElementById('nombreEmpresa2').innerText=datosPendientes.empresa;
+  try{localStorage.setItem('wms_admin_nombre', datosPendientes.nombre||'');}catch(e){}
+  try{localStorage.setItem('wms_empresa_nombre', datosPendientes.empresa||'');}catch(e){}
+  document.getElementById('nombreEmpresa2').innerText=datosPendientes.nombre||'Administrador';
+  var topE=document.getElementById('nombreEmpresaTop'); if(topE) topE.innerText=datosPendientes.empresa||'';
   mostrarPrueba(); aplicarLogo();
   show('p-felicidades');
 }
@@ -88,7 +91,6 @@ function aplicarLogo(){
     var btn=document.getElementById('btnEliminarLogo'); if(btn) btn.style.display = tieneLogo ? 'inline-block' : 'none';
   }catch(e){}
 }
-// ===== LOGO MEJORADO: mas bonito, mas chiquito, con eliminar y acepta mas grande =====
 function subirLogo(e){
   var f=e.target.files[0]; if(!f) return;
   if(f.size > 5*1024*1024){ alert('Ese logo pesa mucho. Elige uno de menos de 5MB.'); e.target.value=''; return; }
@@ -153,7 +155,10 @@ async function registrar(){
     if(resDirecto.error){alert('No se pudo crear: '+resDirecto.error.message); return;}
     try{localStorage.removeItem('wms_pendiente');}catch(e){}
     empresaActual=resDirecto.data; window.sesionActiva=true;
-    document.getElementById('nombreEmpresa2').innerText=emp;
+    try{localStorage.setItem('wms_admin_nombre', nombre);}catch(e){}
+    try{localStorage.setItem('wms_empresa_nombre', emp);}catch(e){}
+    document.getElementById('nombreEmpresa2').innerText=nombre;
+    var topEmp=document.getElementById('nombreEmpresaTop'); if(topEmp) topEmp.innerText=emp;
     mostrarPrueba(); aplicarLogo();
     show('p-felicidades');
     return;
@@ -176,7 +181,11 @@ async function iniciarSesion(){
   var fin=new Date(res.data.fin_prueba);
   if(res.data.estado==='bloqueado'||(res.data.estado==='prueba'&&fin<new Date())){empresaActual=res.data;alert('Se acabaron tus 7 días gratis. Activa tu suscripción de $99 / mes.');show('p-suscripcion');return}
   try{localStorage.setItem('wms_admin_login',JSON.stringify({correo:correo}))}catch(e){}
-  empresaActual=res.data;window.sesionActiva=true;document.getElementById('nombreEmpresa2').innerText=res.data.nombre_empresa;mostrarPrueba();aplicarLogo();await cargarUsuarios();show('p-admin-menu')
+  empresaActual=res.data;window.sesionActiva=true;
+  var nomAdmin=''; try{nomAdmin=localStorage.getItem('wms_admin_nombre')||'';}catch(e){}
+  document.getElementById('nombreEmpresa2').innerText= nomAdmin || 'Administrador';
+  var topEmp2=document.getElementById('nombreEmpresaTop'); if(topEmp2) topEmp2.innerText=res.data.nombre_empresa;
+  mostrarPrueba();aplicarLogo();await cargarUsuarios();show('p-admin-menu')
 }
 function activarSuscripcionGoogle(){alert('Aquí Google Play va a abrir su ventana de pago. Suscripción: $99 / mes. Escríbenos a '+CORREO_SOPORTE)}
 async function enviarRecuperacion(){
