@@ -74,8 +74,56 @@ async function confirmarCodigoVerificacion(){
 }
 function irAlPanelDespuesRegistro(){ if(empresaActual){ show('p-admin-menu'); } else { show('p2-admin'); } }
 function cerrarSesion(){window.sesionActiva=false;empresaActual=null;operadorActual=null;navStack=['p1'];cerrarMenuAdmin();show('p1')}
-function aplicarLogo(){try{document.getElementById('logoAdmin').src=logoEmpresaURL;document.getElementById('logoOperador').src=logoEmpresaURL;}catch(e){}}
-function subirLogo(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(){logoEmpresaURL=r.result;try{localStorage.setItem('wms_logo',logoEmpresaURL)}catch(err){}aplicarLogo();alert('¡Listo Lulú! Ya quedó tu logo.')};r.readAsDataURL(f);}
+function aplicarLogo(){
+  try{
+    var la=document.getElementById('logoAdmin'); if(la) la.src=logoEmpresaURL;
+    var lo=document.getElementById('logoOperador'); if(lo) lo.src=logoEmpresaURL;
+    var pv=document.getElementById('prevLogo');
+    var tieneLogo = logoEmpresaURL && logoEmpresaURL.indexOf('icon-512')===-1;
+    if(pv){
+      if(tieneLogo){ pv.src=logoEmpresaURL; pv.style.display='block'; }
+      else { pv.src=''; pv.style.display='none'; }
+    }
+    var sin=document.getElementById('sinLogoTxt'); if(sin) sin.style.display = tieneLogo ? 'none' : 'block';
+    var btn=document.getElementById('btnEliminarLogo'); if(btn) btn.style.display = tieneLogo ? 'inline-block' : 'none';
+  }catch(e){}
+}
+// ===== LOGO MEJORADO: mas bonito, mas chiquito, con eliminar y acepta mas grande =====
+function subirLogo(e){
+  var f=e.target.files[0]; if(!f) return;
+  if(f.size > 5*1024*1024){ alert('Ese logo pesa mucho. Elige uno de menos de 5MB.'); e.target.value=''; return; }
+  if(f.type.indexOf('image/')!==0){ alert('Elige una imagen PNG o JPG.'); e.target.value=''; return; }
+  var r=new FileReader();
+  r.onload=function(){
+    var img=new Image();
+    img.onload=function(){
+      try{
+        var maxW=600, maxH=600, w=img.width, h=img.height;
+        var scale=Math.min(1, maxW/w, maxH/h);
+        var cw=Math.round(w*scale), ch=Math.round(h*scale);
+        var c=document.createElement('canvas'); c.width=cw; c.height=ch;
+        var ctx=c.getContext('2d'); ctx.fillStyle='#ffffff'; ctx.fillRect(0,0,cw,ch);
+        ctx.drawImage(img,0,0,cw,ch);
+        var out = f.type==='image/png' ? c.toDataURL('image/png') : c.toDataURL('image/jpeg',0.9);
+        logoEmpresaURL=out;
+        try{localStorage.setItem('wms_logo',logoEmpresaURL)}catch(err){ alert('Logo guardado, pero es muy pesado para este cel. Intenta con uno mas chiquito.'); }
+        aplicarLogo();
+        alert('¡Listo! Ya quedó tu logo.');
+      }catch(err){ logoEmpresaURL=r.result; try{localStorage.setItem('wms_logo',logoEmpresaURL)}catch(e2){} aplicarLogo(); }
+    };
+    img.onerror=function(){ logoEmpresaURL=r.result; try{localStorage.setItem('wms_logo',logoEmpresaURL)}catch(e){} aplicarLogo(); };
+    img.src=r.result;
+  };
+  r.readAsDataURL(f);
+  e.target.value='';
+}
+function eliminarLogo(){
+  if(!confirm('¿Eliminar tu logo?')) return;
+  logoEmpresaURL='./icon-512.png';
+  try{localStorage.removeItem('wms_logo');}catch(e){}
+  aplicarLogo();
+  alert('Logo eliminado. Ya puedes subir otro.');
+}
 async function abrirCamaraHD(){var m=document.getElementById('camaraModal');m.style.display='flex';try{if(streamHD){streamHD.getTracks().forEach(function(t){t.stop()});}streamHD=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:1920,min:1280},height:{ideal:1080,min:720}}});var v=document.getElementById('videoHD');v.srcObject=streamHD;await v.play();}catch(e){alert('No se pudo abrir la cámara HD, Lulú. Revisa el permiso de cámara.\n'+e.message);document.getElementById('fotosFinales').click();}}
 function cerrarCamaraHD(){try{if(streamHD)streamHD.getTracks().forEach(function(t){t.stop()});}catch(e){}document.getElementById('camaraModal').style.display='none';}
 function renderFotos(){var pv=document.getElementById('previewFotos');pv.innerHTML='';fotosFinalesArr.forEach(function(data,idx){var wrap=document.createElement('div');wrap.className='foto-item';var img=document.createElement('img');img.src=data;img.className='preview-foto';var btn=document.createElement('button');btn.className='btn-borrar-foto';btn.innerHTML='×';btn.type='button';btn.onclick=function(){fotosFinalesArr.splice(idx,1);renderFotos();};wrap.appendChild(img);wrap.appendChild(btn);pv.appendChild(wrap);});}
