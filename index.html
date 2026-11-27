@@ -7,6 +7,49 @@
 <link rel="manifest" href="manifest.json"><link rel="icon" href="icon-192.png">
 <link rel="stylesheet" href="css/style.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  /* === CENTRADO BONITO - PANTALLAS PRINCIPALES === */
+  #p2-admin .top, #p2-admin-registro .top, #p2-operador .top,
+  #p-olvido .top, #p-nueva-pass .top, #p-cambiar-pin .top,
+  #p-alta-empleado .top, #p-verificacion .top {
+    justify-content: center !important;
+    text-align: center !important;
+  }
+  #p2-admin .top b, #p2-admin-registro .top b, #p2-operador .top b,
+  #p-olvido .top b, #p-nueva-pass .top b, #p-cambiar-pin .top b,
+  #p-alta-empleado .top b, #p-verificacion .top b {
+    flex: 1;
+    text-align: center !important;
+  }
+  #p2-admin .saludo, #p2-admin-registro .saludo, #p2-operador .saludo,
+  #p-olvido .saludo, #p-nueva-pass .saludo, #p-cambiar-pin .saludo,
+  #p-verificacion .saludo {
+    text-align: center !important;
+  }
+  #p2-admin .saludo h2, #p2-admin-registro .saludo h2, #p2-operador .saludo h2,
+  #p-olvido .saludo h2, #p-nueva-pass .saludo h2, #p-cambiar-pin .saludo h2 {
+    text-align: center !important;
+  }
+  #p2-admin label, #p2-admin-registro label, #p2-operador label,
+  #p-olvido label, #p-nueva-pass label, #p-cambiar-pin label,
+  #p-alta-empleado label {
+    display: block !important;
+    text-align: center !important;
+    font-weight: 700;
+    margin-top: 12px;
+  }
+  #p2-admin input, #p2-admin-registro input, #p2-operador input,
+  #p-olvido input, #p-nueva-pass input, #p-cambiar-pin input,
+  #p-alta-empleado input {
+    text-align: center !important;
+  }
+  #p2-admin .link, #p2-operador .link, #p2-admin-registro .link {
+    text-align: center !important;
+  }
+  #p2-admin-registro .precio {
+    text-align: center !important;
+  }
+</style>
 </head>
 <body>
 <div class="container" id="p1">
@@ -35,13 +78,13 @@
 <label>*Contraseña</label><input id="pass1" type="password" required autocomplete="new-password">
 <ul class="req-list" id="reqList"><li id="req8">8 caracteres</li><li id="reqMay">1 Mayúscula</li><li id="reqMin">1 Minúscula</li><li id="reqEsp">1 Caracter especial @$#%&</li></ul>
 <label>*Confirma tu contraseña</label><input id="pass2" type="password" required autocomplete="new-password">
-<label style="display:flex;align-items:center;gap:8px"><input type="checkbox" id="verPass" onclick="verContrasena()" style="width:18px;margin:0"> Ver contraseña</label>
-<p style="font-size:12px;opacity:.8;margin:10px 0 4px">Los campos marcados con * son obligatorios</p>
-<label class="check-terminos"><input type="checkbox" id="aceptoTerminos" required><span>Acepto términos y condiciones <b class="ver-link" onclick="abrirLegal('terminos')">Ver</b></span></label>
-<label class="check-terminos"><input type="checkbox" id="aceptoPrivacidad" required><span>He leído aviso de privacidad <b class="ver-link" onclick="abrirLegal('privacidad')">Ver</b></span></label>
+<label style="display:flex;align-items:center;gap:8px;justify-content:center"><input type="checkbox" id="verPass" onclick="verContrasena()" style="width:18px;margin:0"> Ver contraseña</label>
+<p style="font-size:12px;opacity:.8;margin:10px 0 4px;text-align:center">Los campos marcados con * son obligatorios</p>
+<label class="check-terminos" style="justify-content:center"><input type="checkbox" id="aceptoTerminos" required><span>Acepto términos y condiciones <b class="ver-link" onclick="abrirLegal('terminos')">Ver</b></span></label>
+<label class="check-terminos" style="justify-content:center"><input type="checkbox" id="aceptoPrivacidad" required><span>He leído aviso de privacidad <b class="ver-link" onclick="abrirLegal('privacidad')">Ver</b></span></label>
 <p style="font-size:12px;opacity:.8;text-align:center;margin:6px 0 12px">No compartiremos tus datos con terceros.</p>
 <button class="btn btn-blue" type="submit">ACTIVAR SUSCRIPCIÓN - 7 DÍAS GRATIS</button></form>
-<p class="terminos">Al activar tu suscripción aceptas que después de tus 7 días gratis se cobrarán $99 MXN al mes en automático hasta que canceles. Tu teléfono solo se usa para verificar tu cuenta por SMS.</p>
+<p class="terminos" style="text-align:center">Al activar tu suscripción aceptas que después de tus 7 días gratis se cobrarán $99 MXN al mes en automático hasta que canceles. Tu teléfono solo se usa para verificar tu cuenta por SMS.</p>
 <div class="link">¿Ya tienes cuenta? <b onclick="show('p2-admin')">Inicia Sesión</b></div>
 </div>
 <div class="container hidden" id="p-verificacion" style="background:#0A1E3C">
@@ -50,7 +93,7 @@
 <div class="timer" id="timerVerif">2:00</div>
 <div id="msgVerif" class="ok hidden"></div>
 <form onsubmit="event.preventDefault();confirmarCodigoVerificacion()">
-<label>Código de 6 dígitos</label><input id="codigoVerif" class="codigo-input" type="tel" inputmode="numeric" maxlength="6" required>
+<label style="display:block;text-align:center">Código de 6 dígitos</label><input id="codigoVerif" class="codigo-input" type="tel" inputmode="numeric" maxlength="6" required style="text-align:center">
 <button class="btn btn-yellow" type="submit">VERIFICAR CÓDIGO</button></form>
 <div class="link">¿No te llegó el código? <b onclick="reenviarCodigoVerificacion()">REENVIAR CÓDIGO</b></div>
 </div>
@@ -66,7 +109,7 @@
 <div class="saludo"><h2>¿Olvidaste tu contraseña?</h2><p>Te mandamos un código por SMS</p></div>
 <div id="msgOlvido" class="ok hidden"></div>
 <form onsubmit="event.preventDefault();enviarRecuperacion()"><label>Ingresa el número de teléfono con el que te registraste</label><input id="telefonoOlvido" type="tel" inputmode="numeric" required><button class="btn btn-yellow" type="submit">ENVIAR CÓDIGO POR SMS</button></form>
-<div class="card"><b>¿Ya te llegó el código?</b><p style="font-size:13px;opacity:.85;margin:8px 0">Te llega por SMS a tu número registrado.</p><p style="font-size:13px">1. Pon tu código de 6 dígitos<br>2. Crear contraseña nueva y Actualizar</p></div>
+<div class="card" style="text-align:center"><b>¿Ya te llegó el código?</b><p style="font-size:13px;opacity:.85;margin:8px 0">Te llega por SMS a tu número registrado.</p><p style="font-size:13px">1. Pon tu código de 6 dígitos<br>2. Crear contraseña nueva y Actualizar</p></div>
 <button class="btn btn-outline" onclick="show('p2-admin')">Regresar a Iniciar Sesión</button>
 </div>
 <div class="container hidden" id="p-nueva-pass" style="background:#0A1E3C">
@@ -89,7 +132,17 @@
 <label>Tu usuario</label><input id="opUsuario" name="username" required autocomplete="username">
 <label>Tu PIN de 4 dígitos</label><input id="opPass" name="password" type="password" inputmode="numeric" maxlength="4" placeholder="••••" required autocomplete="current-password">
 <button class="btn" type="submit">ENTRAR A CHAMBEAR</button></form>
-<div class="link">¿Olvidaste tu PIN? <b onclick="alert('Pídele a tu Administrador que te ponga un PIN nuevo. Él lo puede cambiar en su panel.')">Pide ayuda a tu Admin</b></div>
+<div class="link">¿Olvidaste tu PIN? <b onclick="olvidoPinOperador()">Pide ayuda a tu Admin</b></div>
+</div>
+<div class="container hidden" id="p-cambiar-pin" style="background:#0A1E3C">
+<div class="top"><span onclick="show('p1')" style="cursor:pointer">←</span><b>Cambiar PIN</b><span></span></div>
+<div class="saludo"><h2 id="tituloCambiarPin">Crea tu PIN nuevo</h2><p id="textoCambiarPin">Ya no uses el temporal, pon el tuyo de 4 dígitos, que solo tú sepas.</p></div>
+<form onsubmit="event.preventDefault();guardarNuevoPin()">
+<label>PIN nuevo de 4 dígitos</label><input id="nuevoPin1" type="password" inputmode="numeric" maxlength="4" placeholder="••••" required>
+<label>Repite tu PIN nuevo</label><input id="nuevoPin2" type="password" inputmode="numeric" maxlength="4" placeholder="••••" required>
+<p style="font-size:12px;opacity:.75;margin:-4px 0 10px;text-align:center">No uses 1234 ni 0000. Que no sea igual al temporal que te dio tu Admin.</p>
+<button class="btn btn-yellow" type="submit">GUARDAR MI PIN NUEVO</button></form>
+<button class="btn btn-outline" onclick="show('p1')">Cancelar</button>
 </div>
 <div class="container hidden" id="p-admin-menu">
 <div class="top" style="align-items:flex-start"><span onclick="show('p1')" style="cursor:pointer;margin-top:4px">←</span><div style="text-align:center;flex:1;line-height:1.2;min-width:0"><div style="font-size:13px;opacity:.8;font-weight:600">Bienvenido</div><b id="nombreEmpresaTop" style="font-size:16px;line-height:1.2;display:block;white-space:normal;word-break:break-word">Industrias Suarez</b></div><button class="btn-menu-admin" onclick="abrirMenuAdmin()">☰ Menú</button></div>
@@ -125,15 +178,15 @@
 <div class="top"><span onclick="show('p-admin-menu')" style="cursor:pointer">←</span><b>Dar de Alta Empleado</b><span></span></div>
 <label>Nombre completo</label><input id="empNombre">
 <label>Usuario para entrar</label><input id="empUsuario">
-<label>PIN de 4 dígitos</label><input id="empPass" type="password" inputmode="numeric" maxlength="4" placeholder="••••">
-<p style="font-size:12px;opacity:.75;margin:-4px 0 10px">No uses 1234 ni 0000. Si se le olvida, tú le pones uno nuevo aquí.</p>
+<label>PIN temporal de 4 dígitos</label><input id="empPass" type="password" inputmode="numeric" maxlength="4" placeholder="••••">
+<p style="font-size:12px;opacity:.75;margin:-4px 0 10px;text-align:center">Este es PIN temporal. No uses 1234 ni 0000. El operador lo cambia por el suyo cuando entra la primera vez. Si se le olvida, tú le picas a Restablecer PIN en Consulta de Usuarios.</p>
 <label>Rol</label><input id="empRol">
 <label>Teléfono</label><input id="empTel">
 <button class="btn btn-yellow" onclick="guardarEmpleado()">GUARDAR EMPLEADO</button>
 </div>
 <div class="container hidden" id="p-consulta-usuarios" style="background:#0A1E3C">
 <div class="top"><span onclick="show('p-admin-menu')" style="cursor:pointer">←</span><b>Consultar Usuarios</b><span></span></div>
-<p style="font-size:13px;margin-bottom:14px">Tienes <b id="totalUsuarios">0</b> usuarios</p>
+<p style="font-size:13px;margin-bottom:14px;text-align:center">Tienes <b id="totalUsuarios">0</b> usuarios</p>
 <div id="listaUsuarios"></div><div id="sinUsuarios" class="card"><p>Aún no tienes usuarios.</p></div>
 <button class="btn btn-yellow" onclick="show('p-alta-empleado')">+ AGREGAR OTRO USUARIO</button>
 <button class="btn btn-outline" onclick="show('p-admin-menu')">Regresar</button>
