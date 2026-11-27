@@ -35,7 +35,7 @@ var usuarios=[],empresaActual=null,operadorActual=null,tipoChecklistActual='mont
 var logoEmpresaURL='';try{logoEmpresaURL=localStorage.getItem('wms_logo')||'./icon-512.png';}catch(e){logoEmpresaURL='./icon-512.png';}
 var fotosFinalesArr=[];var streamHD=null;
 // ===== PIN TEMPORAL =====
-var usuarioCambiandoPin=null; // usuario que esta cambiando su PIN
+var usuarioCambiandoPin=null;
 function generarSalt(){var a=new Uint8Array(16);crypto.getRandomValues(a);return Array.from(a).map(function(b){return b.toString(16).padStart(2,'0')}).join('');}
 async function hashConSalt(texto, salt){var enc=new TextEncoder();var data=enc.encode(salt+'::'+texto);var buf=await crypto.subtle.digest('SHA-256', data);return Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,'0')}).join('');}
 var PUNTOS_MONTACARGAS=["Horquillas en Buen estado (No quebradas, dobladas o fisuradas)","Carro porta horquillas","Mastil o torre de elevacion (Sube y Baja sin dificultad)","Desplazador del mastil","Inclinacion del mastil","Mangueras en buen estado","Cadenas en buen estado","Llanta delantera izquierda","Llanta delantera derecha","Llanta trasera izquierda","Llanta trasera derecha","Direccion del volante","Nivel del aceite Hidraulico","Mangeras del mastil sin fugas","Cadenas del Mastil bien sujetas y ajustadas","Asiento en buen estado","Cinturon de seguridad","Palancas de control hidraulico (Todas hacen su funcion)","Freno de mano","Espejo retrovisor","Direccionales","Alarma de reversa","Luces de navegacion","Luces de trabajo o reflectores delanteros","Guarda o parrilla protectora de cabina","Torreta","Boton de emergencia","Extinguidor (Vigente y Cargado)","Cilindro de Gas LP","Mangueras de Gas LP","Explica Golpes y Daños en Carroceria (Comenta)"];
@@ -56,6 +56,22 @@ var timerInterval=null, tiempoRestante=120, datosPendientes=null;
 function iniciarTimer(){clearInterval(timerInterval);tiempoRestante=120;var el=document.getElementById('timerVerif');el.textContent='2:00';timerInterval=setInterval(function(){tiempoRestante--;var m=Math.floor(tiempoRestante/60), s=tiempoRestante%60;el.textContent=m+':'+(s<10?'0'+s:s);if(tiempoRestante<=0){clearInterval(timerInterval); el.textContent='0:00'; alert('Se acabó el tiempo. Pide otro código con REENVIAR CÓDIGO.');}},1000);}
 async function enviarSMS(to, message){var res = await fetch('/api/send-sms', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ to: to, message: message }) });var data = await res.json().catch(function(){return {}});if(!res.ok) throw new Error((data.error || 'No se pudo enviar SMS') + ' | ' + (data.details || data.message || 'sin detalle'));return data;}
 async function reenviarCodigoVerificacion(){if(!SMS_ACTIVO){alert('Verificación pausada por ahora. Ya puedes entrar directo.'); return;}if(!datosPendientes){alert('Vuelve a Activar Suscripción'); return;}var codigo=Math.floor(100000+Math.random()*900000).toString();datosPendientes.codigo=codigo; datosPendientes.expira=Date.now()+120000;try{localStorage.setItem('wms_pendiente', JSON.stringify(datosPendientes));}catch(e){}try{await enviarSMS(datosPendientes.telefonoCompleto, 'Tu codigo WMS Check List es: '+codigo+'. Tienes 2 minutos para usarlo.');}catch(e){alert('No se pudo reenviar SMS: '+e.message); return;}iniciarTimer();var m=document.getElementById('msgVerif'); m.classList.remove('hidden'); m.innerHTML='✅ Te reenviamos el código por SMS a <b>'+enmascararTelefono(datosPendientes.telefono)+'</b>';}
+// ===== GUARDAR EMPRESA CON NOMBRE ADMIN - CON RESPALDO SI NO EXISTE LA COLUMNA =====
+async function crearEmpresaEnSupabase(datos){
+  var conNombre={nombre_empresa:datos.empresa,correo:datos.correo,telefono:datos.telefono,pass:datos.pass_hash,pass_salt:datos.pass_salt,estado:'prueba',nombre_admin:datos.nombre||''};
+  var res=await supabaseClient.from('empresas').insert([conNombre]).select().single();
+  if(res.error && (res.error.message||'').indexOf('nombre_admin')>=0){
+    var sinNombre={nombre_empresa:datos.empresa,correo:datos.correo,telefono:datos.telefono,pass:datos.pass_hash,pass_salt:datos.pass_salt,estado:'prueba'};
+    res=await supabaseClient.from('empresas').insert([sinNombre]).select().single();
+  }
+  return res;
+}
+function ponerNombreAdmin(nombre, empresa){
+  try{var el=document.getElementById('nombreEmpresa2'); if(el) el.innerText=nombre||'Administrador';}catch(e){}
+  try{var topE=document.getElementById('nombreEmpresaTop'); if(topE) topE.innerText=empresa||'';}catch(e){}
+  try{localStorage.setItem('wms_admin_nombre', nombre||'');}catch(e){}
+  try{localStorage.setItem('wms_empresa_nombre', empresa||'');}catch(e){}
+}
 async function confirmarCodigoVerificacion(){
   var codigo=document.getElementById('codigoVerif').value.trim();
   if(!datosPendientes){ try{datosPendientes=JSON.parse(localStorage.getItem('wms_pendiente')||'null');}catch(e){} }
@@ -65,15 +81,12 @@ async function confirmarCodigoVerificacion(){
     if(Date.now()>datosPendientes.expira){alert('Código vencido. Dale a REENVIAR CÓDIGO.'); return;}
   }
   if(!supabaseClient){alert('Sin internet'); return;}
-  var res=await supabaseClient.from('empresas').insert([{nombre_empresa:datosPendientes.empresa,correo:datosPendientes.correo,telefono:datosPendientes.telefono,pass:datosPendientes.pass_hash,pass_salt:datosPendientes.pass_salt,estado:'prueba'}]).select().single();
+  var res=await crearEmpresaEnSupabase(datosPendientes);
   if(res.error){alert('No se pudo crear: '+res.error.message); return;}
   clearInterval(timerInterval);
   try{localStorage.removeItem('wms_pendiente');}catch(e){}
   empresaActual=res.data; window.sesionActiva=true;
-  try{localStorage.setItem('wms_admin_nombre', datosPendientes.nombre||'');}catch(e){}
-  try{localStorage.setItem('wms_empresa_nombre', datosPendientes.empresa||'');}catch(e){}
-  document.getElementById('nombreEmpresa2').innerText=datosPendientes.nombre||'Administrador';
-  var topE=document.getElementById('nombreEmpresaTop'); if(topE) topE.innerText=datosPendientes.empresa||'';
+  ponerNombreAdmin(datosPendientes.nombre, datosPendientes.empresa);
   mostrarPrueba(); aplicarLogo();
   show('p-felicidades');
 }
@@ -153,14 +166,11 @@ async function registrar(){
   try{localStorage.setItem('wms_pendiente', JSON.stringify(datosPendientes));}catch(e){}
   if(!SMS_ACTIVO){
     if(!supabaseClient){alert('Sin internet'); return;}
-    var resDirecto=await supabaseClient.from('empresas').insert([{nombre_empresa:emp,correo:correo,telefono:telefono,pass:pass_hash,pass_salt:salt,estado:'prueba'}]).select().single();
+    var resDirecto=await crearEmpresaEnSupabase(datosPendientes);
     if(resDirecto.error){alert('No se pudo crear: '+resDirecto.error.message); return;}
     try{localStorage.removeItem('wms_pendiente');}catch(e){}
     empresaActual=resDirecto.data; window.sesionActiva=true;
-    try{localStorage.setItem('wms_admin_nombre', nombre);}catch(e){}
-    try{localStorage.setItem('wms_empresa_nombre', emp);}catch(e){}
-    document.getElementById('nombreEmpresa2').innerText=nombre;
-    var topEmp=document.getElementById('nombreEmpresaTop'); if(topEmp) topEmp.innerText=emp;
+    ponerNombreAdmin(nombre, emp);
     mostrarPrueba(); aplicarLogo();
     show('p-felicidades');
     return;
@@ -184,9 +194,13 @@ async function iniciarSesion(){
   if(res.data.estado==='bloqueado'||(res.data.estado==='prueba'&&fin<new Date())){empresaActual=res.data;alert('Se acabaron tus 7 días gratis. Activa tu suscripción de $99 / mes.');show('p-suscripcion');return}
   try{localStorage.setItem('wms_admin_login',JSON.stringify({correo:correo}))}catch(e){}
   empresaActual=res.data;window.sesionActiva=true;
-  var nomAdmin=''; try{nomAdmin=localStorage.getItem('wms_admin_nombre')||'';}catch(e){}
-  document.getElementById('nombreEmpresa2').innerText= nomAdmin || 'Administrador';
-  var topEmp2=document.getElementById('nombreEmpresaTop'); if(topEmp2) topEmp2.innerText=res.data.nombre_empresa;
+  var nomAdmin = res.data.nombre_admin || '';
+  if(!nomAdmin){ try{nomAdmin=localStorage.getItem('wms_admin_nombre')||'';}catch(e){} }
+  // Si ya existe en Supabase pero no tenia nombre, lo guardamos para la proxima
+  if(nomAdmin && !res.data.nombre_admin && supabaseClient){
+    try{await supabaseClient.from('empresas').update({nombre_admin:nomAdmin}).eq('correo',correo);}catch(e){}
+  }
+  ponerNombreAdmin(nomAdmin, res.data.nombre_empresa);
   mostrarPrueba();aplicarLogo();await cargarUsuarios();show('p-admin-menu')
 }
 function activarSuscripcionGoogle(){alert('Aquí Google Play va a abrir su ventana de pago. Suscripción: $99 / mes. Escríbenos a '+CORREO_SOPORTE)}
@@ -221,8 +235,6 @@ async function actualizarPass(){
   alert('¡Listo! Tu contraseña nueva ya quedó.');show('p2-admin')
 }
 async function cargarUsuarios(){if(!empresaActual||!supabaseClient)return;var res=await supabaseClient.from('usuarios').select('id,nombre,usuario,rol,telefono,empresa_correo,debe_cambiar_pin,reset_permitido').eq('empresa_correo',empresaActual.correo);usuarios=res.data||[];renderUsuarios()}
-
-// ===== LOGIN OPERADOR CON PIN TEMPORAL =====
 async function loginOperador(){
   var emp=document.getElementById('opEmpresa').value,usu=document.getElementById('opUsuario').value,pass=document.getElementById('opPass').value;
   if(!emp||!usu||!pass){alert('Llena empresa, usuario y PIN');return}
@@ -232,20 +244,18 @@ async function loginOperador(){
   if(res.error||!res.data){alert('Usuario o PIN incorrectos. Pídele a tu Admin que te lo recuerde.');return}
   var hashPin=await hashConSalt(pass, res.data.pass_salt||'');
   if(hashPin!==res.data.pass){alert('Usuario o PIN incorrectos.');return}
-  // Si es PIN temporal o le dieron restablecer, obligar a cambiarlo
   if(res.data.debe_cambiar_pin===true || res.data.reset_permitido===true){
     usuarioCambiandoPin=res.data;
     try{document.getElementById('nuevoPin1').value='';document.getElementById('nuevoPin2').value='';}catch(e){}
     try{document.getElementById('tituloCambiarPin').innerText = res.data.reset_permitido===true ? 'Crea tu PIN nuevo' : 'Crea tu PIN nuevo';}catch(e){}
     try{document.getElementById('textoCambiarPin').innerText='Hola '+res.data.nombre+', ya no uses el temporal, pon el tuyo de 4 dígitos.';}catch(e){}
-    window.sesionActiva=true; // para que show() no lo rebote
+    window.sesionActiva=true;
     show('p-cambiar-pin');
     return;
   }
   try{localStorage.setItem('wms_op_login',JSON.stringify({empresa:emp,usuario:usu}))}catch(e){}
   operadorActual=res.data;document.getElementById('nombreEmpresa').innerText=res.data.nombre||usu;window.sesionActiva=true;aplicarLogo();show('p4');
 }
-// ===== OLVIDE MI PIN - OPERADOR =====
 async function olvidoPinOperador(){
   var usu=document.getElementById('opUsuario').value;
   if(!usu){alert('Primero pon tu usuario');return}
@@ -256,22 +266,18 @@ async function olvidoPinOperador(){
     alert('🔒 Candado puesto.\nDile a tu Admin que te pique en Restablecer PIN para que puedas poner uno nuevo.');
     return;
   }
-  // Ya tiene permiso, va a cambiar PIN - pero primero debe validar que es el? Le pedimos que ponga su PIN temporal actual? No, el Admin ya lo desbloqueo, asi que directo a cambiar.
-  // Para seguridad, le pedimos que ponga empresa + usuario y lo mandamos a cambiar, sin pedir PIN viejo.
   usuarioCambiandoPin=res.data;
   try{document.getElementById('nuevoPin1').value='';document.getElementById('nuevoPin2').value='';}catch(e){}
   try{document.getElementById('textoCambiarPin').innerText='Tu Admin te desbloqueó, '+res.data.nombre+'. Pon tu PIN nuevo de 4 dígitos.';}catch(e){}
   window.sesionActiva=true;
   show('p-cambiar-pin');
 }
-// ===== GUARDAR PIN NUEVO Y REGRESAR AL LOGIN =====
 async function guardarNuevoPin(){
   if(!usuarioCambiandoPin){alert('Vuelve a entrar con tu PIN temporal');show('p1');return}
   var p1=document.getElementById('nuevoPin1').value||'';
   var p2=document.getElementById('nuevoPin2').value||'';
   if(!esPinValido(p1)){alert('PIN de 4 dígitos. No uses 1234 ni 0000.');return}
   if(p1!==p2){alert('Los PIN no coinciden. Ponlos igualitos.');return}
-  // Que no sea igual al temporal / viejo
   var hashViejo=await hashConSalt(p1, usuarioCambiandoPin.pass_salt||'');
   if(hashViejo===usuarioCambiandoPin.pass){alert('Ese es el mismo PIN temporal. Pon uno diferente, que solo tú sepas.');return}
   if(!supabaseClient){alert('Sin internet');return}
@@ -282,13 +288,11 @@ async function guardarNuevoPin(){
   try{empresaGuardada=document.getElementById('opEmpresa').value||'';}catch(e){}
   usuarioCambiandoPin=null;
   window.sesionActiva=false; operadorActual=null;
-  // Regresar a primer pantalla y que ponga empresa, usuario y PIN nuevo
   try{document.getElementById('opPass').value='';}catch(e){}
   try{document.getElementById('opEmpresa').value=empresaGuardada;}catch(e){}
   try{document.getElementById('opUsuario').value=usuarioGuardado;}catch(e){}
   alert('¡Listo! Ya quedó tu PIN nuevo.\nAhora pon empresa, usuario y tu PIN nuevo para entrar a chambear.');
   show('p1');
-  // Despues de p1, lo mandamos a login operador para que no se confunda
   setTimeout(function(){show('p2-operador');},100);
 }
 async function guardarEmpleado(){
@@ -297,14 +301,12 @@ async function guardarEmpleado(){
   if(!esPinValido(pass)){alert('PIN de 4 dígitos,. No uses 1234 ni 0000.');return}
   if(!supabaseClient){alert('Sin internet');return}
   var saltPin=generarSalt(); var hashPin=await hashConSalt(pass, saltPin);
-  // PIN temporal: debe_cambiar_pin = true
   var res=await supabaseClient.from('usuarios').insert([{empresa_correo:empresaActual.correo,nombre:nombre,usuario:usuario,pass:hashPin,pass_salt:saltPin,rol:rol,telefono:tel,debe_cambiar_pin:true,reset_permitido:false}]);
   if(res.error){alert('No se pudo: '+res.error.message);return}
   alert('¡Listo! '+nombre+' creado con PIN temporal '+pass+'\nDile: "Este es tu PIN temporal, entra y cámbialo por el tuyo"');
   ['empNombre','empUsuario','empPass','empRol','empTel'].forEach(function(i){document.getElementById(i).value=''});await cargarUsuarios();show('p-consulta-usuarios')
 }
 function renderUsuarios(){var l=document.getElementById('listaUsuarios');document.getElementById('totalUsuarios').innerText=usuarios.length;document.getElementById('sinUsuarios').style.display=usuarios.length?'none':'block';l.innerHTML='';usuarios.forEach(function(u){var esTemporal = u.debe_cambiar_pin===true; var desbloqueado = u.reset_permitido===true; l.innerHTML+='<div class="usuario-card"><div><b>'+u.nombre+'</b><span>Usuario: '+u.usuario+'</span><span>PIN: **** '+(esTemporal?'• PIN temporal - falta que lo cambie':desbloqueado?'• Desbloqueado para cambiar PIN':'• PIN propio')+'</span><span>Rol: '+(u.rol||'Sin rol')+' '+(u.telefono?'• Tel: '+u.telefono:'')+'</span></div><div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end"><button class="btn-trash" onclick="eliminarUsuario(\''+u.id+'\',\''+u.nombre+'\')">🗑️</button><button onclick="restablecerPIN(\''+u.id+'\',\''+u.nombre+'\')" style="background:none;border:none;color:#2563eb;text-decoration:underline;font-size:11px;cursor:pointer">Restablecer PIN</button></div></div>'});}
-// ===== ADMIN RESTABLECE PIN =====
 async function restablecerPIN(id,nombre){
   if(!confirm('¿Desbloquear a '+nombre+' para que ponga su PIN nuevo?'))return;
   if(!supabaseClient){alert('Sin internet');return}
