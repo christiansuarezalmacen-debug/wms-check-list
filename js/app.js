@@ -1,6 +1,4 @@
 // ===== WMS - LOGICA =====
-// SMS_ACTIVO false = PAUSADO, te deja crear cuenta sin SMS
-// Cuando recargues los $20 en Twilio, cambialo a true
 var SMS_ACTIVO = false;
 var navStack=['p1'];
 function show(id, push){
@@ -62,9 +60,81 @@ function rechazarFotoCamara(){fotoCamaraTemporal=null;var p=document.getElementB
 var usuarioCambiandoPin=null;
 function generarSalt(){var a=new Uint8Array(16);crypto.getRandomValues(a);return Array.from(a).map(function(b){return b.toString(16).padStart(2,'0')}).join('');}
 async function hashConSalt(texto, salt){var enc=new TextEncoder();var data=enc.encode(salt+'::'+texto);var buf=await crypto.subtle.digest('SHA-256', data);return Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,'0')}).join('');}
-var PUNTOS_MONTACARGAS=["Horquillas en Buen estado (No quebradas, dobladas o fisuradas)","Carro porta horquillas","Mastil o torre de elevacion (Sube y Baja sin dificultad)","Desplazador del mastil","Inclinacion del mastil","Mangueras en buen estado","Cadenas en buen estado","Llanta delantera izquierda","Llanta delantera derecha","Llanta trasera izquierda","Llanta trasera derecha","Direccion del volante","Nivel del aceite Hidraulico","Mangeras del mastil sin fugas","Cadenas del Mastil bien sujetas y ajustadas","Asiento en buen estado","Cinturon de seguridad","Palancas de control hidraulico (Todas hacen su funcion)","Freno de mano","Espejo retrovisor","Direccionales","Alarma de reversa","Luces de navegacion","Luces de trabajo o reflectores delanteros","Guarda o parrilla protectora de cabina","Torreta","Boton de emergencia","Extinguidor (Vigente y Cargado)","Cilindro de Gas LP","Mangueras de Gas LP","Explica Golpes y Daños en Carroceria (Comenta)"];
 
-// ===== VEHICULOS - CHECKLIST DINAMICO - MISMO FORMATO MONTACARGAS =====
+// ===== AUTO-GUARDADO / BORRADOR - SI TE SALES POR ERROR, REGRESAS DONDE TE QUEDASTE =====
+function guardarBorrador(){
+  try{
+    var chk=document.getElementById('p-checklist');
+    if(!chk || chk.classList.contains('hidden')) return;
+    var radios={};
+    var inputs=document.querySelectorAll('#itemsChecklist input[type="radio"]:checked');
+    inputs.forEach(function(r){ radios[r.name]=r.value; });
+    var b={
+      tipo:tipoChecklistActual,
+      fecha: new Date().toISOString(),
+      dFecha: document.getElementById('dFecha') ? document.getElementById('dFecha').value : '',
+      dOperador: document.getElementById('dOperador') ? document.getElementById('dOperador').value : '',
+      dTurno: document.getElementById('dTurno') ? document.getElementById('dTurno').value : '',
+      dUnidad: document.getElementById('dUnidad') ? document.getElementById('dUnidad').value : '',
+      dTipo: document.getElementById('dTipo') ? document.getElementById('dTipo').value : '',
+      dHorometro: document.getElementById('dHorometro') ? document.getElementById('dHorometro').value : '',
+      dCombustible: document.getElementById('dCombustible') ? document.getElementById('dCombustible').value : '',
+      dBateria: document.getElementById('dBateria') ? document.getElementById('dBateria').value : '',
+      vFecha: document.getElementById('vFecha') ? document.getElementById('vFecha').value : '',
+      vOperador: document.getElementById('vOperador') ? document.getElementById('vOperador').value : '',
+      vTurno: document.getElementById('vTurno') ? document.getElementById('vTurno').value : '',
+      vNum: document.getElementById('vNumEconomico') ? document.getElementById('vNumEconomico').value : '',
+      vKm: document.getElementById('vKilometraje') ? document.getElementById('vKilometraje').value : '',
+      vTipo: document.getElementById('vTipoVehiculo') ? document.getElementById('vTipoVehiculo').value : '',
+      vComb: document.getElementById('vTipoCombustible') ? document.getElementById('vTipoCombustible').value : '',
+      vNivelComb: document.getElementById('vNivelCombustible') ? document.getElementById('vNivelCombustible').value : '',
+      vNivelBat: document.getElementById('vNivelBateria') ? document.getElementById('vNivelBateria').value : '',
+      comentario: document.getElementById('comentarioFinal') ? document.getElementById('comentarioFinal').value : '',
+      radios: radios,
+      tablero: fotoTableroData ? 'SI' : 'NO'
+    };
+    localStorage.setItem('wms_borrador', JSON.stringify(b));
+  }catch(e){}
+}
+function cargarBorrador(){
+  try{
+    var b=JSON.parse(localStorage.getItem('wms_borrador')||'null');
+    if(!b) return false;
+    if(b.tipo!==tipoChecklistActual) return false;
+    function set(id,val){ var el=document.getElementById(id); if(el && val!==undefined && val!=='') el.value=val; }
+    set('dFecha',b.dFecha); set('dOperador',b.dOperador); set('dTurno',b.dTurno); set('dUnidad',b.dUnidad); set('dTipo',b.dTipo); set('dHorometro',b.dHorometro); set('dCombustible',b.dCombustible); set('dBateria',b.dBateria);
+    set('vFecha',b.vFecha); set('vOperador',b.vOperador); set('vTurno',b.vTurno); set('vNumEconomico',b.vNum); set('vKilometraje',b.vKm); set('vTipoVehiculo',b.vTipo); set('vTipoCombustible',b.vComb); set('vNivelCombustible',b.vNivelComb); set('vNivelBateria',b.vNivelBat);
+    set('comentarioFinal',b.comentario);
+    // Restaurar palomitas verdes / rojas
+    if(b.radios){ Object.keys(b.radios).forEach(function(name){ var r=document.querySelector('input[name="'+name+'"][value="'+b.radios[name]+'"]'); if(r) r.checked=true; }); }
+    // Si habia numero, volver a pintar cuadrito verde / rojo
+    if(b.tipo==='camiones' && b.vNum) buscarVehiculoPorNumero();
+    if(b.tipo==='montacargas' && b.dUnidad) buscarMontacargasPorNumero();
+    if(b.tipo==='camiones') actualizarTipoCombustibleVehiculo();
+    if(b.tipo==='montacargas') actualizarTipo();
+    return true;
+  }catch(e){ return false; }
+}
+function limpiarBorrador(){ try{localStorage.removeItem('wms_borrador');}catch(e){} }
+function limpiarChecklist(){
+  if(!confirm('¿Deseas limpiar todo y empezarlo de nuevo?')) return;
+  limpiarBorrador();
+  fotoTableroData=null; fotoTableroTemporal=null; fotosFinalesArr=[];
+  try{document.getElementById('previewFotos').innerHTML='';}catch(e){}
+  try{document.getElementById('comentarioFinal').value='';}catch(e){}
+  // Volver a abrir limpio el mismo tipo
+  var t=tipoChecklistActual;
+  abrirChecklist(t);
+  limpiarBorrador();
+  alert('¡Listo! Ya quedó limpio, puedes empezarlo de nuevo.');
+}
+// Cada 2 segundos, si estas en el checklist, se auto-guarda solo
+setInterval(function(){ guardarBorrador(); }, 2000);
+// Si te sales, al volver a entrar al checklist te pregunta si quieres seguir donde te quedaste
+document.addEventListener('change', function(){ guardarBorrador(); });
+document.addEventListener('input', function(){ guardarBorrador(); });
+
+var PUNTOS_MONTACARGAS=["Horquillas en Buen estado (No quebradas, dobladas o fisuradas)","Carro porta horquillas","Mastil o torre de elevacion (Sube y Baja sin dificultad)","Desplazador del mastil","Inclinacion del mastil","Mangueras en buen estado","Cadenas en buen estado","Llanta delantera izquierda","Llanta delantera derecha","Llanta trasera izquierda","Llanta trasera derecha","Direccion del volante","Nivel del aceite Hidraulico","Mangeras del mastil sin fugas","Cadenas del Mastil bien sujetas y ajustadas","Asiento en buen estado","Cinturon de seguridad","Palancas de control hidraulico (Todas hacen su funcion)","Freno de mano","Espejo retrovisor","Direccionales","Alarma de reversa","Luces de navegacion","Luces de trabajo o reflectores delanteros","Guarda o parrilla protectora de cabina","Torreta","Boton de emergencia","Extinguidor (Vigente y Cargado)","Cilindro de Gas LP","Mangueras de Gas LP","Explica Golpes y Daños en Carroceria (Comenta)"];
 function puntosVehiculoPorTipo(tipo){
   if(tipo==='Carro' || tipo==='Pick Up'){
     return ["Tarjeta de Circulación Vigente","Holograma de Verificación","Póliza de Seguro Vigente","Foto del Tablero Visible Tacómetro, Nivel de Combustible","Faro delantero izquierdo (Alta y Baja)","Faro delantero derecho (Alta y Baja)","Direccional Izquierda (delantera y trasera)","Direccional Derecha (delantera y trasera)","Intermitentes (delanteros y traseros)","Lámparas de Reversa","Llanta delantera Izquierda","Llanta delantera Derecha","Llanta trasera Izquierda","Llanta trasera derecha","Llanta de Refacción (si cuenta con ella que este funcional y presión adecuada)","Espejo retrovisor derecho","Espejo retrovisor izquierdo","Parabrisas (Roto, estrellado o fisurado)","Anticongelante","Aceite de Motor","Líquido de Frenos","Líquido de Clutch","Extinguidor (Vigente y Cargado)"];
@@ -90,7 +160,7 @@ function puntosDe(t){
 function esPuntoGasLP(texto){var t=(texto||'').toLowerCase();return t.indexOf('gas lp')>=0;}
 function puntosVisibles(){var base=puntosDe(tipoChecklistActual);if(tipoChecklistActual!=='montacargas') return base;var tipo='';try{tipo=document.getElementById('dTipo').value;}catch(e){tipo='Gas';}if(tipo==='Electrico'){return base.filter(function(p){return !esPuntoGasLP(p);});}return base;}
 
-// ===== FOTO TABLERO - SIN DOBLE PASO - ACEPTAR UNA VEZ Y LISTO =====
+// ===== FOTO TABLERO - YA NO SE QUEDA EN MEDIO, SE VA HASTA ABAJO, SOLO PALOMITA =====
 var fotoTableroData=null;
 var fotoTableroTemporal=null;
 function abrirFotoTablero(){var i=document.getElementById('inputFotoTablero'); if(i) i.click();}
@@ -98,19 +168,18 @@ function onFotoTableroChange(e){
   var f=e.target.files[0]; if(!f) return;
   var r=new FileReader();
   r.onload=function(){
-    // En cuanto tomas la foto, en automatico ya queda aceptada, sin palomita / crucecita extra
     fotoTableroData=r.result;
     fotoTableroTemporal=null;
+    // Se va hasta abajo al historial, no se queda en medio
     if(window.fotosFinalesArr && fotosFinalesArr.length<10){
-      // Si ya habia una foto de tablero, la reemplazamos para no duplicar
       fotosFinalesArr.unshift(fotoTableroData);
       if(typeof renderFotos==='function') renderFotos();
     }
     renderItemsChecklist();
+    guardarBorrador();
   };
   r.readAsDataURL(f); e.target.value='';
 }
-// Ya no usamos aceptar / rechazar con doble paso, quedan por compatibilidad pero ya no se muestran
 function aceptarFotoTablero(){ if(fotoTableroTemporal){ fotoTableroData=fotoTableroTemporal; fotoTableroTemporal=null; renderItemsChecklist(); } }
 function rechazarFotoTablero(){ fotoTableroTemporal=null; renderItemsChecklist(); }
 function eliminarFotoTablero(){
@@ -122,17 +191,20 @@ function eliminarFotoTablero(){
     if(typeof renderFotos==='function') renderFotos();
   }
   renderItemsChecklist();
+  guardarBorrador();
 }
 function renderItemsChecklist(){
   var c=document.getElementById('itemsChecklist'); if(!c) return; c.innerHTML='';
   puntosVisibles().forEach(function(item,i){
     if(item.indexOf('Foto del Tablero')>=0){
+      // Si ya la tomo: palomita verde ✅ de que ya esta guardada y hasta abajo, + crucecita ❌ para quitarla
+      // Si aun no: camarita 📷 normal
+      var btnTablero = fotoTableroData
+        ? '<span style="width:38px;height:38px;border-radius:10px;background:#DCFCE7;color:#166534;border:2px solid #22C55E;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900">✅</span>'
+        : '<button type="button" onclick="abrirFotoTablero()" style="width:38px;height:38px;border-radius:10px;background:#2563EB;color:#fff;border:none;font-size:18px;cursor:pointer;line-height:1">📷</button>';
       c.innerHTML+='<div class="fila-check"><b>'+(i+1)+'. '+item+'</b>'
-      +'<label class="check-mini" style="display:flex;align-items:center;justify-content:center"><button type="button" onclick="abrirFotoTablero()" style="width:38px;height:38px;border-radius:10px;background:#2563EB;color:#fff;border:none;font-size:18px;cursor:pointer;line-height:1">📷</button></label>'
+      +'<label class="check-mini" style="display:flex;align-items:center;justify-content:center">'+btnTablero+'</label>'
       +'<label class="check-mini mal" style="display:flex;align-items:center;justify-content:center"><button type="button" onclick="eliminarFotoTablero()" style="display:'+(fotoTableroData?'flex':'none')+';width:38px;height:38px;border-radius:50%;background:#EF4444;color:#fff;border:none;font-size:18px;cursor:pointer;align-items:center;justify-content:center;line-height:1">❌</button></label></div>'
-      +'<div style="display:flex;flex-direction:column;align-items:center;gap:8px;margin:-4px 0 10px;padding:0 10px">'
-      +'<img id="previewTablero" src="'+(fotoTableroData||'')+'" style="display:'+(fotoTableroData?'block':'none')+';max-width:100%;border-radius:12px">'
-      +'</div>'
       +'<input type="file" id="inputFotoTablero" accept="image/*" capture="environment" style="display:none" onchange="onFotoTableroChange(event)">';
       return;
     }
@@ -185,7 +257,7 @@ async function confirmarCodigoVerificacion(){
   show('p-felicidades');
 }
 function irAlPanelDespuesRegistro(){ if(empresaActual){ show('p-admin-menu'); } else { show('p2-admin'); } }
-function cerrarSesion(){window.sesionActiva=false;empresaActual=null;operadorActual=null;usuarioCambiandoPin=null;navStack=['p1'];cerrarMenuAdmin();show('p1')}
+function cerrarSesion(){window.sesionActiva=false;empresaActual=null;operadorActual=null;usuarioCambiandoPin=null;navStack=['p1'];try{localStorage.removeItem('wms_sesion_operador');}catch(e){}try{localStorage.removeItem('wms_borrador');}catch(e){}cerrarMenuAdmin();show('p1')}
 function aplicarLogo(){
   try{
     var la=document.getElementById('logoAdmin'); if(la) la.src=logoEmpresaURL;
@@ -252,6 +324,7 @@ function cerrarCamaraHD(){
   var p=document.getElementById('previewCamaraNueva');if(p)p.style.display='none';fotoCamaraTemporal=null;
   fotosCamaraAceptadas.forEach(function(src){if(fotosFinalesArr.length<10)fotosFinalesArr.push(src);});
   fotosCamaraAceptadas=[];pintarHistorialCamara();renderFotos();document.getElementById('camaraModal').style.display='none';
+  guardarBorrador();
 }
 function renderFotos(){var pv=document.getElementById('previewFotos');pv.innerHTML='';fotosFinalesArr.forEach(function(data,idx){var wrap=document.createElement('div');wrap.className='foto-item';var img=document.createElement('img');img.src=data;img.className='preview-foto';var btn=document.createElement('button');btn.className='btn-borrar-foto';btn.innerHTML='×';btn.type='button';btn.onclick=function(){fotosFinalesArr.splice(idx,1);renderFotos();};wrap.appendChild(img);wrap.appendChild(btn);pv.appendChild(wrap);});}
 function tomarFotoHD(){
@@ -372,7 +445,9 @@ async function loginOperador(){
     return;
   }
   try{localStorage.setItem('wms_op_login',JSON.stringify({empresa:emp,usuario:usu}))}catch(e){}
-  operadorActual=res.data;document.getElementById('nombreEmpresa').innerText=res.data.nombre||usu;window.sesionActiva=true;aplicarLogo();show('p4');
+  operadorActual=res.data;document.getElementById('nombreEmpresa').innerText=res.data.nombre||usu;window.sesionActiva=true;
+  try{localStorage.setItem('wms_sesion_operador', JSON.stringify({nombre:res.data.nombre||usu, usuario:usu, empresa:emp}));}catch(e){}
+  aplicarLogo();show('p4');
 }
 async function olvidoPinOperador(){
   var usu=document.getElementById('opUsuario').value;
@@ -445,7 +520,6 @@ function actualizarTipoCombustibleVehiculo(){
   else if(tipo==='Híbrido'){ boxComb.classList.remove('hidden'); boxBat.classList.remove('hidden'); }
   else { boxComb.classList.remove('hidden'); boxBat.classList.add('hidden'); }
 }
-// ===== CUADRITO NUMERO VERDE / ROJO A LA PAR DE LA LEYENDA =====
 function pintarCuadritoNumero(el, estado){
   if(!el) return;
   if(estado==='ok'){ el.style.border='2px solid #22C55E'; el.style.background='#F0FDF4'; el.style.boxShadow='0 0 0 2px rgba(34,197,94,.15)'; }
@@ -503,7 +577,7 @@ function buscarMontacargasPorNumero(){
     return null;
   }
 }
-function abrirChecklist(tipo){
+function abrirChecklist(tipo, desdeBorrador){
   tipoChecklistActual=tipo;
   var tit={camiones:'🚚 Checklist Camión',montacargas:'🏗️ Checklist Montacargas - 31 puntos',bitacora:'🗺️ Bitácora de Ruta'};
   document.getElementById('tituloChecklist').innerText=tit[tipo];
@@ -512,11 +586,12 @@ function abrirChecklist(tipo){
   var esVehiculo=(tipo==='camiones');
   if(boxM) boxM.classList.toggle('hidden', esVehiculo);
   if(boxV) boxV.classList.toggle('hidden', !esVehiculo);
-  fotoTableroData=null; fotoTableroTemporal=null;
+  // Si es borrador, no reseteamos tablero / fotos, lo restauramos abajo
+  if(!desdeBorrador){ fotoTableroData=null; fotoTableroTemporal=null; }
   if(esVehiculo){
     try{document.getElementById('vFecha').value=hoyISO();}catch(e){}
     try{document.getElementById('vOperador').value=operadorActual?operadorActual.nombre:'';}catch(e){}
-    try{document.getElementById('vNumEconomico').value=''; pintarCuadritoNumero(document.getElementById('vNumEconomico'),'');}catch(e){}
+    if(!desdeBorrador){ try{document.getElementById('vNumEconomico').value=''; pintarCuadritoNumero(document.getElementById('vNumEconomico'),'');}catch(e){} }
     try{document.getElementById('vKilometraje').value='';}catch(e){}
     try{document.getElementById('vTurno').value='Matutino';}catch(e){}
     try{document.getElementById('vTipoVehiculo').value='Carro';}catch(e){}
@@ -529,8 +604,7 @@ function abrirChecklist(tipo){
   } else {
     document.getElementById('dFecha').value=hoyISO();
     document.getElementById('dOperador').value=operadorActual?operadorActual.nombre:'';
-    document.getElementById('dUnidad').value='';
-    try{pintarCuadritoNumero(document.getElementById('dUnidad'),'');}catch(e){}
+    if(!desdeBorrador){ document.getElementById('dUnidad').value=''; try{pintarCuadritoNumero(document.getElementById('dUnidad'),'');}catch(e){} }
     document.getElementById('dHorometro').value='';
     document.getElementById('dTipo').value='Gas';
     actualizarTipo();
@@ -539,12 +613,31 @@ function abrirChecklist(tipo){
     try{var m3=document.getElementById('msgMontacargasEncontrado'); if(m3) m3.style.display='none';}catch(e){}
     try{var m4=document.getElementById('msgMontacargasNoEncontrado'); if(m4) m4.style.display='none';}catch(e){}
   }
-  document.getElementById('comentarioFinal').value='';
-  document.getElementById('previewFotos').innerHTML='';
-  document.getElementById('fotosFinales').value='';
-  fotosFinalesArr=[];
+  if(!desdeBorrador){
+    document.getElementById('comentarioFinal').value='';
+    document.getElementById('previewFotos').innerHTML='';
+    document.getElementById('fotosFinales').value='';
+    fotosFinalesArr=[];
+  }
   renderItemsChecklist();
-  show('p-checklist')
+  show('p-checklist');
+  // Si hay borrador de este tipo, preguntar si quiere seguir donde se quedo
+  if(!desdeBorrador){
+    try{
+      var b=JSON.parse(localStorage.getItem('wms_borrador')||'null');
+      if(b && b.tipo===tipo){
+        setTimeout(function(){
+          if(confirm('¿Quieres seguir donde te quedaste? Tienes un checklist sin guardar.')){
+            abrirChecklist(tipo, true);
+            // Restaurar despues de renderizar
+            setTimeout(function(){ cargarBorrador(); renderItemsChecklist(); cargarBorrador(); }, 100);
+          } else {
+            limpiarBorrador();
+          }
+        }, 300);
+      }
+    }catch(e){}
+  }
 }
 try{document.getElementById('fotosFinales').addEventListener('change',function(e){var files=Array.from(e.target.files||[]);files.slice(0,10).forEach(function(f){var r=new FileReader();r.onload=function(){if(fotosFinalesArr.length<10){fotosFinalesArr.push(r.result);renderFotos();}};r.readAsDataURL(f)});document.getElementById('fotosFinales').value='';});}catch(e){}
 function getLibro(){try{return JSON.parse(localStorage.getItem('wms_libro')||'{}')}catch(e){return{}}}
@@ -573,6 +666,7 @@ async function guardarChecklist(){
     var idxV=libroV[mesV][tipoChecklistActual][numEco].findIndex(function(d){return d.fecha===fechaV});if(idxV>=0)libroV[mesV][tipoChecklistActual][numEco][idxV]=datosV;else libroV[mesV][tipoChecklistActual][numEco].push(datosV);
     libroV[mesV][tipoChecklistActual][numEco].sort(function(a,b){return a.fecha.localeCompare(b.fecha)});setLibro(libroV);
     try{if(supabaseClient)await supabaseClient.from('checklists').insert([{tipo:tipoChecklistActual,unidad:numEco,operador:datosV.operador,resultados:datosV.filas.map(function(f){return f.punto+': '+f.estado}).join(' || '),observaciones:'Tipo Vehículo:'+datosV.tipoVehiculo+' Turno:'+datosV.turno+' Km:'+datosV.kilometraje+' Tipo Combustible:'+tipoCombV+' Nivel Comb:'+nivelCombV+' Nivel Bat:'+nivelBatV+' Foto Tablero:'+datosV.fotoTablero+' | GOLPES: '+datosV.comentarioFinal+' | FOTOS: '+datosV.fotosFinales,tiene_foto:fotosFinalesArr.length?'SI':'NO',fecha:new Date(fechaV).toISOString()}])}catch(e){}
+    limpiarBorrador();
     alert('¡Guardado! ✅\nVehículo '+numEco+' ('+datosV.tipoVehiculo+' - '+tipoCombV+')\nFecha: '+fechaV+'\nNivel: '+nivelMostrarV);show('p4');
     return;
   }
@@ -586,6 +680,7 @@ async function guardarChecklist(){
   var idx=libro[mes][tipoChecklistActual][unidad].findIndex(function(d){return d.fecha===fecha});if(idx>=0)libro[mes][tipoChecklistActual][unidad][idx]=datos;else libro[mes][tipoChecklistActual][unidad].push(datos);
   libro[mes][tipoChecklistActual][unidad].sort(function(a,b){return a.fecha.localeCompare(b.fecha)});setLibro(libro);
   try{if(supabaseClient)await supabaseClient.from('checklists').insert([{tipo:tipoChecklistActual,unidad:unidad,operador:datos.operador,resultados:datos.filas.map(function(f){return f.punto+': '+f.estado}).join(' || '),observaciones:'Tipo:'+tipoUnidad+' Turno:'+datos.turno+' Horometro:'+datos.horometro+' Combustible:'+datos.combustible+' Bateria:'+datos.bateria+' | GOLPES: '+datos.comentarioFinal+' | FOTOS: '+datos.fotosFinales,tiene_foto:fotosFinalesArr.length?'SI':'NO',fecha:new Date(fecha).toISOString()}])}catch(e){}
+  limpiarBorrador();
   alert('¡Guardado! ✅\nUnidad '+unidad+' ('+tipoUnidad+')\nFecha: '+fecha+'\nNivel: '+nivel);show('p4');
 }
 function renderLibro(tipo){try{var mesEl=document.getElementById(tipo==='montacargas'?'mesMontacargas':'mesReporte');if(!mesEl) return;var mes=mesEl.value||'2026-11',sel=document.getElementById('selUnidadMontacargas'),libro=getLibro(),hojas=(libro[mes]&&libro[mes][tipo])||{},unidades=Object.keys(hojas);if(sel&&sel.options.length<=1){sel.innerHTML='<option value="">Todas las unidades</option>'+unidades.map(function(u){return '<option value="'+u+'">Unidad '+u+'</option>'}).join('')}var filtro=sel?sel.value:'',cont=document.getElementById('libroMontacargas');if(!cont) return;if(!unidades.length){cont.innerHTML='<div class="card"><p>No hay registros en '+mes+' todavía.</p></div>';return}var html='';unidades.filter(function(u){return !filtro||u===filtro}).forEach(function(unidad){var dias=hojas[unidad];html+='<div class="card"><b>📄 Hoja Unidad '+unidad+'</b> <span class="badge">'+dias.length+' día(s) en '+mes+'</span></div>';html+='<div class="libro-wrap"><table><tr><th>A - Datos / B - Punto</th>'+dias.map(function(d){return '<th>'+d.fecha+'<br>'+d.operador+'<br>'+(d.tipoUnidad||'')+' - Turno '+d.turno+'<br>Horom '+d.horometro+'<br>'+(d.tipoUnidad==='Electrico'?'Bat '+d.bateria:'Comb '+d.combustible)+'<br><small>'+(d.comentarioFinal||'')+'<br>Fotos: '+(d.fotosFinales||'0 fotos')+'</small></th>'}).join('')+'</tr>';puntosDe(tipo).forEach(function(punto,pi){html+='<tr><td>'+(pi+1)+'. '+punto+'</td>'+dias.map(function(d){var f=(d.filas||[]).find(function(x){return x.punto===punto})||{};return '<td>'+(f.estado==='MAL ESTADO'?'❌ MAL':f.estado==='BUEN ESTADO'?'✅ BUEN':'—')+'</td>'}).join('')+'</tr>'});html+='</table></div>'});cont.innerHTML=html;}catch(e){}}
@@ -593,7 +688,6 @@ function verReporteMes(){var mes=document.getElementById('mesReporte').value,lib
 function descargarMes(tipo){var el=document.getElementById('mesMontacargas');var mes=el?el.value:'2026-11';exportarCSVPorMes(mes||'2026-11',tipo)}
 function exportarCSVPorMes(mes,tipo){var libro=getLibro(),hojas=(libro[mes]&&libro[mes][tipo])||{},unidades=Object.keys(hojas);if(!unidades.length){alert('Aún no hay datos en '+mes);return}var csv='Libro '+mes+' - '+tipo+'\n';unidades.forEach(function(u){var dias=hojas[u];csv+='\nHoja Unidad '+u+'\nA - Datos / B - Punto,'+dias.map(function(d){return d.fecha+' - '+d.operador+' - Tipo '+(d.tipoUnidad||'')+' - Turno '+d.turno+' - Horometro '+d.horometro+' - Combustible '+d.combustible+' - Bateria '+d.bateria+' - GOLPES: '+(d.comentarioFinal||'')+' - FOTOS: '+(d.fotosFinales||'')}).join(',')+'\n';puntosDe(tipo).forEach(function(punto,pi){csv+='"'+(pi+1)+'. '+punto.replace(/"/g,'')+'",'+dias.map(function(d){var f=(d.filas||[]).find(function(x){return x.punto===punto})||{};return '"'+(f.estado||'')+'"'}).join(',')+'\n'})});var blob=new Blob([csv],{type:'text/csv'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='wms_libro_'+mes+'_'+tipo+'_por_unidad.csv';a.click();alert('¡Listo! Se descargó todo el mes '+mes+'.')}
 function exportarCSV(){var mes=document.getElementById('mesReporte').value||'2026-11';exportarCSVPorMes(mes,'montacargas')}
-// ===== EQUIPOS 20/20 - MONTACARGAS Y VEHÍCULOS =====
 window.listaMontacargas = JSON.parse(localStorage.getItem('wms_montacargas')||'[]');
 window.listaVehiculos = JSON.parse(localStorage.getItem('wms_vehiculos')||'[]');
 var LIMITE_EQUIPOS = 20;
@@ -682,5 +776,10 @@ function eliminarVehiculo(i){
 }
 try{if(window.location.hash==='#nueva-pass'){show('p-nueva-pass')}}catch(e){}
 try{cargarDatosGuardados();aplicarLogo();actualizarContadoresEquipos();}catch(e){}
+// Si ya habia sesion de operador guardada, no te regresa al inicio, te deja en el menu
+try{
+  var sesOp=JSON.parse(localStorage.getItem('wms_sesion_operador')||'null');
+  if(sesOp && sesOp.nombre){ window.sesionActiva=true; operadorActual={nombre:sesOp.nombre, usuario:sesOp.usuario||''}; try{document.getElementById('nombreEmpresa').innerText=sesOp.nombre;}catch(e){} setTimeout(function(){ show('p4'); }, 200); }
+}catch(e){}
 try{document.getElementById('btnAdmin').addEventListener('click',function(){show('p2-admin')});}catch(e){}
 try{document.getElementById('pass1').addEventListener('input', validarPass);document.getElementById('pass2').addEventListener('input', validarPass);}catch(e){}
