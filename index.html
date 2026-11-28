@@ -130,7 +130,7 @@
 <button class="btn btn-yellow" type="submit">GUARDAR MI PIN NUEVO</button></form>
 <button class="btn btn-outline" onclick="show('p1')">Cancelar</button>
 </div>
-<!-- PANEL ADMIN - CUADRITO MENÚ EN LA ORILLA -->
+<!-- PANEL ADMIN -->
 <div class="container hidden" id="p-admin-menu">
 <div class="header-admin">
 <span class="btn-regresar-mini" onclick="show('p1')">←</span>
@@ -188,16 +188,59 @@
 <button class="btn btn-yellow" onclick="show('p-alta-empleado')">+ AGREGAR OTRO USUARIO</button>
 <button class="btn btn-outline" onclick="show('p-admin-menu')">Regresar</button>
 </div>
+<!-- PANTALLA MONTACARGAS -->
 <div class="container hidden" id="p-consulta-montacargas" style="background:#0A1E3C">
-<div class="top"><span onclick="show('p-admin-menu')" style="cursor:pointer">←</span><b>Consultar Montacargas</b><span></span></div>
+<div class="top"><span onclick="show('p-admin-menu')" style="cursor:pointer">←</span><b>Montacargas</b><span></span></div>
+<div class="card" style="text-align:center">
+<b style="font-size:18px">🏗️ Montacargas</b>
+<p style="font-size:13px;opacity:.8;margin-top:4px">Tienes <b id="totalMontacargas">0</b> / 20 montacargas registrados</p>
+<p id="msgLimiteMontacargas" style="display:none;font-size:13px;color:#DC2626;font-weight:800;margin-top:6px">Alcanzaste el número máximo de montacargas registrados (20)</p>
+<button class="btn btn-yellow" id="btnAgregarMontacargas" onclick="agregarMontacargas()">+ AGREGAR MONTACARGAS</button>
+</div>
 <div class="card"><b>🏗️ Libro de Montacargas - por unidad</b><p style="font-size:13px;opacity:.8;margin-top:6px">A-G un día, H-N otro día, hacia un lado. No hacia abajo.</p>
 <label>Unidad</label><select id="selUnidadMontacargas" onchange="renderLibro('montacargas')"><option value="">Todas las unidades</option></select>
 <label>Mes del libro</label><input type="month" id="mesMontacargas" value="2026-11" onchange="renderLibro('montacargas')">
 <button class="btn btn-yellow" onclick="descargarMes('montacargas')">⬇ DESCARGAR TODO EL MES</button></div>
 <div id="libroMontacargas"></div>
+<div id="listaMontacargas"></div>
 <button class="btn btn-outline" onclick="show('p-admin-menu')">Regresar</button>
 </div>
-<div class="container hidden" id="p-consulta-camiones" style="background:#0A1E3C"><div class="top"><span onclick="show('p-admin-menu')" style="cursor:pointer">←</span><b>Consultar Camiones</b><span></span></div><div id="libroCamiones"></div><button class="btn btn-outline" onclick="show('p-admin-menu')">Regresar</button></div>
+<!-- PANTALLA VEHÍCULOS -->
+<div class="container hidden" id="p-consulta-camiones" style="background:#0A1E3C">
+<div class="top"><span onclick="show('p-admin-menu')" style="cursor:pointer">←</span><b>Vehículos</b><span></span></div>
+<div class="card" style="text-align:center">
+<b style="font-size:18px">🚚 Vehículos</b>
+<p style="font-size:13px;opacity:.8;margin-top:4px">Tienes <b id="totalVehiculos">0</b> / 20 vehículos registrados</p>
+<p id="msgLimiteVehiculos" style="display:none;font-size:13px;color:#DC2626;font-weight:800;margin-top:6px">Alcanzaste el número máximo de vehículos registrados (20)</p>
+<button class="btn btn-yellow" id="btnAgregarVehiculo" onclick="agregarVehiculo()">+ AGREGAR VEHÍCULO</button>
+</div>
+<div id="libroCamiones"></div>
+<div id="listaVehiculos"></div>
+<button class="btn btn-outline" onclick="show('p-admin-menu')">Regresar</button>
+</div>
+<!-- ALTA MONTACARGAS -->
+<div class="container hidden" id="p-alta-montacargas" style="background:#0A1E3C">
+<div class="top"><span onclick="show('p-consulta-montacargas')" style="cursor:pointer">←</span><b>Agregar Montacargas</b><span></span></div>
+<div class="card" style="text-align:center"><b>🏗️ Nuevo Montacargas</b><p style="font-size:13px;opacity:.8">Tienes <b id="totalAltaMontacargas">0</b> / 20</p></div>
+<label>Número de unidad *</label><input id="montNum" placeholder="Ej. 03">
+<label>Marca</label><input id="montMarca" placeholder="Ej. Toyota, Hyster">
+<label>Modelo</label><input id="montModelo" placeholder="Ej. 2022">
+<label>Tipo</label><select id="montTipo"><option>Gas</option><option>Eléctrico</option><option>Diésel</option></select>
+<label>Capacidad</label><input id="montCapacidad" placeholder="Ej. 2500 kg">
+<button class="btn btn-yellow" onclick="guardarMontacargas()">GUARDAR MONTACARGAS</button>
+<button class="btn btn-outline" onclick="show('p-consulta-montacargas')">Cancelar</button>
+</div>
+<!-- ALTA VEHÍCULO -->
+<div class="container hidden" id="p-alta-vehiculo" style="background:#0A1E3C">
+<div class="top"><span onclick="show('p-consulta-camiones')" style="cursor:pointer">←</span><b>Agregar Vehículo</b><span></span></div>
+<div class="card" style="text-align:center"><b>🚚 Nuevo Vehículo</b><p style="font-size:13px;opacity:.8">Tienes <b id="totalAltaVehiculos">0</b> / 20</p></div>
+<label>Número de unidad / Placas *</label><input id="vehNum" placeholder="Ej. 05 / ABC-123">
+<label>Marca</label><input id="vehMarca" placeholder="Ej. Nissan, Kenworth">
+<label>Modelo</label><input id="vehModelo" placeholder="Ej. 2021">
+<label>Tipo</label><select id="vehTipo"><option>Camión</option><option>Camioneta</option><option>Van</option><option>Otro</option></select>
+<button class="btn btn-yellow" onclick="guardarVehiculo()">GUARDAR VEHÍCULO</button>
+<button class="btn btn-outline" onclick="show('p-consulta-camiones')">Cancelar</button>
+</div>
 <div class="container hidden" id="p-consulta-bitacora" style="background:#0A1E3C"><div class="top"><span onclick="show('p-admin-menu')" style="cursor:pointer">←</span><b>Consultar Bitácora</b><span></span></div><div id="libroBitacora"></div><button class="btn btn-outline" onclick="show('p-admin-menu')">Regresar</button></div>
 <div class="container hidden" id="p-reportes" style="background:#0A1E3C">
 <div class="top"><span onclick="show('p-admin-menu')" style="cursor:pointer">←</span><b>Reportes Mensuales</b><span></span></div>
