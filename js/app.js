@@ -61,7 +61,7 @@ var usuarioCambiandoPin=null;
 function generarSalt(){var a=new Uint8Array(16);crypto.getRandomValues(a);return Array.from(a).map(function(b){return b.toString(16).padStart(2,'0')}).join('');}
 async function hashConSalt(texto, salt){var enc=new TextEncoder();var data=enc.encode(salt+'::'+texto);var buf=await crypto.subtle.digest('SHA-256', data);return Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,'0')}).join('');}
 
-// ===== AUTO-GUARDADO / BORRADOR - SI TE SALES POR ERROR, REGRESAS DONDE TE QUEDASTE =====
+// ===== AUTO-GUARDADO / BORRADOR - CORREGIDO: YA SI RESTAURA =====
 function guardarBorrador(){
   try{
     var chk=document.getElementById('p-checklist');
@@ -101,17 +101,47 @@ function cargarBorrador(){
     var b=JSON.parse(localStorage.getItem('wms_borrador')||'null');
     if(!b) return false;
     if(b.tipo!==tipoChecklistActual) return false;
+    // 1. Primero poner los valores de los selects que cambian los puntos, SIN re-renderizar todavia
     function set(id,val){ var el=document.getElementById(id); if(el && val!==undefined && val!=='') el.value=val; }
     set('dFecha',b.dFecha); set('dOperador',b.dOperador); set('dTurno',b.dTurno); set('dUnidad',b.dUnidad); set('dTipo',b.dTipo); set('dHorometro',b.dHorometro); set('dCombustible',b.dCombustible); set('dBateria',b.dBateria);
     set('vFecha',b.vFecha); set('vOperador',b.vOperador); set('vTurno',b.vTurno); set('vNumEconomico',b.vNum); set('vKilometraje',b.vKm); set('vTipoVehiculo',b.vTipo); set('vTipoCombustible',b.vComb); set('vNivelCombustible',b.vNivelComb); set('vNivelBateria',b.vNivelBat);
     set('comentarioFinal',b.comentario);
-    // Restaurar palomitas verdes / rojas
+    // 2. Mostrar / ocultar combustible / bateria SIN re-renderizar el checklist
+    var boxComb=document.getElementById('boxNivelCombustibleVehiculo');
+    var boxBat=document.getElementById('boxNivelBateriaVehiculo');
+    if(boxComb && boxBat){
+      if(b.vComb==='Eléctrico'){ boxComb.classList.add('hidden'); boxBat.classList.remove('hidden'); }
+      else if(b.vComb==='Híbrido'){ boxComb.classList.remove('hidden'); boxBat.classList.remove('hidden'); }
+      else { boxComb.classList.remove('hidden'); boxBat.classList.add('hidden'); }
+    }
+    var boxC=document.getElementById('boxCombustible');
+    var boxB=document.getElementById('boxBateria');
+    if(boxC && boxB){
+      var esGas = b.dTipo!=='Electrico';
+      boxC.classList.toggle('hidden',!esGas); boxB.classList.toggle('hidden',esGas);
+      var cl=document.getElementById('dClase'); if(cl) cl.value = esGas ? 'Montacargas Gas' : 'Montacargas Eléctrico';
+    }
+    // 3. AHORA SI re-renderizar UNA sola vez con los valores ya puestos
+    renderItemsChecklist();
+    // 4. Y DESPUES poner las palomitas, sin volver a re-renderizar. Aqui estaba el error antes.
     if(b.radios){ Object.keys(b.radios).forEach(function(name){ var r=document.querySelector('input[name="'+name+'"][value="'+b.radios[name]+'"]'); if(r) r.checked=true; }); }
-    // Si habia numero, volver a pintar cuadrito verde / rojo
-    if(b.tipo==='camiones' && b.vNum) buscarVehiculoPorNumero();
-    if(b.tipo==='montacargas' && b.dUnidad) buscarMontacargasPorNumero();
-    if(b.tipo==='camiones') actualizarTipoCombustibleVehiculo();
-    if(b.tipo==='montacargas') actualizarTipo();
+    // 5. Pintar cuadrito verde / rojo sin re-renderizar
+    if(b.tipo==='camiones' && b.vNum){
+      var listaV=window.listaVehiculos||[];
+      var encV=listaV.find(function(v){ return String(v.num||'').trim()===String(b.vNum).trim(); });
+      pintarCuadritoNumero(document.getElementById('vNumEconomico'), encV ? 'ok' : 'mal');
+      var mOk=document.getElementById('msgVehiculoEncontrado'); var mNo=document.getElementById('msgVehiculoNoEncontrado');
+      if(mOk) mOk.style.display = encV ? 'block' : 'none';
+      if(mNo) mNo.style.display = encV ? 'none' : 'block';
+    }
+    if(b.tipo==='montacargas' && b.dUnidad){
+      var listaM=window.listaMontacargas||[];
+      var encM=listaM.find(function(m){ return String(m.num||'').trim()===String(b.dUnidad).trim(); });
+      pintarCuadritoNumero(document.getElementById('dUnidad'), encM ? 'ok' : 'mal');
+      var mOk2=document.getElementById('msgMontacargasEncontrado'); var mNo2=document.getElementById('msgMontacargasNoEncontrado');
+      if(mOk2) mOk2.style.display = encM ? 'block' : 'none';
+      if(mNo2) mNo2.style.display = encM ? 'none' : 'block';
+    }
     return true;
   }catch(e){ return false; }
 }
@@ -122,15 +152,16 @@ function limpiarChecklist(){
   fotoTableroData=null; fotoTableroTemporal=null; fotosFinalesArr=[];
   try{document.getElementById('previewFotos').innerHTML='';}catch(e){}
   try{document.getElementById('comentarioFinal').value='';}catch(e){}
-  // Volver a abrir limpio el mismo tipo
   var t=tipoChecklistActual;
-  abrirChecklist(t);
+  // Abrir limpio sin preguntar por borrador
+  abrirChecklist(t, true);
+  // Limpiar campos que abrirChecklist no limpia en modo borrador
+  try{document.getElementById('dUnidad').value=''; pintarCuadritoNumero(document.getElementById('dUnidad'),'');}catch(e){}
+  try{document.getElementById('vNumEconomico').value=''; pintarCuadritoNumero(document.getElementById('vNumEconomico'),'');}catch(e){}
   limpiarBorrador();
   alert('¡Listo! Ya quedó limpio, puedes empezarlo de nuevo.');
 }
-// Cada 2 segundos, si estas en el checklist, se auto-guarda solo
 setInterval(function(){ guardarBorrador(); }, 2000);
-// Si te sales, al volver a entrar al checklist te pregunta si quieres seguir donde te quedaste
 document.addEventListener('change', function(){ guardarBorrador(); });
 document.addEventListener('input', function(){ guardarBorrador(); });
 
@@ -159,8 +190,6 @@ function puntosDe(t){
 }
 function esPuntoGasLP(texto){var t=(texto||'').toLowerCase();return t.indexOf('gas lp')>=0;}
 function puntosVisibles(){var base=puntosDe(tipoChecklistActual);if(tipoChecklistActual!=='montacargas') return base;var tipo='';try{tipo=document.getElementById('dTipo').value;}catch(e){tipo='Gas';}if(tipo==='Electrico'){return base.filter(function(p){return !esPuntoGasLP(p);});}return base;}
-
-// ===== FOTO TABLERO - YA NO SE QUEDA EN MEDIO, SE VA HASTA ABAJO, SOLO PALOMITA =====
 var fotoTableroData=null;
 var fotoTableroTemporal=null;
 function abrirFotoTablero(){var i=document.getElementById('inputFotoTablero'); if(i) i.click();}
@@ -170,7 +199,6 @@ function onFotoTableroChange(e){
   r.onload=function(){
     fotoTableroData=r.result;
     fotoTableroTemporal=null;
-    // Se va hasta abajo al historial, no se queda en medio
     if(window.fotosFinalesArr && fotosFinalesArr.length<10){
       fotosFinalesArr.unshift(fotoTableroData);
       if(typeof renderFotos==='function') renderFotos();
@@ -197,8 +225,6 @@ function renderItemsChecklist(){
   var c=document.getElementById('itemsChecklist'); if(!c) return; c.innerHTML='';
   puntosVisibles().forEach(function(item,i){
     if(item.indexOf('Foto del Tablero')>=0){
-      // Si ya la tomo: palomita verde ✅ de que ya esta guardada y hasta abajo, + crucecita ❌ para quitarla
-      // Si aun no: camarita 📷 normal
       var btnTablero = fotoTableroData
         ? '<span style="width:38px;height:38px;border-radius:10px;background:#DCFCE7;color:#166534;border:2px solid #22C55E;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900">✅</span>'
         : '<button type="button" onclick="abrirFotoTablero()" style="width:38px;height:38px;border-radius:10px;background:#2563EB;color:#fff;border:none;font-size:18px;cursor:pointer;line-height:1">📷</button>';
@@ -586,7 +612,6 @@ function abrirChecklist(tipo, desdeBorrador){
   var esVehiculo=(tipo==='camiones');
   if(boxM) boxM.classList.toggle('hidden', esVehiculo);
   if(boxV) boxV.classList.toggle('hidden', !esVehiculo);
-  // Si es borrador, no reseteamos tablero / fotos, lo restauramos abajo
   if(!desdeBorrador){ fotoTableroData=null; fotoTableroTemporal=null; }
   if(esVehiculo){
     try{document.getElementById('vFecha').value=hoyISO();}catch(e){}
@@ -621,16 +646,14 @@ function abrirChecklist(tipo, desdeBorrador){
   }
   renderItemsChecklist();
   show('p-checklist');
-  // Si hay borrador de este tipo, preguntar si quiere seguir donde se quedo
   if(!desdeBorrador){
     try{
       var b=JSON.parse(localStorage.getItem('wms_borrador')||'null');
       if(b && b.tipo===tipo){
         setTimeout(function(){
           if(confirm('¿Quieres seguir donde te quedaste? Tienes un checklist sin guardar.')){
-            abrirChecklist(tipo, true);
-            // Restaurar despues de renderizar
-            setTimeout(function(){ cargarBorrador(); renderItemsChecklist(); cargarBorrador(); }, 100);
+            // Solo restaurar, sin volver a abrir, para no borrar lo restaurado
+            cargarBorrador();
           } else {
             limpiarBorrador();
           }
@@ -776,7 +799,6 @@ function eliminarVehiculo(i){
 }
 try{if(window.location.hash==='#nueva-pass'){show('p-nueva-pass')}}catch(e){}
 try{cargarDatosGuardados();aplicarLogo();actualizarContadoresEquipos();}catch(e){}
-// Si ya habia sesion de operador guardada, no te regresa al inicio, te deja en el menu
 try{
   var sesOp=JSON.parse(localStorage.getItem('wms_sesion_operador')||'null');
   if(sesOp && sesOp.nombre){ window.sesionActiva=true; operadorActual={nombre:sesOp.nombre, usuario:sesOp.usuario||''}; try{document.getElementById('nombreEmpresa').innerText=sesOp.nombre;}catch(e){} setTimeout(function(){ show('p4'); }, 200); }
