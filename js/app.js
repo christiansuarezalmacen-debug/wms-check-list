@@ -21,6 +21,9 @@ function abrirMenuAdmin(){document.getElementById('menuOverlayAdmin').style.disp
 function cerrarMenuAdmin(){document.getElementById('menuOverlayAdmin').style.display='none';document.getElementById('menuPanelAdmin').style.display='none';}
 function irMenuAdmin(id){cerrarMenuAdmin();show(id);}
 window.addEventListener('popstate', function(e){
+  // Si la camara esta abierta, la flechita del telefono la cierra y te regresa al checklist, no te saca de la app
+  var cam=document.getElementById('camaraModal');
+  if(cam && cam.style.display==='flex'){ cerrarCamaraHD(); try{history.pushState({pantalla:'p-checklist'},'', '#p-checklist');}catch(err){} return; }
   if(navStack.length>1){navStack.pop();var anterior=navStack[navStack.length-1]||'p1';show(anterior, false);}
   else {try{history.pushState({pantalla:'p1'},'', '#p1');}catch(err){}}
 });
@@ -34,12 +37,31 @@ window.sesionActiva=false;
 var usuarios=[],empresaActual=null,operadorActual=null,tipoChecklistActual='montacargas';
 var logoEmpresaURL='';try{logoEmpresaURL=localStorage.getItem('wms_logo')||'./icon-512.png';}catch(e){logoEmpresaURL='./icon-512.png';}
 var fotosFinalesArr=[];var streamHD=null;
+// ===== CAMARA - HISTORIAL HASTA 10 + FLASH + FLECHITA REGRESAR + VELOCIDAD =====
 var fotosCamaraAceptadas=[];
 var fotoCamaraTemporal=null;
+var flashEncendido=false;
+function actualizarBotonFlash(){
+  var b=document.getElementById('btnFlashCamara');
+  if(b){ b.textContent = flashEncendido ? '⚡ On' : '⚡ Off'; b.style.background = flashEncendido ? '#FBBF24' : '#1E293B'; b.style.color = flashEncendido ? '#000' : '#fff'; }
+}
+async function toggleFlashCamara(){
+  try{
+    if(!streamHD){ alert('Primero abre la cámara'); return; }
+    var track=streamHD.getVideoTracks()[0];
+    var caps=track.getCapabilities ? track.getCapabilities() : {};
+    if(!caps.torch){ alert('Este teléfono no tiene flash para la cámara trasera.'); return; }
+    flashEncendido=!flashEncendido;
+    await track.applyConstraints({advanced:[{torch:flashEncendido}]});
+    actualizarBotonFlash();
+  }catch(e){ alert('No se pudo prender el flash: '+e.message); }
+}
+function regresarCamaraHD(){ cerrarCamaraHD(); }
 function actualizarContadorCamara(){var el=document.getElementById('contadorFotosCamara');if(el)el.textContent=fotosCamaraAceptadas.length+' / 10';}
 function pintarHistorialCamara(){var box=document.getElementById('historialFotosCamara');if(!box)return;box.innerHTML='';fotosCamaraAceptadas.forEach(function(src,i){var img=document.createElement('img');img.src=src;img.style.cssText='width:56px;height:56px;object-fit:cover;border-radius:10px;border:2px solid #fff;flex-shrink:0';img.onclick=function(){if(confirm('¿Deseas quitar esta foto?')){fotosCamaraAceptadas.splice(i,1);pintarHistorialCamara();}};box.appendChild(img);});actualizarContadorCamara();}
 function aceptarFotoCamara(){if(!fotoCamaraTemporal)return;if(fotosCamaraAceptadas.length>=10){alert('Ya cuentas con 10 fotos');return;}fotosCamaraAceptadas.push(fotoCamaraTemporal);fotoCamaraTemporal=null;var p=document.getElementById('previewCamaraNueva');if(p)p.style.display='none';pintarHistorialCamara();}
 function rechazarFotoCamara(){fotoCamaraTemporal=null;var p=document.getElementById('previewCamaraNueva');if(p)p.style.display='none';}
+// ===== PIN TEMPORAL =====
 var usuarioCambiandoPin=null;
 function generarSalt(){var a=new Uint8Array(16);crypto.getRandomValues(a);return Array.from(a).map(function(b){return b.toString(16).padStart(2,'0')}).join('');}
 async function hashConSalt(texto, salt){var enc=new TextEncoder();var data=enc.encode(salt+'::'+texto);var buf=await crypto.subtle.digest('SHA-256', data);return Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,'0')}).join('');}
@@ -144,6 +166,7 @@ var timerInterval=null, tiempoRestante=120, datosPendientes=null;
 function iniciarTimer(){clearInterval(timerInterval);tiempoRestante=120;var el=document.getElementById('timerVerif');el.textContent='2:00';timerInterval=setInterval(function(){tiempoRestante--;var m=Math.floor(tiempoRestante/60), s=tiempoRestante%60;el.textContent=m+':'+(s<10?'0'+s:s);if(tiempoRestante<=0){clearInterval(timerInterval); el.textContent='0:00'; alert('Se acabó el tiempo. Por favor, solicita otro código con REENVIAR CÓDIGO.');}},1000);}
 async function enviarSMS(to, message){var res = await fetch('/api/send-sms', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ to: to, message: message }) });var data = await res.json().catch(function(){return {}});if(!res.ok) throw new Error((data.error || 'No se pudo enviar SMS') + ' | ' + (data.details || data.message || 'sin detalle'));return data;}
 async function reenviarCodigoVerificacion(){if(!SMS_ACTIVO){alert('Verificación pausada por ahora. Ya puedes entrar directo.'); return;}if(!datosPendientes){alert('Por favor, vuelve a Activar Suscripción'); return;}var codigo=Math.floor(100000+Math.random()*900000).toString();datosPendientes.codigo=codigo; datosPendientes.expira=Date.now()+120000;try{localStorage.setItem('wms_pendiente', JSON.stringify(datosPendientes));}catch(e){}try{await enviarSMS(datosPendientes.telefonoCompleto, 'Tu codigo WMS Check List es: '+codigo+'. Tienes 2 minutos para usarlo.');}catch(e){alert('No se pudo reenviar SMS: '+e.message); return;}iniciarTimer();var m=document.getElementById('msgVerif'); m.classList.remove('hidden'); m.innerHTML='✅ Te reenviamos el código por SMS a <b>'+enmascararTelefono(datosPendientes.telefono)+'</b>';}
+// ===== GUARDAR EMPRESA CON NOMBRE ADMIN - CON RESPALDO SI NO EXISTE LA COLUMNA =====
 async function crearEmpresaEnSupabase(datos){
   var conNombre={nombre_empresa:datos.empresa,correo:datos.correo,telefono:datos.telefono,pass:datos.pass_hash,pass_salt:datos.pass_salt,estado:'prueba',nombre_admin:datos.nombre||''};
   var res=await supabaseClient.from('empresas').insert([conNombre]).select().single();
@@ -228,10 +251,37 @@ function eliminarLogo(){
   aplicarLogo();
   alert('Logo eliminado. Ya puedes subir otro.');
 }
-async function abrirCamaraHD(){var m=document.getElementById('camaraModal');m.style.display='flex';fotosCamaraAceptadas=[];fotoCamaraTemporal=null;var pp=document.getElementById('previewCamaraNueva');if(pp)pp.style.display='none';pintarHistorialCamara();try{if(streamHD){streamHD.getTracks().forEach(function(t){t.stop()});}streamHD=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:1920,min:1280},height:{ideal:1080,min:720}}});var v=document.getElementById('videoHD');v.srcObject=streamHD;await v.play();}catch(e){alert('No se pudo abrir la cámara HD. Por favor, revisa el permiso de cámara.\n'+e.message);document.getElementById('fotosFinales').click();}}
-function cerrarCamaraHD(){try{if(streamHD)streamHD.getTracks().forEach(function(t){t.stop()});}catch(e){}var p=document.getElementById('previewCamaraNueva');if(p)p.style.display='none';fotoCamaraTemporal=null;fotosCamaraAceptadas.forEach(function(src){if(fotosFinalesArr.length<10)fotosFinalesArr.push(src);});fotosCamaraAceptadas=[];pintarHistorialCamara();renderFotos();document.getElementById('camaraModal').style.display='none';}
+async function abrirCamaraHD(){
+  var m=document.getElementById('camaraModal');m.style.display='flex';
+  fotosCamaraAceptadas=[];fotoCamaraTemporal=null;flashEncendido=false;actualizarBotonFlash();
+  var pp=document.getElementById('previewCamaraNueva');if(pp)pp.style.display='none';pintarHistorialCamara();
+  try{
+    if(streamHD){streamHD.getTracks().forEach(function(t){t.stop()});}
+    // Mas rapido: 1280 en vez de 1920, abre mas rapido y pesa menos
+    streamHD=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}}});
+    var v=document.getElementById('videoHD');v.srcObject=streamHD;await v.play();
+    try{history.pushState({pantalla:'camara'},'', '#camara');}catch(e){}
+  }catch(e){alert('No se pudo abrir la cámara HD. Por favor, revisa el permiso de cámara.\n'+e.message);document.getElementById('fotosFinales').click();}
+}
+function cerrarCamaraHD(){
+  try{if(streamHD)streamHD.getTracks().forEach(function(t){t.stop()});}catch(e){}
+  flashEncendido=false;actualizarBotonFlash();
+  var p=document.getElementById('previewCamaraNueva');if(p)p.style.display='none';fotoCamaraTemporal=null;
+  fotosCamaraAceptadas.forEach(function(src){if(fotosFinalesArr.length<10)fotosFinalesArr.push(src);});
+  fotosCamaraAceptadas=[];pintarHistorialCamara();renderFotos();document.getElementById('camaraModal').style.display='none';
+}
 function renderFotos(){var pv=document.getElementById('previewFotos');pv.innerHTML='';fotosFinalesArr.forEach(function(data,idx){var wrap=document.createElement('div');wrap.className='foto-item';var img=document.createElement('img');img.src=data;img.className='preview-foto';var btn=document.createElement('button');btn.className='btn-borrar-foto';btn.innerHTML='×';btn.type='button';btn.onclick=function(){fotosFinalesArr.splice(idx,1);renderFotos();};wrap.appendChild(img);wrap.appendChild(btn);pv.appendChild(wrap);});}
-function tomarFotoHD(){try{var v=document.getElementById('videoHD');if(!v.videoWidth){alert('Por favor, espera a que cargue la cámara.');return;}if(fotosCamaraAceptadas.length>=10){alert('Ya cuentas con 10 fotos.');return;}if(fotosFinalesArr.length>=10){alert('Ya cuentas con 10 fotos.');return;}var c=document.createElement('canvas');c.width=v.videoWidth;c.height=v.videoHeight;var ctx=c.getContext('2d');ctx.drawImage(v,0,0,c.width,c.height);var data=c.toDataURL('image/jpeg',0.92);fotoCamaraTemporal=data;var imgEl=document.getElementById('imgPreviewCamara');if(imgEl)imgEl.src=data;var prev=document.getElementById('previewCamaraNueva');if(prev)prev.style.display='flex';}catch(e){alert('No se pudo tomar la foto: '+e.message);}}
+function tomarFotoHD(){
+  try{
+    var v=document.getElementById('videoHD');if(!v.videoWidth){alert('Por favor, espera a que cargue la cámara.');return;}
+    if(fotosCamaraAceptadas.length>=10){alert('Ya cuentas con 10 fotos.');return;}
+    if(fotosFinalesArr.length>=10){alert('Ya cuentas con 10 fotos.');return;}
+    var c=document.createElement('canvas');c.width=v.videoWidth;c.height=v.videoHeight;var ctx=c.getContext('2d');ctx.drawImage(v,0,0,c.width,c.height);
+    // Mas rapido: 0.82 en vez de 0.92, pesa menos y guarda mas rapido
+    var data=c.toDataURL('image/jpeg',0.82);
+    fotoCamaraTemporal=data;var imgEl=document.getElementById('imgPreviewCamara');if(imgEl)imgEl.src=data;var prev=document.getElementById('previewCamaraNueva');if(prev)prev.style.display='flex';
+  }catch(e){alert('No se pudo tomar la foto: '+e.message);}
+}
 function cargarDatosGuardados(){try{var op=JSON.parse(localStorage.getItem('wms_op_login')||'null');if(op){document.getElementById('opEmpresa').value=op.empresa||'';document.getElementById('opUsuario').value=op.usuario||'';}}catch(e){}try{var ad=JSON.parse(localStorage.getItem('wms_admin_login')||'null');if(ad){document.getElementById('loginCorreo').value=ad.correo||'';}}catch(e){}}
 function mostrarPrueba(){if(!empresaActual)return;try{document.getElementById('estadoEmpresa').innerText=empresaActual.estado||'prueba';var fin=new Date(empresaActual.fin_prueba);var dias=Math.ceil((fin-new Date())/(1000*60*60*24));document.getElementById('diasPrueba').innerText=empresaActual.estado==='activo'?'Suscripción activa - $99 / mes':dias>0?'Te quedan '+dias+' días gratis, después $99 / mes':'Tu prueba terminó';}catch(e){}}
 function soloDigitos(t){return (t||'').replace(/\D/g,'');}
@@ -403,6 +453,7 @@ async function restablecerPIN(id,nombre){
 }
 async function eliminarUsuario(id,nombre){if(!confirm('¿Deseas eliminar a '+nombre+'?'))return;if(supabaseClient)await supabaseClient.from('usuarios').delete().eq('id',id);await cargarUsuarios();}
 function actualizarTipo(){var t=document.getElementById('dTipo').value,esGas=t==='Gas';document.getElementById('boxCombustible').classList.toggle('hidden',!esGas);document.getElementById('boxBateria').classList.toggle('hidden',esGas);document.getElementById('dClase').value=esGas?'Montacargas Gas':'Montacargas Eléctrico'; renderItemsChecklist();}
+// ===== VEHÍCULO: TIPO COMBUSTIBLE -> MUESTRA COMBUSTIBLE / BATERÍA / AMBOS =====
 function actualizarTipoCombustibleVehiculo(){
   var tipo='';
   try{tipo=document.getElementById('vTipoCombustible').value||'';}catch(e){}
@@ -413,6 +464,7 @@ function actualizarTipoCombustibleVehiculo(){
   else if(tipo==='Híbrido'){ boxComb.classList.remove('hidden'); boxBat.classList.remove('hidden'); }
   else { boxComb.classList.remove('hidden'); boxBat.classList.add('hidden'); }
 }
+// ===== VEHÍCULO: BUSCAR POR NÚMERO ECONÓMICO Y AUTO-LLENAR =====
 function buscarVehiculoPorNumero(){
   var numEl=document.getElementById('vNumEconomico');
   if(!numEl) return null;
@@ -436,6 +488,7 @@ function buscarVehiculoPorNumero(){
     return null;
   }
 }
+// ===== EQUIPO / MONTACARGAS: BUSCAR POR NÚMERO DE EQUIPO Y AUTO-LLENAR =====
 function buscarMontacargasPorNumero(){
   var numEl=document.getElementById('dUnidad');
   if(!numEl) return null;
@@ -549,6 +602,7 @@ function verReporteMes(){var mes=document.getElementById('mesReporte').value,lib
 function descargarMes(tipo){var el=document.getElementById('mesMontacargas');var mes=el?el.value:'2026-11';exportarCSVPorMes(mes||'2026-11',tipo)}
 function exportarCSVPorMes(mes,tipo){var libro=getLibro(),hojas=(libro[mes]&&libro[mes][tipo])||{},unidades=Object.keys(hojas);if(!unidades.length){alert('Aún no hay datos en '+mes);return}var csv='Libro '+mes+' - '+tipo+'\n';unidades.forEach(function(u){var dias=hojas[u];csv+='\nHoja Unidad '+u+'\nA - Datos / B - Punto,'+dias.map(function(d){return d.fecha+' - '+d.operador+' - Tipo '+(d.tipoUnidad||'')+' - Turno '+d.turno+' - Horometro '+d.horometro+' - Combustible '+d.combustible+' - Bateria '+d.bateria+' - GOLPES: '+(d.comentarioFinal||'')+' - FOTOS: '+(d.fotosFinales||'')}).join(',')+'\n';puntosDe(tipo).forEach(function(punto,pi){csv+='"'+(pi+1)+'. '+punto.replace(/"/g,'')+'",'+dias.map(function(d){var f=(d.filas||[]).find(function(x){return x.punto===punto})||{};return '"'+(f.estado||'')+'"'}).join(',')+'\n'})});var blob=new Blob([csv],{type:'text/csv'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='wms_libro_'+mes+'_'+tipo+'_por_unidad.csv';a.click();alert('¡Listo! Se descargó todo el mes '+mes+'.')}
 function exportarCSV(){var mes=document.getElementById('mesReporte').value||'2026-11';exportarCSVPorMes(mes,'montacargas')}
+// ===== EQUIPOS 20/20 - MONTACARGAS Y VEHÍCULOS =====
 window.listaMontacargas = JSON.parse(localStorage.getItem('wms_montacargas')||'[]');
 window.listaVehiculos = JSON.parse(localStorage.getItem('wms_vehiculos')||'[]');
 var LIMITE_EQUIPOS = 20;
