@@ -34,7 +34,6 @@
   .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
   .menu-grid button { border: none; border-radius: 16px; padding: 18px 8px; color: #fff; font-weight: 800; font-size: 14px; cursor: pointer; }
   .contador-equipo { display: block; font-size: 16px; font-weight: 800; margin-top: 6px; opacity: .95; }
-  /* CUADRITOS ENCONTRADO / NO ENCONTRADO - EN AUTOMATICO */
   .cuadrito-verde { display:none; background:#DCFCE7 !important; color:#166534 !important; border:2px solid #22C55E !important; border-radius:12px !important; padding:10px !important; font-size:13px !important; font-weight:800 !important; text-align:center !important; margin-top:10px !important; }
   .cuadrito-rojo { display:none; background:#FEE2E2 !important; color:#991B1B !important; border:2px solid #EF4444 !important; border-radius:12px !important; padding:10px !important; font-size:13px !important; font-weight:800 !important; text-align:center !important; margin-top:10px !important; }
 </style>
@@ -257,7 +256,6 @@
 </div>
 <div class="container hidden" id="p-checklist" style="background:#0A1E3C;max-width:720px">
 <div class="top"><span onclick="show('p4')" style="cursor:pointer">←</span><b id="tituloChecklist">Checklist</b><span></span></div>
-
 <div id="boxDatosMontacargas" class="card" style="background:#fff;color:#000">
 <div style="display:flex;justify-content:center;align-items:center;text-align:center;width:100%"><b style="font-size:14px;text-align:center;width:100%">DATOS DEL EQUIPO</b></div>
 <div class="datos-grid" style="margin-top:10px">
@@ -274,7 +272,6 @@
 <p id="msgMontacargasNoEncontrado" class="cuadrito-rojo">⚠️ Equipo no encontrado, por favor informa a tu administrador para registrarlo</p>
 <input type="hidden" id="dClase" value="Montacargas">
 </div>
-
 <div id="boxDatosVehiculo" class="card hidden" style="background:#fff;color:#000">
 <div style="display:flex;justify-content:center;align-items:center;text-align:center;width:100%"><b style="font-size:14px;text-align:center;width:100%">DATOS DEL VEHÍCULO</b></div>
 <div class="datos-grid" style="margin-top:10px">
@@ -291,7 +288,6 @@
 <p id="msgVehiculoEncontrado" class="cuadrito-verde">✅ Vehículo encontrado</p>
 <p id="msgVehiculoNoEncontrado" class="cuadrito-rojo">⚠️ Vehículo no encontrado, por favor informa a tu administrador para registrarlo</p>
 </div>
-
 <div class="checklist-scroll"><div class="tabla-head"><span style="text-align:left">PUNTOS DE REVISION</span><span>BUEN<br>ESTADO</span><span>MAL<br>ESTADO</span></div><div id="itemsChecklist"></div></div>
 <div class="card" style="background:#fff;color:#000;margin-top:16px"><b style="font-size:15px">📝 Describe Golpes en Carrocería / Fallas</b><textarea id="comentarioFinal" placeholder="Ej. Golpe en puerta izquierda..." style="width:100%;min-height:90px;padding:12px;border-radius:12px;border:1px solid #CBD5E1;background:#fff;color:#000;font-size:14px"></textarea>
 <label style="color:#000;margin-top:14px">Fotos</label>
@@ -306,7 +302,12 @@
 <button class="btn btn-outline" onclick="show('p4')">Regresar</button>
 </div>
 <div id="camaraModal" style="position:fixed;top:0;left:0;width:100%;height:100dvh;background:#000;z-index:9999;display:none;flex-direction:column">
-<div style="padding:12px 14px;background:#0A1E3C;display:flex;justify-content:space-between;align-items:center;flex-shrink:0"><b style="font-size:14px;font-weight:600;color:#fff">Puedes tomar hasta 10 fotos</b><span id="contadorFotosCamara" style="font-size:13px;color:#E2E8F0;font-weight:600">0 / 10</span></div>
+<div style="padding:8px 10px;background:#0A1E3C;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;gap:8px">
+<button onclick="regresarCamaraHD()" style="background:none;border:none;color:#fff;font-size:22px;cursor:pointer;line-height:1">←</button>
+<b style="font-size:13px;font-weight:600;color:#fff;flex:1;text-align:center">Puedes tomar hasta 10 fotos</b>
+<button id="btnFlashCamara" onclick="toggleFlashCamara()" style="background:#1E293B;color:#fff;border:none;border-radius:999px;padding:6px 10px;font-size:13px;cursor:pointer">⚡ Off</button>
+<span id="contadorFotosCamara" style="font-size:13px;color:#E2E8F0;font-weight:600">0 / 10</span>
+</div>
 <div style="flex:1;min-height:0;position:relative;overflow:hidden;background:#000">
 <video id="videoHD" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover;display:block"></video>
 <div id="previewCamaraNueva" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.85);z-index:20;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:16px">
@@ -328,7 +329,6 @@
 </div>
 <script src="js/app.js"></script>
 <script>
-// --- HISTORIAL CAMARA HASTA 10 - NO TOCA NADA MAS ---
 let fotosCamaraAceptadas = [];
 let fotoCamaraTemporal = null;
 function actualizarContadorCamara(){
