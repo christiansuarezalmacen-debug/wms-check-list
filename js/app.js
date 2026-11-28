@@ -74,7 +74,7 @@ function puntosDe(t){
 function esPuntoGasLP(texto){var t=(texto||'').toLowerCase();return t.indexOf('gas lp')>=0;}
 function puntosVisibles(){var base=puntosDe(tipoChecklistActual);if(tipoChecklistActual!=='montacargas') return base;var tipo='';try{tipo=document.getElementById('dTipo').value;}catch(e){tipo='Gas';}if(tipo==='Electrico'){return base.filter(function(p){return !esPuntoGasLP(p);});}return base;}
 
-// ===== FOTO TABLERO - CAMARITA CHIQUITA =====
+// ===== FOTO TABLERO - CAMARITA ALINEADA CON VERDE / CRUZ ALINEADA CON ROJO =====
 var fotoTableroData=null;
 var fotoTableroTemporal=null;
 function abrirFotoTablero(){var i=document.getElementById('inputFotoTablero'); if(i) i.click();}
@@ -91,19 +91,42 @@ function onFotoTableroChange(e){
 function aceptarFotoTablero(){
   if(!fotoTableroTemporal) return;
   fotoTableroData=fotoTableroTemporal; fotoTableroTemporal=null;
+  if(window.fotosFinalesArr && fotosFinalesArr.length<10){
+    fotosFinalesArr.unshift(fotoTableroData);
+    if(typeof renderFotos==='function') renderFotos();
+  }
   var box=document.getElementById('boxAceptarTablero'); if(box) box.style.display='none';
-  var ok=document.getElementById('tableroGuardado'); if(ok) ok.style.display='inline-block';
+  renderItemsChecklist();
 }
 function rechazarFotoTablero(){
   fotoTableroTemporal=null;
   var prev=document.getElementById('previewTablero'); if(prev){prev.src=''; prev.style.display='none';}
   var box=document.getElementById('boxAceptarTablero'); if(box) box.style.display='none';
 }
+function eliminarFotoTablero(){
+  if(!fotoTableroData) return;
+  if(!confirm('¿Deseas quitar esta foto del tablero y tomar otra?')) return;
+  fotoTableroData=null; fotoTableroTemporal=null;
+  if(window.fotosFinalesArr && fotosFinalesArr.length){
+    fotosFinalesArr.shift();
+    if(typeof renderFotos==='function') renderFotos();
+  }
+  renderItemsChecklist();
+}
 function renderItemsChecklist(){
   var c=document.getElementById('itemsChecklist'); if(!c) return; c.innerHTML='';
   puntosVisibles().forEach(function(item,i){
     if(item.indexOf('Foto del Tablero')>=0){
-      c.innerHTML+='<div class="fila-check"><b>'+(i+1)+'. '+item+'</b><div style="display:flex;align-items:center;gap:6px"><button type="button" onclick="abrirFotoTablero()" style="width:38px;height:38px;border-radius:10px;background:#2563EB;color:#fff;border:none;font-size:18px;cursor:pointer">📷</button><span id="tableroGuardado" style="display:'+(fotoTableroData?'inline-block':'none')+';font-size:18px">💾</span></div></div><div style="display:flex;flex-direction:column;align-items:center;gap:8px;margin:-6px 0 8px"><img id="previewTablero" src="'+(fotoTableroData||'')+'" style="display:'+(fotoTableroData?'block':'none')+';max-width:100%;border-radius:10px"><div id="boxAceptarTablero" style="display:none;gap:12px"><button type="button" onclick="aceptarFotoTablero()" style="width:44px;height:44px;border-radius:50%;background:#22C55E;color:#fff;border:none;font-size:20px">✅</button><button type="button" onclick="rechazarFotoTablero()" style="width:44px;height:44px;border-radius:50%;background:#EF4444;color:#fff;border:none;font-size:18px">❌</button></div></div><input type="file" id="inputFotoTablero" accept="image/*" capture="environment" style="display:none" onchange="onFotoTableroChange(event)">';
+      c.innerHTML+='<div class="fila-check"><b>'+(i+1)+'. '+item+'</b>'
+      +'<label class="check-mini" style="display:flex;align-items:center;justify-content:center"><button type="button" onclick="abrirFotoTablero()" style="width:38px;height:38px;border-radius:10px;background:#2563EB;color:#fff;border:none;font-size:18px;cursor:pointer;line-height:1">📷</button></label>'
+      +'<label class="check-mini mal" style="display:flex;align-items:center;justify-content:center"><button type="button" onclick="eliminarFotoTablero()" style="display:'+(fotoTableroData?'flex':'none')+';width:38px;height:38px;border-radius:50%;background:#EF4444;color:#fff;border:none;font-size:18px;cursor:pointer;align-items:center;justify-content:center;line-height:1">❌</button></label></div>'
+      +'<div style="display:flex;flex-direction:column;align-items:center;gap:8px;margin:-4px 0 10px;padding:0 10px">'
+      +'<img id="previewTablero" src="'+(fotoTableroData||'')+'" style="display:'+(fotoTableroData?'block':'none')+';max-width:100%;border-radius:12px">'
+      +'<div id="boxAceptarTablero" style="display:none;gap:12px">'
+      +'<button type="button" onclick="aceptarFotoTablero()" style="width:44px;height:44px;border-radius:50%;background:#22C55E;color:#fff;border:none;font-size:20px">✅</button>'
+      +'<button type="button" onclick="rechazarFotoTablero()" style="width:44px;height:44px;border-radius:50%;background:#EF4444;color:#fff;border:none;font-size:18px">❌</button>'
+      +'</div></div>'
+      +'<input type="file" id="inputFotoTablero" accept="image/*" capture="environment" style="display:none" onchange="onFotoTableroChange(event)">';
       return;
     }
     c.innerHTML+='<div class="fila-check"><b>'+(i+1)+'. '+item+'</b><label class="check-mini"><input type="radio" name="chk'+i+'" value="BUEN ESTADO" checked></label><label class="check-mini mal"><input type="radio" name="chk'+i+'" value="MAL ESTADO"></label></div>';
@@ -390,7 +413,6 @@ function actualizarTipoCombustibleVehiculo(){
   else if(tipo==='Híbrido'){ boxComb.classList.remove('hidden'); boxBat.classList.remove('hidden'); }
   else { boxComb.classList.remove('hidden'); boxBat.classList.add('hidden'); }
 }
-// ===== BUSCAR EN AUTOMATICO - oninput - CUADRITO VERDE / ROJO =====
 function buscarVehiculoPorNumero(){
   var numEl=document.getElementById('vNumEconomico');
   if(!numEl) return null;
@@ -499,7 +521,7 @@ async function guardarChecklist(){
     else nivelMostrarV=nivelCombV;
     var datosV={fecha:fechaV,operador:document.getElementById('vOperador').value,turno:document.getElementById('vTurno').value,unidad:numEco,numero_economico:numEco,clase:'Vehículo',tipoUnidad:document.getElementById('vTipoVehiculo').value,tipoVehiculo:document.getElementById('vTipoVehiculo').value,tipoCombustible:tipoCombV,combustible:nivelCombV,bateria:nivelBatV,kilometraje:document.getElementById('vKilometraje').value,horometro:document.getElementById('vKilometraje').value,tipo:tipoChecklistActual,guardado:new Date().toISOString(),vehiculo_id:vehEncontrado? (vehEncontrado.num||numEco) : numEco, fotoTablero: fotoTableroData ? 'SI' : 'NO'};
     datosV.filas=puntosVisibles().map(function(item,i){
-      if(item.indexOf('Foto del Tablero')>=0) return {punto:item,estado: fotoTableroData ? 'FOTO GUARDADA 💾' : 'SIN FOTO',comentario:'',tieneFoto: fotoTableroData ? 'SI' : 'NO',ligaFoto:''};
+      if(item.indexOf('Foto del Tablero')>=0) return {punto:item,estado: fotoTableroData ? 'FOTO GUARDADA' : 'SIN FOTO',comentario:'',tieneFoto: fotoTableroData ? 'SI' : 'NO',ligaFoto:''};
       var s=document.querySelector('input[name="chk'+i+'"]:checked'); return {punto:item,estado:s?s.value:'',comentario:'',tieneFoto:'NO',ligaFoto:''};
     });
     datosV.comentarioFinal=document.getElementById('comentarioFinal').value||'';datosV.fotosFinales=fotosFinalesArr.length+' fotos';datosV.ligasFotos=fotosFinalesArr.map(function(_,idx){return 'foto_'+numEco+'_'+fechaV+'_'+(idx+1)});
