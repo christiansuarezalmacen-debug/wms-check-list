@@ -118,11 +118,11 @@
 <label>Tu usuario</label><input id="opUsuario" name="username" required autocomplete="username">
 <label>Tu PIN de 4 dígitos</label><input id="opPass" name="password" type="password" inputmode="numeric" maxlength="4" placeholder="••••" required autocomplete="current-password">
 <button class="btn" type="submit">ENTRAR A CHAMBEAR</button></form>
-<div class="link">¿Olvidaste tu PIN? <b onclick="olvidoPinOperador()">Pide ayuda a tu Admin</b></div>
+<div class="link">¿Olvidaste tu PIN? <b onclick="olvidoPinOperador()">Presiona aqui para reestablecer</b></div>
 </div>
 <div class="container hidden" id="p-cambiar-pin" style="background:#0A1E3C">
 <div class="top"><span onclick="show('p1')" style="cursor:pointer">←</span><b>Cambiar PIN</b><span></span></div>
-<div class="saludo"><h2 id="tituloCambiarPin">Crea tu PIN nuevo</h2><p id="textoCambiarPin">Ya no uses el temporal, pon el tuyo de 4 dígitos, que solo tú sepas.</p></div>
+<div class="saludo"><h2 id="tituloCambiarPin">Crea tu PIN nuevo</h2><p id="textoCambiarPin">Deberas cambiar tu nip temporal, crea uno nuevo de 4 digitos y no lo compartas con nadie.</p></div>
 <form onsubmit="event.preventDefault();guardarNuevoPin()">
 <label>PIN nuevo de 4 dígitos</label><input id="nuevoPin1" type="password" inputmode="numeric" maxlength="4" placeholder="••••" required>
 <label>Repite tu PIN nuevo</label><input id="nuevoPin2" type="password" inputmode="numeric" maxlength="4" placeholder="••••" required>
