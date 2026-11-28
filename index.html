@@ -44,7 +44,7 @@
 </div>
 <div class="container hidden" id="p2-admin" style="background:#0A1E3C">
 <div class="top"><span onclick="show('p1')" style="cursor:pointer">←</span><b>Soy Administrador</b><span></span></div>
-<div class="saludo"><h2>Bienvenido de nuevo</h2><p>Inicia sesión para continuar</p></div>
+<div class="saludo"><h2>Bienvenido de nuevo</h2><p>Por favor, inicia sesión para continuar</p></div>
 <form onsubmit="event.preventDefault();iniciarSesion()">
 <label>Correo</label><input id="loginCorreo" type="email" placeholder="tu@correo.com" required autocomplete="email">
 <label>Contraseña</label><input id="loginPass" type="password" placeholder="••••••••" required autocomplete="current-password">
@@ -87,14 +87,14 @@
 <div class="card" style="text-align:center"><b>Ahora cuentas con 7 días de prueba Premium gratuita para que uses nuestra aplicación.</b><p style="font-size:13px;opacity:.85;margin-top:8px">Después $99 MXN al mes • Cancela cuando quieras</p></div>
 <button class="btn btn-yellow" onclick="irAlPanelDespuesRegistro()">CONTINUAR</button>
 </div>
-<div id="modalTerminos" class="modal-legal" onclick="if(event.target===this)cerrarLegal()"><div class="box"><h3>Términos y Condiciones</h3><p><b>WMS Check List</b> te da 7 días gratis de prueba Premium. Después de la prueba se cobrarán $99 MXN al mes en automático hasta que canceles.</p><ul><li>Puedes cancelar cuando quieras desde tu panel.</li><li>Usuarios ilimitados dentro de tu empresa.</li><li>Eres responsable de cuidar tu contraseña y tu PIN.</li><li>No compartimos tus datos con terceros.</li></ul><p>Al activar tu suscripción aceptas estos términos.</p><button class="btn btn-blue" onclick="cerrarLegal()">Cerrar</button></div></div>
-<div id="modalPrivacidad" class="modal-legal" onclick="if(event.target===this)cerrarLegal()"><div class="box"><h3>Aviso de Privacidad</h3><p>Recabamos: nombre de empresa, nombre y apellido, celular, correo y contraseña para crear tu cuenta y verificarte por SMS.</p><ul><li>Usamos tus datos solo para darte el servicio y avisarte de tu suscripción.</li><li>No vendemos ni compartimos tus datos con terceros.</li><li>Puedes pedir que eliminemos tus datos escribiéndonos al correo de soporte.</li></ul><button class="btn btn-blue" onclick="cerrarLegal()">Cerrar</button></div></div>
+<div id="modalTerminos" class="modal-legal" onclick="if(event.target===this)cerrarLegal()"><div class="box"><h3>Términos y Condiciones</h3><p><b>WMS Check List</b> te da 7 días gratis de prueba Premium. Después de la prueba se cobrarán $99 MXN al mes en automático hasta que canceles.</p><ul><li>Puedes cancelar cuando quieras desde tu panel.</li><li>Usuarios ilimitados dentro de tu empresa.</li><li>Por favor, cuida tu contraseña y tu PIN.</li><li>No compartimos tus datos con terceros.</li></ul><p>Al activar tu suscripción aceptas estos términos.</p><button class="btn btn-blue" onclick="cerrarLegal()">Cerrar</button></div></div>
+<div id="modalPrivacidad" class="modal-legal" onclick="if(event.target===this)cerrarLegal()"><div class="box"><h3>Aviso de Privacidad</h3><p>Recabamos: nombre de empresa, nombre y apellido, celular, correo y contraseña para crear tu cuenta y verificarte por SMS.</p><ul><li>Usamos tus datos solo para darte el servicio y avisarte de tu suscripción.</li><li>No vendemos ni compartimos tus datos con terceros.</li><li>Puedes solicitar que eliminemos tus datos escribiéndonos al correo de soporte.</li></ul><button class="btn btn-blue" onclick="cerrarLegal()">Cerrar</button></div></div>
 <div class="container hidden" id="p-olvido" style="background:#0A1E3C">
 <div class="top"><span onclick="show('p2-admin')" style="cursor:pointer">←</span><b>Recuperar Contraseña</b><span></span></div>
 <div class="saludo"><h2>¿Olvidaste tu contraseña?</h2><p>Te mandamos un código por SMS</p></div>
 <div id="msgOlvido" class="ok hidden"></div>
-<form onsubmit="event.preventDefault();enviarRecuperacion()"><label>Ingresa el número de teléfono con el que te registraste</label><input id="telefonoOlvido" type="tel" inputmode="numeric" required><button class="btn btn-yellow" type="submit">ENVIAR CÓDIGO POR SMS</button></form>
-<div class="card" style="text-align:center"><b>¿Ya te llegó el código?</b><p style="font-size:13px;opacity:.85;margin:8px 0">Te llega por SMS a tu número registrado.</p><p style="font-size:13px">1. Pon tu código de 6 dígitos<br>2. Crear contraseña nueva y Actualizar</p></div>
+<form onsubmit="event.preventDefault();enviarRecuperacion()"><label>Por favor, ingresa el número de teléfono con el que te registraste</label><input id="telefonoOlvido" type="tel" inputmode="numeric" required><button class="btn btn-yellow" type="submit">ENVIAR CÓDIGO POR SMS</button></form>
+<div class="card" style="text-align:center"><b>¿Ya te llegó el código?</b><p style="font-size:13px;opacity:.85;margin:8px 0">Te llega por SMS a tu número registrado.</p><p style="font-size:13px">1. Por favor, ingresa tu código de 6 dígitos<br>2. Crear contraseña nueva y Actualizar</p></div>
 <button class="btn btn-outline" onclick="show('p2-admin')">Regresar a Iniciar Sesión</button>
 </div>
 <div class="container hidden" id="p-nueva-pass" style="background:#0A1E3C">
@@ -117,15 +117,15 @@
 <label>Tu usuario</label><input id="opUsuario" name="username" required autocomplete="username">
 <label>Tu PIN de 4 dígitos</label><input id="opPass" name="password" type="password" inputmode="numeric" maxlength="4" placeholder="••••" required autocomplete="current-password">
 <button class="btn" type="submit">ENTRAR A CHAMBEAR</button></form>
-<div class="link">¿Olvidaste tu PIN? <b onclick="olvidoPinOperador()">Presiona aqui para reestablecer</b></div>
+<div class="link">¿Olvidaste tu PIN? <b onclick="olvidoPinOperador()">Por favor, selecciona aquí para restablecerlo</b></div>
 </div>
 <div class="container hidden" id="p-cambiar-pin" style="background:#0A1E3C">
 <div class="top"><span onclick="show('p1')" style="cursor:pointer">←</span><b>Cambiar PIN</b><span></span></div>
-<div class="saludo"><h2 id="tituloCambiarPin">Crea tu PIN nuevo</h2><p id="textoCambiarPin">Deberas cambiar tu nip temporal, crea uno nuevo de 4 digitos y no lo compartas con nadie.</p></div>
+<div class="saludo"><h2 id="tituloCambiarPin">Crea tu PIN nuevo</h2><p id="textoCambiarPin">Por favor, actualiza tu PIN temporal, crea uno nuevo de 4 dígitos y por favor, no lo compartas con nadie.</p></div>
 <form onsubmit="event.preventDefault();guardarNuevoPin()">
 <label>PIN nuevo de 4 dígitos</label><input id="nuevoPin1" type="password" inputmode="numeric" maxlength="4" placeholder="••••" required>
 <label>Repite tu PIN nuevo</label><input id="nuevoPin2" type="password" inputmode="numeric" maxlength="4" placeholder="••••" required>
-<p style="font-size:12px;opacity:.75;margin:-4px 0 10px;text-align:center">No uses 1234 ni 0000. Que no sea igual al temporal que te dio tu Admin.</p>
+<p style="font-size:12px;opacity:.75;margin:-4px 0 10px;text-align:center">Por favor, evita usar 1234 ni 0000. Que no sea igual al temporal que te proporcionó tu administrador.</p>
 <button class="btn btn-yellow" type="submit">GUARDAR MI PIN NUEVO</button></form>
 <button class="btn btn-outline" onclick="show('p1')">Cancelar</button>
 </div>
@@ -175,7 +175,7 @@
 <label>Nombre completo</label><input id="empNombre">
 <label>Usuario para entrar</label><input id="empUsuario">
 <label>PIN temporal de 4 dígitos</label><input id="empPass" type="password" inputmode="numeric" maxlength="4" placeholder="••••">
-<p style="font-size:12px;opacity:.75;margin:-4px 0 10px;text-align:center">Este es PIN temporal. No uses 1234 ni 0000. El usuario lo cambia por el suyo cuando entra la primera vez. Si se le olvida, tú le picas a Restablecer PIN en Ver Usuarios.</p>
+<p style="font-size:12px;opacity:.75;margin:-4px 0 10px;text-align:center">Este es PIN temporal. Por favor, evita usar 1234 ni 0000. El usuario lo cambia por el suyo cuando entra la primera vez. Si se le olvida, por favor, selecciona Restablecer PIN en Ver Usuarios.</p>
 <label>Rol</label><input id="empRol">
 <label>Teléfono</label><input id="empTel">
 <button class="btn btn-yellow" onclick="guardarEmpleado()">GUARDAR USUARIO</button>
@@ -193,7 +193,7 @@
 <div class="card" style="text-align:center">
 <b style="font-size:18px">🏗️ Montacargas</b>
 <p style="font-size:13px;opacity:.8;margin-top:4px">Tienes <b id="totalMontacargas">0</b> / 20 montacargas registrados</p>
-<p id="msgLimiteMontacargas" style="display:none;font-size:13px;color:#DC2626;font-weight:800;margin-top:6px">Alcanzaste el número máximo de montacargas registrados (20)</p>
+<p id="msgLimiteMontacargas" style="display:none;font-size:13px;color:#DC2626;font-weight:800;margin-top:6px">Se alcanzó el número máximo de montacargas registrados (20)</p>
 <button class="btn btn-yellow" id="btnAgregarMontacargas" onclick="agregarMontacargas()">+ AGREGAR MONTACARGAS</button>
 </div>
 <div id="listaMontacargas"></div>
@@ -205,7 +205,7 @@
 <div class="card" style="text-align:center">
 <b style="font-size:18px">🚚 Vehículos</b>
 <p style="font-size:13px;opacity:.8;margin-top:4px">Tienes <b id="totalVehiculos">0</b> / 20 vehículos registrados</p>
-<p id="msgLimiteVehiculos" style="display:none;font-size:13px;color:#DC2626;font-weight:800;margin-top:6px">Alcanzaste el número máximo de vehículos registrados (20)</p>
+<p id="msgLimiteVehiculos" style="display:none;font-size:13px;color:#DC2626;font-weight:800;margin-top:6px">Se alcanzó el número máximo de vehículos registrados (20)</p>
 <button class="btn btn-yellow" id="btnAgregarVehiculo" onclick="agregarVehiculo()">+ AGREGAR VEHÍCULO</button>
 </div>
 <div id="libroCamiones"></div>
@@ -260,23 +260,25 @@
 <div class="container hidden" id="p-checklist" style="background:#0A1E3C;max-width:720px">
 <div class="top"><span onclick="show('p4')" style="cursor:pointer">←</span><b id="tituloChecklist">Checklist</b><span></span></div>
 
-<!-- ========== DATOS MONTACARGAS - NO SE TOCA ========== -->
+<!-- ========== DATOS MONTACARGAS ========== -->
 <div id="boxDatosMontacargas" class="card" style="background:#fff;color:#000">
 <div style="display:flex;justify-content:center;align-items:center;text-align:center;width:100%"><b style="font-size:14px;text-align:center;width:100%">DATOS DEL EQUIPO</b></div>
 <div class="datos-grid" style="margin-top:10px">
 <div class="full"><label style="color:#000">Fecha:</label><input id="dFecha" type="date" style="background:#fff;color:#000;border:1px solid #CBD5E1"></div>
 <div><label style="color:#000">Nombre del Operador:</label><input id="dOperador" placeholder="Nombre" style="background:#fff;color:#000;border:1px solid #CBD5E1"></div>
 <div><label style="color:#000">Turno:</label><select id="dTurno" style="background:#fff;color:#000;border:1px solid #CBD5E1"><option>Matutino</option><option>Vespertino</option><option>Nocturno</option><option>Mixto</option></select></div>
-<div><label style="color:#000">Numero de equipo:</label><input id="dUnidad" placeholder="Ej. 03" style="background:#FFF7ED;color:#000;border:2px solid #EA580C;font-weight:800"></div>
+<div><label style="color:#000">Numero de equipo:</label><input id="dUnidad" placeholder="Ej. 03" onblur="buscarMontacargasPorNumero()" onchange="buscarMontacargasPorNumero()" style="background:#FFF7ED;color:#000;border:2px solid #EA580C;font-weight:800"></div>
 <div><label style="color:#000">Tipo:</label><select id="dTipo" onchange="actualizarTipo()" style="background:#fff;color:#000;border:1px solid #CBD5E1"><option value="Gas">Gas</option><option value="Electrico">Eléctrico</option></select></div>
 <div><label style="color:#000">Horometro:</label><input id="dHorometro" placeholder="Ej. 12345" style="background:#fff;color:#000;border:1px solid #CBD5E1"></div>
 <div id="boxCombustible"><label style="color:#000">Nivel de Combustible:</label><select id="dCombustible" style="background:#fff;color:#000;border:1px solid #CBD5E1"><option value="">Selecciona...</option><option>Vacio</option><option>1/8</option><option>1/4</option><option>3/8</option><option>1/2</option><option>5/8</option><option>3/4</option><option>7/8</option><option>Lleno</option></select></div>
 <div id="boxBateria" class="hidden"><label style="color:#000">Nivel de Bateria:</label><input id="dBateria" placeholder="Escribe... Ej. 85%" style="background:#fff;color:#000;border:1px solid #CBD5E1"></div>
 </div>
+<p id="msgMontacargasEncontrado" style="display:none;font-size:12px;color:#059669;font-weight:700;text-align:center;margin-top:8px">✅ Equipo encontrado</p>
+<p id="msgMontacargasNoEncontrado" style="display:none;font-size:12px;color:#DC2626;font-weight:700;text-align:center;margin-top:8px">⚠️ Equipo no encontrado, por favor informa a tu administrador para registrarlo</p>
 <input type="hidden" id="dClase" value="Montacargas">
 </div>
 
-<!-- ========== DATOS DEL VEHÍCULO - NUEVO ========== -->
+<!-- ========== DATOS DEL VEHÍCULO ========== -->
 <div id="boxDatosVehiculo" class="card hidden" style="background:#fff;color:#000">
 <div style="display:flex;justify-content:center;align-items:center;text-align:center;width:100%"><b style="font-size:14px;text-align:center;width:100%">DATOS DEL VEHÍCULO</b></div>
 <div class="datos-grid" style="margin-top:10px">
@@ -290,8 +292,8 @@
 <div id="boxNivelCombustibleVehiculo"><label style="color:#000">Nivel de Combustible:</label><select id="vNivelCombustible" style="background:#fff;color:#000;border:1px solid #CBD5E1"><option value="">Selecciona...</option><option>1/8</option><option>1/4</option><option>3/8</option><option>1/2</option><option>5/8</option><option>3/4</option><option>7/8</option><option>Lleno</option></select></div>
 <div id="boxNivelBateriaVehiculo" class="hidden"><label style="color:#000">Nivel de Batería:</label><input id="vNivelBateria" placeholder="Escribe... Ej. 93%" style="background:#fff;color:#000;border:1px solid #CBD5E1"></div>
 </div>
-<p id="msgVehiculoEncontrado" style="display:none;font-size:12px;color:#059669;font-weight:700;text-align:center;margin-top:8px">✅ Vehículo encontrado, se llenó solito Tipo y Combustible</p>
-<p id="msgVehiculoNoEncontrado" style="display:none;font-size:12px;color:#DC2626;font-weight:700;text-align:center;margin-top:8px">⚠️ Ese número económico no está dado de alta, verifica con tu Admin</p>
+<p id="msgVehiculoEncontrado" style="display:none;font-size:12px;color:#059669;font-weight:700;text-align:center;margin-top:8px">✅ Vehículo encontrado</p>
+<p id="msgVehiculoNoEncontrado" style="display:none;font-size:12px;color:#DC2626;font-weight:700;text-align:center;margin-top:8px">⚠️ Vehículo no encontrado, por favor informa a tu administrador para registrarlo</p>
 </div>
 
 <div class="checklist-scroll"><div class="tabla-head"><span style="text-align:left">PUNTOS DE REVISION</span><span>BUEN<br>ESTADO</span><span>MAL<br>ESTADO</span></div><div id="itemsChecklist"></div></div>
@@ -303,7 +305,7 @@
 </div>
 <input type="file" id="fotosFinales" accept="image/*" multiple style="display:none">
 <div id="previewFotos" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px"></div>
-<p style="font-size:11px;color:#64748B;margin-top:6px">Presiona ❌ para eliminar.</p></div>
+<p style="font-size:11px;color:#64748B;margin-top:6px">Por favor, selecciona ❌ para eliminar.</p></div>
 <button class="btn btn-yellow" onclick="guardarChecklist()" style="margin-top:16px">💾 GUARDAR CHECKLIST</button>
 <button class="btn btn-outline" onclick="show('p4')">Regresar</button>
 </div>
@@ -345,14 +347,14 @@ function pintarHistorialCamara(){
     const img = document.createElement('img');
     img.src = src;
     img.style.cssText = 'width:56px;height:56px;object-fit:cover;border-radius:10px;border:2px solid #fff;flex-shrink:0';
-    img.onclick = () => { if(confirm('¿Quitar esta foto?')){ fotosCamaraAceptadas.splice(i,1); pintarHistorialCamara(); } };
+    img.onclick = () => { if(confirm('¿Deseas quitar esta foto?')){ fotosCamaraAceptadas.splice(i,1); pintarHistorialCamara(); } };
     box.appendChild(img);
   });
   actualizarContadorCamara();
 }
 function aceptarFotoCamara(){
   if(!fotoCamaraTemporal) return;
-  if(fotosCamaraAceptadas.length >= 10){ alert('Ya tienes 10 fotos'); return; }
+  if(fotosCamaraAceptadas.length >= 10){ alert('Ya cuentas con 10 fotos'); return; }
   fotosCamaraAceptadas.push(fotoCamaraTemporal);
   fotoCamaraTemporal = null;
   document.getElementById('previewCamaraNueva').style.display = 'none';
@@ -390,7 +392,6 @@ function buscarVehiculoPorNumero(){
   if(msgOk) msgOk.style.display = 'none';
   if(msgNo) msgNo.style.display = 'none';
   if(!num) return;
-  // Intenta usar la lista que ya usa tu app.js: listaVehiculos / vehiculos / camiones
   const lista = window.listaVehiculos || window.vehiculos || window.camiones || [];
   const encontrado = lista.find(v => String(v.numero_economico || v.num || v.numero || v.economico || '').trim() === num || String(v.placas || '').trim() === num);
   if(encontrado){
@@ -401,8 +402,30 @@ function buscarVehiculoPorNumero(){
     actualizarTipoCombustibleVehiculo();
     if(msgOk) msgOk.style.display = 'block';
   } else {
-    // Si no está en memoria, lo dejamos que el operador lo ponga manual, solo avisamos
-    if(lista.length > 0 && msgNo) msgNo.style.display = 'block';
+    if(msgNo) msgNo.style.display = 'block';
+  }
+}
+// --- EQUIPO: BUSCAR POR NÚMERO DE EQUIPO Y AUTO-LLENAR ---
+function buscarMontacargasPorNumero(){
+  const numEl = document.getElementById('dUnidad');
+  if(!numEl) return;
+  const num = (numEl.value || '').trim();
+  const msgOk = document.getElementById('msgMontacargasEncontrado');
+  const msgNo = document.getElementById('msgMontacargasNoEncontrado');
+  if(msgOk) msgOk.style.display = 'none';
+  if(msgNo) msgNo.style.display = 'none';
+  if(!num) return;
+  const lista = window.listaMontacargas || [];
+  const encontrado = lista.find(m => String(m.num || m.numero || '').trim() === num);
+  if(encontrado){
+    const comb = (encontrado.combustible || '').toLowerCase();
+    const tipoCheck = comb.indexOf('elect') >= 0 ? 'Electrico' : 'Gas';
+    document.getElementById('dTipo').value = tipoCheck;
+    if(encontrado.clase) document.getElementById('dClase').value = encontrado.clase;
+    if(typeof actualizarTipo === 'function') actualizarTipo();
+    if(msgOk) msgOk.style.display = 'block';
+  } else {
+    if(msgNo) msgNo.style.display = 'block';
   }
 }
 </script>
