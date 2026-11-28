@@ -17,8 +17,7 @@
   #p-olvido .top b, #p-nueva-pass .top b, #p-cambiar-pin .top b,
   #p-alta-empleado .top b, #p-verificacion .top b { flex: 1; text-align: center !important; }
   #p2-admin .saludo, #p2-admin-registro .saludo, #p2-operador .saludo,
-  #p-olvido .saludo, #p-nueva-pass .saludo, #p-cambiar-pin .saludo,
-  #p-verificacion .saludo { text-align: center !important; }
+  #p-olvido .saludo, #p-nueva-pass .saludo, #p-cambiar-pin .saludo, #p-verificacion .saludo { text-align: center !important; }
   #p2-admin label, #p2-admin-registro label, #p2-operador label,
   #p-olvido label, #p-nueva-pass label, #p-cambiar-pin label,
   #p-alta-empleado label { display: block !important; text-align: center !important; font-weight: 700; margin-top: 12px; }
@@ -237,7 +236,7 @@
 <label>Placas *</label><input id="vehPlacas" placeholder="Ej. ABC-123">
 <label>Marca</label><input id="vehMarca" placeholder="Ej. Nissan">
 <label>Modelo</label><input id="vehModelo" placeholder="Ej. 2021">
-<label>Tipo</label><select id="vehTipo"><option>Carro</option><option>Pick Up</option><option>1.5 Toneladas</option><option>3.5 Toneladas</option><option>5 Toneladas</option><option>Rabón</option><option>Thorton</option><option>Tráiler</option></select>
+<label>Tipo</label><select id="vehTipo"><option>Carro</option><option>Pick Up</option><option>1.5 Toneladas</option><option>3.5 Toneladas</option><option>5 Toneladas</option><option>Rabón</option><option>Torton</option><option>Tráiler</option></select>
 <label>Kilometraje</label><input id="vehKm" inputmode="numeric" placeholder="Ej. 85000">
 <label>Tipo de combustible</label><select id="vehCombustible"><option>Gasolina</option><option>Diésel</option><option>Gas LP</option><option>Gas Natural</option><option>Eléctrico</option><option>Híbrido</option></select>
 <button class="btn btn-yellow" onclick="guardarVehiculo()">GUARDAR VEHÍCULO</button>
@@ -260,7 +259,9 @@
 </div>
 <div class="container hidden" id="p-checklist" style="background:#0A1E3C;max-width:720px">
 <div class="top"><span onclick="show('p4')" style="cursor:pointer">←</span><b id="tituloChecklist">Checklist</b><span></span></div>
-<div class="card" style="background:#fff;color:#000">
+
+<!-- ========== DATOS MONTACARGAS - NO SE TOCA ========== -->
+<div id="boxDatosMontacargas" class="card" style="background:#fff;color:#000">
 <div style="display:flex;justify-content:center;align-items:center;text-align:center;width:100%"><b style="font-size:14px;text-align:center;width:100%">DATOS DEL EQUIPO</b></div>
 <div class="datos-grid" style="margin-top:10px">
 <div class="full"><label style="color:#000">Fecha:</label><input id="dFecha" type="date" style="background:#fff;color:#000;border:1px solid #CBD5E1"></div>
@@ -274,6 +275,25 @@
 </div>
 <input type="hidden" id="dClase" value="Montacargas">
 </div>
+
+<!-- ========== DATOS DEL VEHÍCULO - NUEVO ========== -->
+<div id="boxDatosVehiculo" class="card hidden" style="background:#fff;color:#000">
+<div style="display:flex;justify-content:center;align-items:center;text-align:center;width:100%"><b style="font-size:14px;text-align:center;width:100%">DATOS DEL VEHÍCULO</b></div>
+<div class="datos-grid" style="margin-top:10px">
+<div class="full"><label style="color:#000">Fecha:</label><input id="vFecha" type="date" style="background:#fff;color:#000;border:1px solid #CBD5E1"></div>
+<div><label style="color:#000">Nombre del Operador:</label><input id="vOperador" placeholder="Nombre" style="background:#fff;color:#000;border:1px solid #CBD5E1"></div>
+<div><label style="color:#000">Turno:</label><select id="vTurno" style="background:#fff;color:#000;border:1px solid #CBD5E1"><option>Matutino</option><option>Vespertino</option><option>Nocturno</option><option>Mixto</option></select></div>
+<div><label style="color:#000">Número económico:</label><input id="vNumEconomico" placeholder="Ej. 05" onblur="buscarVehiculoPorNumero()" onchange="buscarVehiculoPorNumero()" style="background:#EFF6FF;color:#000;border:2px solid #2563EB;font-weight:800"></div>
+<div><label style="color:#000">Kilometraje:</label><input id="vKilometraje" inputmode="numeric" placeholder="Ej. 85000" style="background:#fff;color:#000;border:1px solid #CBD5E1"></div>
+<div><label style="color:#000">Tipo de Vehículo:</label><select id="vTipoVehiculo" style="background:#fff;color:#000;border:1px solid #CBD5E1"><option>Carro</option><option>Pick Up</option><option>1.5 Toneladas</option><option>3.5 Toneladas</option><option>5 Toneladas</option><option>Rabón</option><option>Torton</option><option>Tráiler</option></select></div>
+<div><label style="color:#000">Tipo de Combustible:</label><select id="vTipoCombustible" onchange="actualizarTipoCombustibleVehiculo()" style="background:#fff;color:#000;border:1px solid #CBD5E1"><option>Gasolina</option><option>Diésel</option><option>Gas LP</option><option>Gas Natural</option><option>Eléctrico</option><option>Híbrido</option></select></div>
+<div id="boxNivelCombustibleVehiculo"><label style="color:#000">Nivel de Combustible:</label><select id="vNivelCombustible" style="background:#fff;color:#000;border:1px solid #CBD5E1"><option value="">Selecciona...</option><option>1/8</option><option>1/4</option><option>3/8</option><option>1/2</option><option>5/8</option><option>3/4</option><option>7/8</option><option>Lleno</option></select></div>
+<div id="boxNivelBateriaVehiculo" class="hidden"><label style="color:#000">Nivel de Batería:</label><input id="vNivelBateria" placeholder="Escribe... Ej. 93%" style="background:#fff;color:#000;border:1px solid #CBD5E1"></div>
+</div>
+<p id="msgVehiculoEncontrado" style="display:none;font-size:12px;color:#059669;font-weight:700;text-align:center;margin-top:8px">✅ Vehículo encontrado, se llenó solito Tipo y Combustible</p>
+<p id="msgVehiculoNoEncontrado" style="display:none;font-size:12px;color:#DC2626;font-weight:700;text-align:center;margin-top:8px">⚠️ Ese número económico no está dado de alta, verifica con tu Admin</p>
+</div>
+
 <div class="checklist-scroll"><div class="tabla-head"><span style="text-align:left">PUNTOS DE REVISION</span><span>BUEN<br>ESTADO</span><span>MAL<br>ESTADO</span></div><div id="itemsChecklist"></div></div>
 <div class="card" style="background:#fff;color:#000;margin-top:16px"><b style="font-size:15px">📝 Describe Golpes en Carrocería / Fallas</b><textarea id="comentarioFinal" placeholder="Ej. Golpe en puerta izquierda..." style="width:100%;min-height:90px;padding:12px;border-radius:12px;border:1px solid #CBD5E1;background:#fff;color:#000;font-size:14px"></textarea>
 <label style="color:#000;margin-top:14px">Fotos</label>
@@ -341,6 +361,49 @@ function aceptarFotoCamara(){
 function rechazarFotoCamara(){
   fotoCamaraTemporal = null;
   document.getElementById('previewCamaraNueva').style.display = 'none';
+}
+
+// --- VEHÍCULO: LÓGICA COMBUSTIBLE / BATERÍA ---
+function actualizarTipoCombustibleVehiculo(){
+  const tipo = document.getElementById('vTipoCombustible')?.value || '';
+  const boxComb = document.getElementById('boxNivelCombustibleVehiculo');
+  const boxBat = document.getElementById('boxNivelBateriaVehiculo');
+  if(!boxComb || !boxBat) return;
+  if(tipo === 'Eléctrico'){
+    boxComb.classList.add('hidden');
+    boxBat.classList.remove('hidden');
+  } else if(tipo === 'Híbrido'){
+    boxComb.classList.remove('hidden');
+    boxBat.classList.remove('hidden');
+  } else {
+    boxComb.classList.remove('hidden');
+    boxBat.classList.add('hidden');
+  }
+}
+// --- VEHÍCULO: BUSCAR POR NÚMERO ECONÓMICO Y AUTO-LLENAR ---
+function buscarVehiculoPorNumero(){
+  const numEl = document.getElementById('vNumEconomico');
+  if(!numEl) return;
+  const num = (numEl.value || '').trim();
+  const msgOk = document.getElementById('msgVehiculoEncontrado');
+  const msgNo = document.getElementById('msgVehiculoNoEncontrado');
+  if(msgOk) msgOk.style.display = 'none';
+  if(msgNo) msgNo.style.display = 'none';
+  if(!num) return;
+  // Intenta usar la lista que ya usa tu app.js: listaVehiculos / vehiculos / camiones
+  const lista = window.listaVehiculos || window.vehiculos || window.camiones || [];
+  const encontrado = lista.find(v => String(v.numero_economico || v.num || v.numero || v.economico || '').trim() === num || String(v.placas || '').trim() === num);
+  if(encontrado){
+    const tipo = encontrado.tipo || encontrado.Tipo || '';
+    const comb = encontrado.combustible || encontrado.tipo_combustible || encontrado.TipoCombustible || '';
+    if(tipo) document.getElementById('vTipoVehiculo').value = tipo;
+    if(comb) document.getElementById('vTipoCombustible').value = comb;
+    actualizarTipoCombustibleVehiculo();
+    if(msgOk) msgOk.style.display = 'block';
+  } else {
+    // Si no está en memoria, lo dejamos que el operador lo ponga manual, solo avisamos
+    if(lista.length > 0 && msgNo) msgNo.style.display = 'block';
+  }
 }
 </script>
 </body>
