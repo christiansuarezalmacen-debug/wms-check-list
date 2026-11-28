@@ -6,15 +6,16 @@ var navStack=['p1'];
 function show(id, push){
   try{
     if(push===undefined) push=true;
-    var protegidas=['p-admin-menu','p-alta-empleado','p-consulta-usuarios','p-consulta-camiones','p-consulta-montacargas','p-consulta-bitacora','p-reportes','p4','p-checklist','p-nueva-pass','p-cambiar-pin'];
+    var protegidas=['p-admin-menu','p-alta-empleado','p-consulta-usuarios','p-consulta-camiones','p-consulta-montacargas','p-consulta-bitacora','p-reportes','p4','p-checklist','p-nueva-pass','p-cambiar-pin','p-alta-montacargas','p-alta-vehiculo'];
     if(protegidas.indexOf(id)>=0 && !window.sesionActiva && id!=='p-nueva-pass' && id!=='p-cambiar-pin'){alert('Primero inicia sesión');id='p1';}
-    var todos=['p1','p2-admin','p2-admin-registro','p-verificacion','p-felicidades','p-olvido','p-suscripcion','p2-operador','p4','p-admin-menu','p-alta-empleado','p-consulta-usuarios','p-consulta-camiones','p-consulta-montacargas','p-consulta-bitacora','p-reportes','p-checklist','p-nueva-pass','p-cambiar-pin'];
+    var todos=['p1','p2-admin','p2-admin-registro','p-verificacion','p-felicidades','p-olvido','p-suscripcion','p2-operador','p4','p-admin-menu','p-alta-empleado','p-consulta-usuarios','p-consulta-camiones','p-consulta-montacargas','p-consulta-bitacora','p-reportes','p-checklist','p-nueva-pass','p-cambiar-pin','p-alta-montacargas','p-alta-vehiculo'];
     for(var i=0;i<todos.length;i++){var el=document.getElementById(todos[i]);if(el)el.classList.add('hidden');}
     var dest=document.getElementById(id);if(dest)dest.classList.remove('hidden');
     window.scrollTo(0,0);
     if(push && navStack[navStack.length-1]!==id){navStack.push(id);try{history.pushState({pantalla:id},'', '#'+id);}catch(e){}}
     if(id==='p2-operador'){cargarDatosGuardados();}
     if(id==='p-consulta-montacargas' && typeof renderLibro==='function')renderLibro('montacargas');
+    if((id==='p-admin-menu' || id==='p-consulta-montacargas' || id==='p-consulta-camiones') && typeof actualizarContadoresEquipos==='function') actualizarContadoresEquipos();
   }catch(e){var d=document.getElementById(id);if(d){d.classList.remove('hidden');}}
 }
 function abrirMenuAdmin(){document.getElementById('menuOverlayAdmin').style.display='block';document.getElementById('menuPanelAdmin').style.display='flex';}
@@ -196,7 +197,6 @@ async function iniciarSesion(){
   empresaActual=res.data;window.sesionActiva=true;
   var nomAdmin = res.data.nombre_admin || '';
   if(!nomAdmin){ try{nomAdmin=localStorage.getItem('wms_admin_nombre')||'';}catch(e){} }
-  // Si ya existe en Supabase pero no tenia nombre, lo guardamos para la proxima
   if(nomAdmin && !res.data.nombre_admin && supabaseClient){
     try{await supabaseClient.from('empresas').update({nombre_admin:nomAdmin}).eq('correo',correo);}catch(e){}
   }
@@ -339,7 +339,66 @@ function verReporteMes(){var mes=document.getElementById('mesReporte').value,lib
 function descargarMes(tipo){var mes=document.getElementById('mesMontacargas').value||'2026-11';exportarCSVPorMes(mes,tipo)}
 function exportarCSVPorMes(mes,tipo){var libro=getLibro(),hojas=(libro[mes]&&libro[mes][tipo])||{},unidades=Object.keys(hojas);if(!unidades.length){alert('Aún no hay datos en '+mes);return}var csv='Libro '+mes+' - '+tipo+'\n';unidades.forEach(function(u){var dias=hojas[u];csv+='\nHoja Unidad '+u+'\nA - Datos / B - Punto,'+dias.map(function(d){return d.fecha+' - '+d.operador+' - Tipo '+(d.tipoUnidad||'')+' - Turno '+d.turno+' - Horometro '+d.horometro+' - Combustible '+d.combustible+' - Bateria '+d.bateria+' - GOLPES: '+(d.comentarioFinal||'')+' - FOTOS: '+(d.fotosFinales||'')}).join(',')+'\n';puntosDe(tipo).forEach(function(punto,pi){csv+='"'+(pi+1)+'. '+punto.replace(/"/g,'')+'",'+dias.map(function(d){var f=(d.filas||[]).find(function(x){return x.punto===punto})||{};return '"'+(f.estado||'')+'"'}).join(',')+'\n'})});var blob=new Blob([csv],{type:'text/csv'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='wms_libro_'+mes+'_'+tipo+'_por_unidad.csv';a.click();alert('¡Listo! Se descargó todo el mes '+mes+', Lulú.')}
 function exportarCSV(){var mes=document.getElementById('mesReporte').value||'2026-11';exportarCSVPorMes(mes,'montacargas')}
+// ===== EQUIPOS 20/20 - MONTACARGAS Y VEHÍCULOS =====
+window.listaMontacargas = JSON.parse(localStorage.getItem('wms_montacargas')||'[]');
+window.listaVehiculos = JSON.parse(localStorage.getItem('wms_vehiculos')||'[]');
+var LIMITE_EQUIPOS = 20;
+function actualizarContadoresEquipos(){
+  var totalM = window.listaMontacargas.length;
+  var totalV = window.listaVehiculos.length;
+  var ids = {'contadorMontacargas':totalM+' / 20','contadorVehiculos':totalV+' / 20','totalMontacargas':totalM,'totalVehiculos':totalV,'totalAltaMontacargas':totalM,'totalAltaVehiculos':totalV};
+  for(var id in ids){ var el=document.getElementById(id); if(el) el.innerText=ids[id]; }
+  var bM=document.getElementById('btnAgregarMontacargas');
+  var bV=document.getElementById('btnAgregarVehiculo');
+  if(bM){ bM.disabled = totalM>=20; bM.style.opacity = totalM>=20?'0.5':'1'; bM.innerText = totalM>=20?'LÍMITE ALCANZADO (20 / 20)':'+ AGREGAR MONTACARGAS'; }
+  if(bV){ bV.disabled = totalV>=20; bV.style.opacity = totalV>=20?'0.5':'1'; bV.innerText = totalV>=20?'LÍMITE ALCANZADO (20 / 20)':'+ AGREGAR VEHÍCULO'; }
+  var mM=document.getElementById('msgLimiteMontacargas'); if(mM) mM.style.display = totalM>=20?'block':'none';
+  var mV=document.getElementById('msgLimiteVehiculos'); if(mV) mV.style.display = totalV>=20?'block':'none';
+  renderListaMontacargas(); renderListaVehiculos();
+}
+function agregarMontacargas(){
+  if(window.listaMontacargas.length>=20){ alert('Alcanzaste el número máximo de montacargas registrados (20)'); return; }
+  actualizarContadoresEquipos(); show('p-alta-montacargas');
+}
+function agregarVehiculo(){
+  if(window.listaVehiculos.length>=20){ alert('Alcanzaste el número máximo de vehículos registrados (20)'); return; }
+  actualizarContadoresEquipos(); show('p-alta-vehiculo');
+}
+function guardarMontacargas(){
+  if(window.listaMontacargas.length>=20){ alert('Alcanzaste el número máximo de montacargas registrados (20)'); return; }
+  var num=document.getElementById('montNum').value.trim();
+  if(!num){ alert('Pon el número de unidad'); return; }
+  window.listaMontacargas.push({num:num, marca:document.getElementById('montMarca').value, modelo:document.getElementById('montModelo').value, tipo:document.getElementById('montTipo').value, capacidad:document.getElementById('montCapacidad').value});
+  localStorage.setItem('wms_montacargas', JSON.stringify(window.listaMontacargas));
+  document.getElementById('montNum').value=''; document.getElementById('montMarca').value=''; document.getElementById('montModelo').value=''; document.getElementById('montCapacidad').value='';
+  actualizarContadoresEquipos(); show('p-consulta-montacargas');
+}
+function guardarVehiculo(){
+  if(window.listaVehiculos.length>=20){ alert('Alcanzaste el número máximo de vehículos registrados (20)'); return; }
+  var num=document.getElementById('vehNum').value.trim();
+  if(!num){ alert('Pon el número de unidad / placas'); return; }
+  window.listaVehiculos.push({num:num, marca:document.getElementById('vehMarca').value, modelo:document.getElementById('vehModelo').value, tipo:document.getElementById('vehTipo').value});
+  localStorage.setItem('wms_vehiculos', JSON.stringify(window.listaVehiculos));
+  document.getElementById('vehNum').value=''; document.getElementById('vehMarca').value=''; document.getElementById('vehModelo').value='';
+  actualizarContadoresEquipos(); show('p-consulta-camiones');
+}
+function renderListaMontacargas(){
+  var c=document.getElementById('listaMontacargas'); if(!c) return;
+  c.innerHTML = window.listaMontacargas.map(function(e,i){return '<div class="card" style="display:flex;justify-content:space-between;align-items:center"><div><b>🏗️ Unidad '+e.num+'</b><br><span style="font-size:12px;opacity:.8">'+(e.marca||'')+' '+(e.modelo||'')+' - '+(e.tipo||'')+'</span></div><span onclick="eliminarMontacargas('+i+')" style="color:#EF4444;font-size:20px;cursor:pointer">❌</span></div>'}).join('');
+}
+function renderListaVehiculos(){
+  var c=document.getElementById('listaVehiculos'); if(!c) return;
+  c.innerHTML = window.listaVehiculos.map(function(e,i){return '<div class="card" style="display:flex;justify-content:space-between;align-items:center"><div><b>🚚 Unidad '+e.num+'</b><br><span style="font-size:12px;opacity:.8">'+(e.marca||'')+' '+(e.modelo||'')+' - '+(e.tipo||'')+'</span></div><span onclick="eliminarVehiculo('+i+')" style="color:#EF4444;font-size:20px;cursor:pointer">❌</span></div>'}).join('');
+}
+function eliminarMontacargas(i){
+  if(!confirm('¿Eliminar este montacargas?')) return;
+  window.listaMontacargas.splice(i,1); localStorage.setItem('wms_montacargas', JSON.stringify(window.listaMontacargas)); actualizarContadoresEquipos();
+}
+function eliminarVehiculo(i){
+  if(!confirm('¿Eliminar este vehículo?')) return;
+  window.listaVehiculos.splice(i,1); localStorage.setItem('wms_vehiculos', JSON.stringify(window.listaVehiculos)); actualizarContadoresEquipos();
+}
 try{if(window.location.hash==='#nueva-pass'){show('p-nueva-pass')}}catch(e){}
-try{cargarDatosGuardados();aplicarLogo();}catch(e){}
+try{cargarDatosGuardados();aplicarLogo();actualizarContadoresEquipos();}catch(e){}
 try{document.getElementById('btnAdmin').addEventListener('click',function(){show('p2-admin')});}catch(e){}
 try{document.getElementById('pass1').addEventListener('input', validarPass);document.getElementById('pass2').addEventListener('input', validarPass);}catch(e){}
