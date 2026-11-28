@@ -358,37 +358,66 @@ function actualizarContadoresEquipos(){
 }
 function agregarMontacargas(){
   if(window.listaMontacargas.length>=20){ alert('Alcanzaste el número máximo de montacargas registrados (20)'); return; }
-  actualizarContadoresEquipos(); show('p-alta-montacargas');
+  actualizarContadoresEquipos();
+  try{ document.getElementById('montFecha').value = new Date().toISOString().slice(0,10); }catch(e){}
+  show('p-alta-montacargas');
 }
 function agregarVehiculo(){
   if(window.listaVehiculos.length>=20){ alert('Alcanzaste el número máximo de vehículos registrados (20)'); return; }
-  actualizarContadoresEquipos(); show('p-alta-vehiculo');
+  actualizarContadoresEquipos();
+  try{ document.getElementById('vehFecha').value = new Date().toISOString().slice(0,10); }catch(e){}
+  show('p-alta-vehiculo');
 }
 function guardarMontacargas(){
   if(window.listaMontacargas.length>=20){ alert('Alcanzaste el número máximo de montacargas registrados (20)'); return; }
   var num=document.getElementById('montNum').value.trim();
   if(!num){ alert('Pon el número de unidad'); return; }
-  window.listaMontacargas.push({num:num, marca:document.getElementById('montMarca').value, modelo:document.getElementById('montModelo').value, tipo:document.getElementById('montTipo').value, capacidad:document.getElementById('montCapacidad').value});
+  window.listaMontacargas.push({
+    num:num,
+    fecha:document.getElementById('montFecha').value || new Date().toISOString().slice(0,10),
+    marca:document.getElementById('montMarca').value,
+    modelo:document.getElementById('montModelo').value,
+    clase:document.getElementById('montClase').value,
+    horometro:document.getElementById('montHorometro').value,
+    capacidad:document.getElementById('montCapacidad').value,
+    combustible:document.getElementById('montCombustible').value
+  });
   localStorage.setItem('wms_montacargas', JSON.stringify(window.listaMontacargas));
-  document.getElementById('montNum').value=''; document.getElementById('montMarca').value=''; document.getElementById('montModelo').value=''; document.getElementById('montCapacidad').value='';
+  document.getElementById('montNum').value=''; document.getElementById('montMarca').value=''; document.getElementById('montModelo').value=''; document.getElementById('montClase').value=''; document.getElementById('montHorometro').value=''; document.getElementById('montCapacidad').value='';
   actualizarContadoresEquipos(); show('p-consulta-montacargas');
 }
 function guardarVehiculo(){
   if(window.listaVehiculos.length>=20){ alert('Alcanzaste el número máximo de vehículos registrados (20)'); return; }
   var num=document.getElementById('vehNum').value.trim();
-  if(!num){ alert('Pon el número de unidad / placas'); return; }
-  window.listaVehiculos.push({num:num, marca:document.getElementById('vehMarca').value, modelo:document.getElementById('vehModelo').value, tipo:document.getElementById('vehTipo').value});
+  var placas=document.getElementById('vehPlacas').value.trim();
+  if(!num){ alert('Pon el número económico'); return; }
+  if(!placas){ alert('Pon las placas'); return; }
+  window.listaVehiculos.push({
+    num:num,
+    placas:placas,
+    fecha:document.getElementById('vehFecha').value || new Date().toISOString().slice(0,10),
+    marca:document.getElementById('vehMarca').value,
+    modelo:document.getElementById('vehModelo').value,
+    tipo:document.getElementById('vehTipo').value,
+    capacidad:document.getElementById('vehCapacidad').value,
+    km:document.getElementById('vehKm').value,
+    combustible:document.getElementById('vehCombustible').value
+  });
   localStorage.setItem('wms_vehiculos', JSON.stringify(window.listaVehiculos));
-  document.getElementById('vehNum').value=''; document.getElementById('vehMarca').value=''; document.getElementById('vehModelo').value='';
+  document.getElementById('vehNum').value=''; document.getElementById('vehPlacas').value=''; document.getElementById('vehMarca').value=''; document.getElementById('vehModelo').value=''; document.getElementById('vehCapacidad').value=''; document.getElementById('vehKm').value='';
   actualizarContadoresEquipos(); show('p-consulta-camiones');
 }
 function renderListaMontacargas(){
   var c=document.getElementById('listaMontacargas'); if(!c) return;
-  c.innerHTML = window.listaMontacargas.map(function(e,i){return '<div class="card" style="display:flex;justify-content:space-between;align-items:center"><div><b>🏗️ Unidad '+e.num+'</b><br><span style="font-size:12px;opacity:.8">'+(e.marca||'')+' '+(e.modelo||'')+' - '+(e.tipo||'')+'</span></div><span onclick="eliminarMontacargas('+i+')" style="color:#EF4444;font-size:20px;cursor:pointer">❌</span></div>'}).join('');
+  c.innerHTML = window.listaMontacargas.map(function(e,i){
+    return '<div class="card" style="display:flex;justify-content:space-between;align-items:center"><div><b>🏗️ Unidad '+(e.num||'')+'</b><br><span style="font-size:12px;opacity:.8">Fecha: '+(e.fecha||'')+' • '+(e.marca||'')+' '+(e.modelo||'')+'<br>Clase: '+(e.clase||'')+' • Horómetro: '+(e.horometro||'')+' • Capacidad: '+(e.capacidad||'')+'<br>Combustible: '+(e.combustible||'')+'</span></div><span onclick="eliminarMontacargas('+i+')" style="color:#EF4444;font-size:20px;cursor:pointer">❌</span></div>'
+  }).join('');
 }
 function renderListaVehiculos(){
   var c=document.getElementById('listaVehiculos'); if(!c) return;
-  c.innerHTML = window.listaVehiculos.map(function(e,i){return '<div class="card" style="display:flex;justify-content:space-between;align-items:center"><div><b>🚚 Unidad '+e.num+'</b><br><span style="font-size:12px;opacity:.8">'+(e.marca||'')+' '+(e.modelo||'')+' - '+(e.tipo||'')+'</span></div><span onclick="eliminarVehiculo('+i+')" style="color:#EF4444;font-size:20px;cursor:pointer">❌</span></div>'}).join('');
+  c.innerHTML = window.listaVehiculos.map(function(e,i){
+    return '<div class="card" style="display:flex;justify-content:space-between;align-items:center"><div><b>🚚 Unidad '+(e.num||'')+' - '+(e.placas||'')+'</b><br><span style="font-size:12px;opacity:.8">Fecha: '+(e.fecha||'')+' • '+(e.marca||'')+' '+(e.modelo||'')+'<br>Tipo: '+(e.tipo||'')+' • Capacidad: '+(e.capacidad||'')+' • Km: '+(e.km||'')+'<br>Combustible: '+(e.combustible||'')+'</span></div><span onclick="eliminarVehiculo('+i+')" style="color:#EF4444;font-size:20px;cursor:pointer">❌</span></div>'
+  }).join('');
 }
 function eliminarMontacargas(i){
   if(!confirm('¿Eliminar este montacargas?')) return;
