@@ -218,11 +218,11 @@
 <div class="top"><span onclick="show('p-consulta-montacargas')" style="cursor:pointer">←</span><b>Agregar Montacargas</b><span></span></div>
 <div class="card" style="text-align:center"><b>🏗️ Datos de La Unidad</b><p style="font-size:13px;opacity:.8">Tienes <b id="totalAltaMontacargas">0</b> / 20</p></div>
 <label>Fecha de registro</label><input id="montFecha" type="date">
-<label>Número de unidad *</label><input id="montNum" placeholder="Ej. 03">
-<label>Marca</label><input id="montMarca" placeholder="Ej. Toyota">
-<label>Modelo</label><input id="montModelo" placeholder="Ej. 2022">
-<label>Clase</label><input id="montClase" placeholder="Ej. Contrapesado">
-<label>Horómetro</label><input id="montHorometro" inputmode="numeric" placeholder="Ej. 12345">
+<label>Número de unidad *</label><input id="montNum" placeholder="03">
+<label>Marca</label><input id="montMarca" placeholder="Toyota">
+<label>Modelo</label><input id="montModelo" placeholder="2022">
+<label>Clase</label><input id="montClase"><option>Clase I Electrico Contrabalanceado</option><option>Clase II Pasillos angostos</option><option>Clase III Transpaletas y apiladores</option><option>Clase IV Combustion interna con llantas solidas</option><option>Clase V Combustion interna con llantas neumaticas</option><option>Clase VI Tractores de remolque</option><option>Clase VII Terrenos dificiles</option></select>
+<label>Horómetro</label><input id="montHorometro" inputmode="numeric" placeholder="H12345">
 <label>Capacidad</label><input id="montCapacidad" placeholder="Ej. 2500 kg">
 <label>Tipo de Combustible</label><select id="montCombustible"><option>Gas</option><option>Gasolina</option><option>Eléctrico</option><option>Ambos</option></select>
 <button class="btn btn-yellow" onclick="guardarMontacargas()">GUARDAR MONTACARGAS</button>
