@@ -323,11 +323,113 @@ async function restablecerPIN(id,nombre){
 }
 async function eliminarUsuario(id,nombre){if(!confirm('¿Seguro que quieres eliminar a '+nombre+'?'))return;if(supabaseClient)await supabaseClient.from('usuarios').delete().eq('id',id);await cargarUsuarios();}
 function actualizarTipo(){var t=document.getElementById('dTipo').value,esGas=t==='Gas';document.getElementById('boxCombustible').classList.toggle('hidden',!esGas);document.getElementById('boxBateria').classList.toggle('hidden',esGas);document.getElementById('dClase').value=esGas?'Montacargas Gas':'Montacargas Eléctrico'; renderItemsChecklist();}
-function abrirChecklist(tipo){tipoChecklistActual=tipo;var tit={camiones:'🚚 Checklist Camión',montacargas:'🏗️ Checklist Montacargas - 31 puntos',bitacora:'🗺️ Bitácora de Ruta'};document.getElementById('tituloChecklist').innerText=tit[tipo];document.getElementById('dFecha').value=hoyISO();document.getElementById('dOperador').value=operadorActual?operadorActual.nombre:'';document.getElementById('dUnidad').value='';document.getElementById('dHorometro').value='';document.getElementById('dTipo').value='Gas';actualizarTipo();document.getElementById('dCombustible').value='';document.getElementById('dBateria').value='';document.getElementById('comentarioFinal').value='';document.getElementById('previewFotos').innerHTML='';document.getElementById('fotosFinales').value='';fotosFinalesArr=[];renderItemsChecklist();show('p-checklist')}
+
+// ===== VEHÍCULO: TIPO COMBUSTIBLE -> MUESTRA COMBUSTIBLE / BATERÍA / AMBOS =====
+function actualizarTipoCombustibleVehiculo(){
+  var tipo='';
+  try{tipo=document.getElementById('vTipoCombustible').value||'';}catch(e){}
+  var boxComb=document.getElementById('boxNivelCombustibleVehiculo');
+  var boxBat=document.getElementById('boxNivelBateriaVehiculo');
+  if(!boxComb||!boxBat) return;
+  if(tipo==='Eléctrico'){ boxComb.classList.add('hidden'); boxBat.classList.remove('hidden'); }
+  else if(tipo==='Híbrido'){ boxComb.classList.remove('hidden'); boxBat.classList.remove('hidden'); }
+  else { boxComb.classList.remove('hidden'); boxBat.classList.add('hidden'); }
+}
+// ===== VEHÍCULO: BUSCAR POR NÚMERO ECONÓMICO Y AUTO-LLENAR =====
+function buscarVehiculoPorNumero(){
+  var numEl=document.getElementById('vNumEconomico');
+  if(!numEl) return null;
+  var num=(numEl.value||'').trim();
+  var msgOk=document.getElementById('msgVehiculoEncontrado');
+  var msgNo=document.getElementById('msgVehiculoNoEncontrado');
+  if(msgOk) msgOk.style.display='none';
+  if(msgNo) msgNo.style.display='none';
+  if(!num) return null;
+  var lista=window.listaVehiculos||[];
+  // Tu alta guarda: num, placas, tipo, combustible
+  var encontrado=lista.find(function(v){ return String(v.num||'').trim()===num; });
+  if(encontrado){
+    try{ if(encontrado.tipo) document.getElementById('vTipoVehiculo').value=encontrado.tipo; }catch(e){}
+    try{ if(encontrado.combustible) document.getElementById('vTipoCombustible').value=encontrado.combustible; }catch(e){}
+    actualizarTipoCombustibleVehiculo();
+    if(msgOk) msgOk.style.display='block';
+    return encontrado;
+  } else {
+    if(lista.length>0 && msgNo) msgNo.style.display='block';
+    return null;
+  }
+}
+function abrirChecklist(tipo){
+  tipoChecklistActual=tipo;
+  var tit={camiones:'🚚 Checklist Camión',montacargas:'🏗️ Checklist Montacargas - 31 puntos',bitacora:'🗺️ Bitácora de Ruta'};
+  document.getElementById('tituloChecklist').innerText=tit[tipo];
+  // Mostrar el bloque de datos correcto
+  var boxM=document.getElementById('boxDatosMontacargas');
+  var boxV=document.getElementById('boxDatosVehiculo');
+  var esVehiculo=(tipo==='camiones');
+  if(boxM) boxM.classList.toggle('hidden', esVehiculo);
+  if(boxV) boxV.classList.toggle('hidden', !esVehiculo);
+  if(esVehiculo){
+    // DATOS DEL VEHÍCULO - limpiar y prellenar
+    try{document.getElementById('vFecha').value=hoyISO();}catch(e){}
+    try{document.getElementById('vOperador').value=operadorActual?operadorActual.nombre:'';}catch(e){}
+    try{document.getElementById('vNumEconomico').value='';}catch(e){}
+    try{document.getElementById('vKilometraje').value='';}catch(e){}
+    try{document.getElementById('vTurno').value='Matutino';}catch(e){}
+    try{document.getElementById('vTipoVehiculo').value='Carro';}catch(e){}
+    try{document.getElementById('vTipoCombustible').value='Gasolina';}catch(e){}
+    try{document.getElementById('vNivelCombustible').value='';}catch(e){}
+    try{document.getElementById('vNivelBateria').value='';}catch(e){}
+    try{var m1=document.getElementById('msgVehiculoEncontrado'); if(m1) m1.style.display='none';}catch(e){}
+    try{var m2=document.getElementById('msgVehiculoNoEncontrado'); if(m2) m2.style.display='none';}catch(e){}
+    actualizarTipoCombustibleVehiculo();
+  } else {
+    // DATOS MONTACARGAS - igual que antes, no se toca
+    document.getElementById('dFecha').value=hoyISO();
+    document.getElementById('dOperador').value=operadorActual?operadorActual.nombre:'';
+    document.getElementById('dUnidad').value='';
+    document.getElementById('dHorometro').value='';
+    document.getElementById('dTipo').value='Gas';
+    actualizarTipo();
+    document.getElementById('dCombustible').value='';
+    document.getElementById('dBateria').value='';
+  }
+  document.getElementById('comentarioFinal').value='';
+  document.getElementById('previewFotos').innerHTML='';
+  document.getElementById('fotosFinales').value='';
+  fotosFinalesArr=[];
+  renderItemsChecklist();
+  show('p-checklist')
+}
 try{document.getElementById('fotosFinales').addEventListener('change',function(e){var files=Array.from(e.target.files||[]);files.slice(0,10).forEach(function(f){var r=new FileReader();r.onload=function(){if(fotosFinalesArr.length<10){fotosFinalesArr.push(r.result);renderFotos();}};r.readAsDataURL(f)});document.getElementById('fotosFinales').value='';});}catch(e){}
 function getLibro(){try{return JSON.parse(localStorage.getItem('wms_libro')||'{}')}catch(e){return{}}}
 function setLibro(d){try{localStorage.setItem('wms_libro',JSON.stringify(d))}catch(e){}}
 async function guardarChecklist(){
+  // ===== SI ES VEHÍCULO =====
+  if(tipoChecklistActual==='camiones'){
+    var numEco=document.getElementById('vNumEconomico').value.trim();
+    if(!numEco){alert('Pon el Número económico, campeón. Ej. 05');document.getElementById('vNumEconomico').focus();return}
+    var vehEncontrado=buscarVehiculoPorNumero();
+    var fechaV=document.getElementById('vFecha').value||hoyISO();
+    var mesV=fechaV.slice(0,7);
+    var tipoCombV=document.getElementById('vTipoCombustible').value;
+    var nivelCombV=document.getElementById('vNivelCombustible').value||'';
+    var nivelBatV=document.getElementById('vNivelBateria').value||'';
+    var nivelMostrarV='';
+    if(tipoCombV==='Eléctrico') nivelMostrarV=nivelBatV;
+    else if(tipoCombV==='Híbrido') nivelMostrarV='Comb: '+nivelCombV+' | Bat: '+nivelBatV;
+    else nivelMostrarV=nivelCombV;
+    var datosV={fecha:fechaV,operador:document.getElementById('vOperador').value,turno:document.getElementById('vTurno').value,unidad:numEco,numero_economico:numEco,clase:'Vehículo',tipoUnidad:document.getElementById('vTipoVehiculo').value,tipoVehiculo:document.getElementById('vTipoVehiculo').value,tipoCombustible:tipoCombV,combustible:nivelCombV,bateria:nivelBatV,kilometraje:document.getElementById('vKilometraje').value,horometro:document.getElementById('vKilometraje').value,tipo:tipoChecklistActual,guardado:new Date().toISOString(),vehiculo_id:vehEncontrado? (vehEncontrado.num||numEco) : numEco};
+    datosV.filas=puntosVisibles().map(function(item,i){var s=document.querySelector('input[name="chk'+i+'"]:checked');return{punto:item,estado:s?s.value:'',comentario:'',tieneFoto:'NO',ligaFoto:''}});
+    datosV.comentarioFinal=document.getElementById('comentarioFinal').value||'';datosV.fotosFinales=fotosFinalesArr.length+' fotos';datosV.ligasFotos=fotosFinalesArr.map(function(_,idx){return 'foto_'+numEco+'_'+fechaV+'_'+(idx+1)});
+    var libroV=getLibro();if(!libroV[mesV])libroV[mesV]={};if(!libroV[mesV][tipoChecklistActual])libroV[mesV][tipoChecklistActual]={};if(!libroV[mesV][tipoChecklistActual][numEco])libroV[mesV][tipoChecklistActual][numEco]=[];
+    var idxV=libroV[mesV][tipoChecklistActual][numEco].findIndex(function(d){return d.fecha===fechaV});if(idxV>=0)libroV[mesV][tipoChecklistActual][numEco][idxV]=datosV;else libroV[mesV][tipoChecklistActual][numEco].push(datosV);
+    libroV[mesV][tipoChecklistActual][numEco].sort(function(a,b){return a.fecha.localeCompare(b.fecha)});setLibro(libroV);
+    try{if(supabaseClient)await supabaseClient.from('checklists').insert([{tipo:tipoChecklistActual,unidad:numEco,operador:datosV.operador,resultados:datosV.filas.map(function(f){return f.punto+': '+f.estado}).join(' || '),observaciones:'Tipo Vehículo:'+datosV.tipoVehiculo+' Turno:'+datosV.turno+' Km:'+datosV.kilometraje+' Tipo Combustible:'+tipoCombV+' Nivel Comb:'+nivelCombV+' Nivel Bat:'+nivelBatV+' | GOLPES: '+datosV.comentarioFinal+' | FOTOS: '+datosV.fotosFinales,tiene_foto:fotosFinalesArr.length?'SI':'NO',fecha:new Date(fechaV).toISOString()}])}catch(e){}
+    alert('¡Guardado, campeón! ✅\nVehículo '+numEco+' ('+datosV.tipoVehiculo+' - '+tipoCombV+')\nFecha: '+fechaV+'\nNivel: '+nivelMostrarV);show('p4');
+    return;
+  }
+  // ===== SI ES MONTACARGAS / BITÁCORA - IGUAL QUE ANTES =====
   var unidad=document.getElementById('dUnidad').value.trim();if(!unidad){alert('Pon el Numero de equipo, Lulú. Ej. 03');document.getElementById('dUnidad').focus();return}
   var fecha=document.getElementById('dFecha').value||hoyISO(),mes=fecha.slice(0,7),tipoUnidad=document.getElementById('dTipo').value,esGas=tipoUnidad==='Gas';
   var nivel=esGas?document.getElementById('dCombustible').value:document.getElementById('dBateria').value;
